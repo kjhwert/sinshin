@@ -1,0 +1,11 @@
+POST http://sinshin-api.test/login
+
+{
+  "user_id" : "test",
+  "user_pw" : "test"
+}
+
+### Get user
+
+GET http://sinshin-api.test/user?page=1&perPage=15
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.58pyH-8OTJN7g3qKCz4RpRz2vnUW0c1Xi1o7jB0xUDw

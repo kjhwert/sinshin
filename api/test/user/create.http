@@ -1,0 +1,9 @@
+POST http://api.test/user
+Content-Type: application/json
+
+{
+  "name" : "홍길동",
+  "email" : "kjhwert11@naver.com",
+  "gender" : true,
+  "level" : 5
+}

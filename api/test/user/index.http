@@ -1,0 +1,2 @@
+GET http://api.test/user?page=1&perPage=15
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjR9.uDIvMMIvpbXFdSiBiEQDgPSgHI8AUBGEoZZwzPHbmx8
