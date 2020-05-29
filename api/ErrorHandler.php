@@ -23,9 +23,9 @@ class ErrorHandler
     /**
      *  401 Error
      */
-    public function unAuthorized ()
+    public function unAuthorized () : Response
     {
-
+        return new Response(401, [], "인증되지 않은 접근입니다. 로그인해주세요.");
     }
 
     public function typeNull ($param)
