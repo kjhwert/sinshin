@@ -17,8 +17,8 @@ class Request
 
     public function routePath ()
     {
-        if ($this->requestUri[0]) {
-            $path = explode("?", $this->requestUri[0]);
+        if ($this->requestUri[1]) {
+            $path = explode("?", $this->requestUri[1]);
             return $this->page = $path[0];
         }
 
