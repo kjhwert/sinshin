@@ -75,13 +75,13 @@ class Controller
     protected function tokenValidation ()
     {
         if (!array_key_exists('HTTP_AUTHORIZATION', $_SERVER)) {
-            return (new ErrorHandler())->typeNull('HTTP_AUTHORIZATION');
+            return (new ErrorHandler())->unAuthorized();
         }
 
         $token = $_SERVER['HTTP_AUTHORIZATION'];
 
         if (!$token) {
-            return new Response("login", [], '올바르지 않은 토큰입니다. 다시 로그인해주세요.');
+            return (new ErrorHandler())->unAuthorized();
         }
 
         try {
