@@ -3,7 +3,7 @@
 
 class Database
 {
-    private $servername = "www.hlabpartner.com";
+    private $servername = "localhost";
     private $username = "hlab";
     private $password = "AjdAjd8689!@";
     private $database = "sinshin";
