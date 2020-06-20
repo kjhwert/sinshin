@@ -33,7 +33,7 @@ class Request
 
             return $array;
         }
-
+        
         if ($this->method === 'POST' || $this->method === 'PUT') {
             return (array) json_decode(file_get_contents('php://input'));
         }

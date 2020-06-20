@@ -337,5 +337,69 @@
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    var ProjectStatsBar2 = new Chartist.Bar('#progress-stats-bar-chart3', {
+        labels: ['Mon', 'Tue', 'Wex', 'Thu', 'Fri', 'Sat', 'Sun'],
+        series: [
+            [20, 17, 14, 18, 15, 20, 18]
+        ]
+    }, barOptions);
+
+    ProjectStatsBar2.on('draw', function (data) {
+        if (data.type === 'bar') {
+            data.element.attr({
+                style: 'stroke-width: 25px'
+            });
+
+        }
+    });
+
+
+    var ProjectStatsLine2 = new Chartist.Line('#progress-stats-line-chart3', {
+        series: [
+            [16, 3, 10, 5, 15, 10]
+        ]
+    }, lineOptions);
+
+    ProjectStatsLine2.on('created', function (data) {
+        var defs = data.svg.querySelector('defs') || data.svg.elem('defs');
+        defs.elem('linearGradient', {
+            id: 'lineLinearStats2',
+            x1: 0,
+            y1: 0,
+            x2: 1,
+            y2: 0
+        }).elem('stop', {
+            offset: '0%',
+            'stop-color': 'rgba(253,185,1,0.1)'
+        }).parent().elem('stop', {
+            offset: '10%',
+            'stop-color': 'rgba(253,185,1,1)'
+        }).parent().elem('stop', {
+            offset: '80%',
+            'stop-color': 'rgba(253,185,1, 1)'
+        }).parent().elem('stop', {
+            offset: '98%',
+            'stop-color': 'rgba(253,185,1, 0.1)'
+        });
+
+        return defs;
+
+
+    }).on('draw', function (data) {
+        var circleRadius = 5;
+        if (data.type === 'point') {
+            var circle = new Chartist.Svg('circle', {
+                cx: data.x,
+                cy: data.y,
+                'ct:value': data.y,
+                r: circleRadius,
+                class: data.value.y === 15 ? 'ct-point ct-point-circle' : 'ct-point ct-point-circle-transperent'
+            });
+            data.element.replace(circle);
+        }
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////
+
 
 })(window, document, jQuery);
