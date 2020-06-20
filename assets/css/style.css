@@ -1,25 +1,17 @@
-<<<<<<< HEAD
-/*================================================================================
-	Item Name: Modern Admin - Clean Bootstrap 4 Dashboard HTML Template
-	Version: 1.0
-	Author: PIXINVENT
-	Author URL: http://www.themeforest.net/user/pixinvent
-================================================================================
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
 
-NOTE:
-------
-PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
-WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
-=======
-/*================================================================================
-	Item Name: Modern Admin - Clean Bootstrap 4 Dashboard HTML Template
-	Version: 1.0
-	Author: PIXINVENT
-	Author URL: http://www.themeforest.net/user/pixinvent
-================================================================================
+html body{
+  width:100%;
+  height:auto;
+  font-family: "Noto Sans KR", sans-serif !important;
 
-NOTE:
-------
-PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
-WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
->>>>>>> 8d76e981e5515d6a93bdf4e69e5483743c47a537
+}
+.login-container{
+  max-width:500px;
+  margin:100px auto 0;
+  padding:50px 20px;
+}
+.btn-login{
+  width:100%;
+  margin:0 auto;
+}
