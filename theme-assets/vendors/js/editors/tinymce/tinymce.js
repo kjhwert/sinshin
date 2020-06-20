@@ -82,7 +82,7 @@
 
 			target[fragments[fragments.length - 1]] = modules[id];
 		}
-		
+
 		// Expose private modules for unit tests
 		if (exports.AMDLC_TESTS) {
 			privateModules = exports.privateModules || {};
@@ -39283,7 +39283,7 @@ define("tinymce/EditorManager", [
 	}
 
 	function purgeDestroyedEditor(editor) {
-		// User has manually destroyed the editor lets clean up the mess
+		// user has manually destroyed the editor lets clean up the mess
 		if (editor && editor.initialized && !(editor.getContainer() || editor.getBody()).parentNode) {
 			removeEditorFromList(editor);
 			editor.unbindAllNativeEvents();

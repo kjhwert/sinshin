@@ -1,11 +1,7 @@
-POST http://sinshin-api.test/login
+POST http://sinshin.test/api/login
+Content-Type: application/json
 
 {
-  "user_id" : "test",
-  "user_pw" : "test"
+"user_id" : "admin",
+"user_pw" : "admin"
 }
-
-### Get user
-
-GET http://sinshin-api.test/user?page=1&perPage=15
-Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.58pyH-8OTJN7g3qKCz4RpRz2vnUW0c1Xi1o7jB0xUDw

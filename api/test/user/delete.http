@@ -1,2 +1,7 @@
-GET http://sinshin.test/api/user?page=1&perPage=15
+DELETE http://sinshin.test/api/user
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSlovc5GG7FHUQ2PTlrDM5FMBedqAweqvJY
+Content-Type: application/json
+
+{
+  "id" : 2
+}

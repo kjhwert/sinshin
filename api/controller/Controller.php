@@ -5,38 +5,43 @@ class Controller
 {
     protected $model;
     protected $types = [];
+    protected $params = [];
 
     /**
      * @param null $id
      * @param array $params
      * @param null $method
      */
-    public function __construct($id = null, array $params = [], $method = null)
+    public function __construct()
     {
-        $this->getModel();
         $this->tokenValidation();
-        //TODO user 정보를 static하게 담아놓을 지는 프로젝트 진행하면서 판단하자.
+        $this->getModel();
+
+        $req = new Request();
+        $this->params = $req->getParams();
+        $method = $req->getMethod();
+        $id = $req->getParamsValue($this->model->primaryKey);
 
         switch ($method) {
             case 'GET' :
-                    if (!$id) {
-                        $this->index($params);
+                    if (!$req->hasId($this->model->primaryKey)) {
+                        $this->index();
                     } else {
                         $this->show($id);
                     }
                 break;
-            case 'POST' : $this->create($params);
+            case 'POST' : $this->create();
                 break;
-            case 'PUT' : $this->update($id, $params);
+            case 'PUT' : $this->update($id);
                 break;
             case 'DELETE' : $this->destroy($id);
                 break;
         }
     }
 
-    public function index (array $params = [])
+    public function index ()
     {
-        $this->model->index($params);
+        $this->model->index($this->params);
     }
 
     /**
@@ -50,18 +55,18 @@ class Controller
     /**
      *  @param array $data
      */
-    public function create (array $data = [])
+    public function create ()
     {
-        $this->model->create($data);
+        $this->model->create($this->params);
     }
 
     /**
      *  @param null $id
      *  @param array $data
      */
-    public function update ($id = null, array $data = [])
+    public function update ($id = null)
     {
-        $this->model->update($id, $data);
+        $this->model->update($id, $this->params);
     }
 
     /**
@@ -86,7 +91,7 @@ class Controller
 
         try {
             $payload = JWT::decode($token, JWT::$tokenKey, array('HS256'));
-            $returnArray = array('id' => $payload->id);
+            $returnArray = array('id' => $payload->userId);
             if (isset($payload->exp)) {
                 $returnArray['exp'] = date(DateTime::ISO8601, $payload->exp);;
             }

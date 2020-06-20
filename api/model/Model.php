@@ -1,14 +1,13 @@
 <?php
 
-require_once "Database.php";
-
 class Model
 {
     protected $db = null;
     protected $table = null;
-    protected $primaryKey = null;
+    public $primaryKey = null;
     protected $searchable = [];
     protected $fields = [];
+    public $types = [];
 
     public function __construct()
     {
@@ -60,7 +59,7 @@ class Model
     public function create(array $data = [])
     {
         $sql = "insert into {$this->table} set {$this->dataToString($data)}";
-        return new Response(200, $this->fetch($sql), '');
+        return new Response(200, $this->fetch($sql), '등록되었습니다.');
     }
 
     /**
@@ -71,7 +70,7 @@ class Model
     public function update($id = null, array $data = [])
     {
         $sql = "update {$this->table} set {$this->dataToString($data)} where {$this->primaryKey} = {$id}";
-        return new Response(200, $this->fetch($sql), '');
+        return new Response(200, $this->fetch($sql), '수정되었습니다.');
     }
 
     /**
@@ -81,7 +80,7 @@ class Model
     public function destroy ($id = null)
     {
         $sql = "delete from {$this->table} where {$this->primaryKey} = {$id}";
-        return new Response(200, $this->fetch($sql), '');
+        return new Response(200, $this->fetch($sql), '삭제되었습니다.');
     }
 
     protected function pagination(array $params = [])
@@ -129,12 +128,20 @@ class Model
 
     protected function dataToString (array $data = [])
     {
+        $filter = array_filter($data, function ($key) {
+            return $key !== $this->primaryKey;
+        },ARRAY_FILTER_USE_KEY);
+
         return implode(', ',array_map(function ($key, $value) {
+            if($key === $this->primaryKey) {
+                return;
+            }
+
             if (gettype($value) === "integer") {
                 return "{$key} = {$value}";
             }
 
             return "{$key} = \"{$value}\"";
-        }, array_keys($data), $data));
+        }, array_keys($filter), $filter));
     }
 }

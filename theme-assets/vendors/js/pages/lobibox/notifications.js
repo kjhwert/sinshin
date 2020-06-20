@@ -27,7 +27,7 @@ var Lobibox = Lobibox || {};
         this.$el = null;
 //------------------------------------------------------------------------------
 //-----------------PRIVATE VARIABLES--------------------------------------------
-//------------------------------------------------------------------------------        
+//------------------------------------------------------------------------------
         var me = this;
 //------------------------------------------------------------------------------
 //-----------------PRIVATE FUNCTIONS--------------------------------------------
@@ -311,9 +311,9 @@ var Lobibox = Lobibox || {};
             var notify =$(el).data('lobibox') .remove();
         });
     };
-    //User can set default options to this variable
+    //user can set default options to this variable
     Lobibox.notify.DEFAULTS = {
-        title: true,                // Title of notification. If you do not include the title in options it will automatically takes its value 
+        title: true,                // Title of notification. If you do not include the title in options it will automatically takes its value
         //from Lobibox.notify.OPTIONS object depending of the type of the notifications or set custom string. Set this false to disable title
         size: 'normal',             // normal, mini, large
         soundPath: 'sounds/',   // The folder path where sounds are located

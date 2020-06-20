@@ -201,7 +201,7 @@ tinymce.ThemeManager.add('modern', function(editor) {
 
 			removedMenuItems = tinymce.makeMap((settings.removed_menuitems || '').split(/[ ,]/));
 
-			// User defined menu
+			// user defined menu
 			if (settings.menu) {
 				menu = settings.menu[context];
 				isUserDefined = true;

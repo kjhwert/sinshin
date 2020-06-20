@@ -7,17 +7,17 @@ var Lobibox = Lobibox || {};
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-    //User can set default properties for prompt in the following way
+    //user can set default properties for prompt in the following way
     //Lobibox.prompt.DEFAULT_OPTIONS = object;
     Lobibox.prompt = function (type, options) {
         return new LobiboxPrompt(type, options);
     };
-    //User can set default properties for confirm in the following way
+    //user can set default properties for confirm in the following way
     //Lobibox.confirm.DEFAULT_OPTIONS = object;
     Lobibox.confirm = function (options) {
         return new LobiboxConfirm(options);
     };
-    //User can set default properties for progress in the following way
+    //user can set default properties for progress in the following way
     //Lobibox.progress.DEFAULT_OPTIONS = object;
     Lobibox.progress = function (options) {
         return new LobiboxProgress(options);
@@ -33,14 +33,14 @@ var Lobibox = Lobibox || {};
     Lobibox.warning = {};
     Lobibox.info = {};
 
-    //User can set default properties for alert in the following way
+    //user can set default properties for alert in the following way
     //Lobibox.alert.DEFAULT_OPTIONS = object;
     Lobibox.alert = function (type, options) {
         if (["success", "error", "warning", "info"].indexOf(type) > -1) {
             return new LobiboxAlert(type, options);
         }
     };
-    //User can set default properties for window in the following way
+    //user can set default properties for window in the following way
     //Lobibox.window.DEFAULT_OPTIONS = object;
     Lobibox.window = function (options) {
         return new LobiboxWindow('window', options);
@@ -532,7 +532,7 @@ var Lobibox = Lobibox || {};
             return me;
         }
     };
-    //User can set default options by this variable
+    //user can set default options by this variable
     Lobibox.base = {};
     Lobibox.base.OPTIONS = {
         bodyClass: 'lobibox-open',
@@ -856,7 +856,7 @@ var Lobibox = Lobibox || {};
             title: 'Error'
         }
     };
-    //User can set default options by this variable
+    //user can set default options by this variable
     Lobibox.alert.DEFAULTS = {};
 //------------------------------------------------------------------------------
 //-------------------------LobiboxProgress--------------------------------------
@@ -1164,7 +1164,7 @@ var Lobibox = Lobibox || {};
         this.$el = null;
 //------------------------------------------------------------------------------
 //-----------------PRIVATE VARIABLES--------------------------------------------
-//------------------------------------------------------------------------------        
+//------------------------------------------------------------------------------
         var me = this;
 //------------------------------------------------------------------------------
 //-----------------PRIVATE FUNCTIONS--------------------------------------------
@@ -1448,9 +1448,9 @@ var Lobibox = Lobibox || {};
             var notify =$(el).data('lobibox') .remove();
         });
     };
-    //User can set default options to this variable
+    //user can set default options to this variable
     Lobibox.notify.DEFAULTS = {
-        title: true,                // Title of notification. If you do not include the title in options it will automatically takes its value 
+        title: true,                // Title of notification. If you do not include the title in options it will automatically takes its value
         //from Lobibox.notify.OPTIONS object depending of the type of the notifications or set custom string. Set this false to disable title
         size: 'normal',             // normal, mini, large
         soundPath: 'sounds/',   // The folder path where sounds are located

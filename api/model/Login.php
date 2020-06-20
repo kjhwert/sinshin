@@ -1,6 +1,6 @@
 <?php
 
-require_once "model/User/User.php";
+require_once "User.php";
 
 class Login extends User
 {

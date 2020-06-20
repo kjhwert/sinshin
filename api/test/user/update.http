@@ -1,9 +1,9 @@
-PUT http://api.test/user/15
+PUT http://sinshin.test/api/user
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSlovc5GG7FHUQ2PTlrDM5FMBedqAweqvJY
 Content-Type: application/json
 
 {
-  "name" : "김홍홍",
-  "email" : "kjhwert11@naver.com",
-  "gender" : 0,
-  "level" : 10
+  "id" : 2,
+  "user_id" : "test4",
+  "name" : "홍갑수"
 }
