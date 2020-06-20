@@ -2,7 +2,6 @@
 
 class Request
 {
-    protected $requestUri;
     protected $query;
     protected $method;
     protected $page;
@@ -10,19 +9,8 @@ class Request
 
     public function __construct()
     {
-        $this->requestUri = explode('/',trim($_SERVER['REQUEST_URI'],'/'));
         $this->query = $_SERVER['QUERY_STRING'];
         $this->method = $_SERVER['REQUEST_METHOD'];
-    }
-
-    public function routePath ()
-    {
-        if ($this->requestUri[1]) {
-            $path = explode("?", $this->requestUri[1]);
-            return $this->page = $path[0];
-        }
-
-        return $this->page = null;
     }
 
     public function getParams ()
@@ -34,29 +22,28 @@ class Request
             return $array;
         }
 
-        if ($this->method === 'POST' || $this->method === 'PUT') {
+        if ($this->method === 'POST' || $this->method === 'PUT' || $this->method === 'DELETE') {
             return (array) json_decode(file_get_contents('php://input'));
         }
 
         return [];
     }
 
-    public function method ()
+    public function getMethod ()
     {
         return $this->method;
     }
 
-    public function showId ()
+    public function hasId ($id = null)
     {
-        if ($this->hasId()) {
-            return $this->id = $this->requestUri[1];
+        return array_key_exists($id, $this->getParams());
+    }
+
+    public function getParamsValue ($value)
+    {
+        if ($this->hasId($value)) {
+            return $this->getParams()[$value];
         }
-
-        return $this->id = null;
     }
 
-    protected function hasId ()
-    {
-        return count($this->requestUri) >= 2 && $this->requestUri[1];
-    }
 }

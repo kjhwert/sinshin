@@ -55,7 +55,7 @@ define("tinymce/pasteplugin/Clipboard", [
 			html = args.content;
 
 			if (!args.isDefaultPrevented()) {
-				// User has bound PastePostProcess events then we need to pass it through a DOM node
+				// user has bound PastePostProcess events then we need to pass it through a DOM node
 				// This is not ideal but we don't want to let the browser mess up the HTML for example
 				// some browsers add &nbsp; to P tags etc
 				if (editor.hasEventListeners('PastePostProcess') && !args.isDefaultPrevented()) {

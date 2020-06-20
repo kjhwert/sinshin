@@ -1,22 +1,20 @@
 <?php
 
-require_once "model/User/Login.php";
-
 class LoginController
 {
-    protected $userNo;
-    protected $userToken;
     protected $model;
+    protected $params;
 
     public function __construct()
     {
+        $this->params = (new Request())->getParams();
         $this->model = new Login();
     }
 
-    public function login (array $params = [])
+    public function login ()
     {
-        $this->validate($params);
-        $this->model->verification($params);
+        $this->validate($this->params);
+        $this->model->verification($this->params);
     }
 
     protected function validate (array $data = [])
