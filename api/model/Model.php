@@ -4,7 +4,7 @@ class Model
 {
     protected $db = null;
     protected $table = null;
-    public $primaryKey = null;
+    public $primaryKey = 'id';
     protected $searchable = [];
     protected $fields = [];
     public $types = [];
@@ -30,11 +30,13 @@ class Model
             $sql = "select {$this->getFields()} 
                     from {$this->table} 
                     where {$this->search($params)}
+                    and stts = 'ACT'
                     order by {$this->primaryKey} desc
                     limit {$page},{$perPage}";
         } else {
             $sql = "select {$this->getFields()} 
                     from {$this->table}
+                    where stts = 'ACT'
                     order by {$this->primaryKey} desc
                     limit {$page},{$perPage}";
         }
@@ -48,7 +50,7 @@ class Model
      */
     public function show ($id = null)
     {
-        $sql = "select {$this->getFields()} from {$this->table} where {$this->primaryKey} = {$id}";
+        $sql = "select {$this->getFields()} from {$this->table} where {$this->primaryKey} = {$id} and stts = 'ACT'";
         return new Response(200, $this->fetch($sql), '');
     }
 
