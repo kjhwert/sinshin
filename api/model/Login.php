@@ -23,11 +23,15 @@ class Login extends User
         $sql = "select password('{$pw}') as pw";
         $pw = $this->fetch($sql)[0]['pw'];
 
-        $sql = "select id from {$this->table} where user_id = '{$id}' and user_pw = '{$pw}'";
+        $sql = "select id, name, tel, email, dept_id, position, duty from {$this->table} where user_id = '{$id}' and user_pw = '{$pw}' and stts = 'ACT'";
         $result = $this->fetch($sql)[0];
         $result['token'] = $this->getToken($result['id']);
 
+        $result['dept'] = $this->getDept($result['dept_id']);
+        $result['position'] = $this->getPosition($result['position']);
+
         if ($result) {
+            unset($result['dept_id']);
             return new Response(
                 200,
                 $result,

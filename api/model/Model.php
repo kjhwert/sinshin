@@ -79,8 +79,9 @@ class Model
      */
     public function destroy ($id = null)
     {
-        $sql = "delete from {$this->table} where {$this->primaryKey} = {$id}";
-        return new Response(200, $this->fetch($sql), '삭제되었습니다.');
+        //TODO stts 상태 변경
+//        $sql = "delete from {$this->table} where {$this->primaryKey} = {$id}";
+//        return new Response(200, $this->fetch($sql), '삭제되었습니다.');
     }
 
     protected function pagination(array $params = [])
