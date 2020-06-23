@@ -15,3 +15,32 @@ html body{
   width:100%;
   margin:0 auto;
 }
+.search_box input{
+  max-width:200px;
+  display:inline-block;
+}
+.search_box select{
+  max-width:200px;
+  display:inline-block;
+}
+.custom_input{
+  padding: 13px 1.5rem 12px;
+}
+.custom_input2{
+  padding: 11px 1.5rem 10px;
+  margin-right:5px;
+  margin-bottom:5px;
+}
+.custom_btn{
+  padding:12px 1.5rem 13px;
+  margin-top:-4px;
+}
+footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+}
+.pagination{
+  justify-content: center;
+}

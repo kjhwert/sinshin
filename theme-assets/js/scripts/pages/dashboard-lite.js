@@ -337,14 +337,14 @@
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    var ProjectStatsBar2 = new Chartist.Bar('#progress-stats-bar-chart3', {
+    var ProjectStatsBar3 = new Chartist.Bar('#progress-stats-bar-chart3', {
         labels: ['Mon', 'Tue', 'Wex', 'Thu', 'Fri', 'Sat', 'Sun'],
         series: [
             [20, 17, 14, 18, 15, 20, 18]
         ]
     }, barOptions);
 
-    ProjectStatsBar2.on('draw', function (data) {
+    ProjectStatsBar3.on('draw', function (data) {
         if (data.type === 'bar') {
             data.element.attr({
                 style: 'stroke-width: 25px'
@@ -354,13 +354,13 @@
     });
 
 
-    var ProjectStatsLine2 = new Chartist.Line('#progress-stats-line-chart3', {
+    var ProjectStatsLine3 = new Chartist.Line('#progress-stats-line-chart3', {
         series: [
             [16, 3, 10, 5, 15, 10]
         ]
     }, lineOptions);
 
-    ProjectStatsLine2.on('created', function (data) {
+    ProjectStatsLine3.on('created', function (data) {
         var defs = data.svg.querySelector('defs') || data.svg.elem('defs');
         defs.elem('linearGradient', {
             id: 'lineLinearStats2',
