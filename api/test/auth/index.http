@@ -1,0 +1,2 @@
+GET http://sinshin.test/api/auth
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSlovc5GG7FHUQ2PTlrDM5FMBedqAweqvJY

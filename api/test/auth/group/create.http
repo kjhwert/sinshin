@@ -1,0 +1,7 @@
+POST http://sinshin.test/api/auth/group
+Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSlovc5GG7FHUQ2PTlrDM5FMBedqAweqvJY
+Content-Type: application/json
+
+{
+  "name" : "사출팀"
+}
