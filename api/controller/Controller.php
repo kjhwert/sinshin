@@ -14,8 +14,8 @@ class Controller
      */
     public function __construct()
     {
-        $this->tokenValidation();
         $this->getModel();
+        $this->model->token = $this->tokenValidation();
 
         $req = new Request();
         $this->params = $req->getParams();

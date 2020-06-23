@@ -29,6 +29,7 @@ class Login extends User
 
         $result['dept'] = $this->getDept($result['dept_id']);
         $result['position'] = $this->getPosition($result['position']);
+//        $result['auth'] = $this->getAuth($result[])
 
         if ($result) {
             unset($result['dept_id']);
