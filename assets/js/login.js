@@ -1,4 +1,3 @@
-
 $("#login_btn").on("click", function(){
   var user_id = $("#user_id").val();
   var user_pw = $("#user_pw").val();
@@ -18,7 +17,7 @@ function login(user_id, user_pw){
     $.ajax({
         type    : "POST",
         url        : "./api/login/",
-        contentType: "application/json",
+        contentType: "appxlication/json",
         dataType:"json",
         data     : JSON.stringify({
           user_id: user_id,
@@ -26,7 +25,8 @@ function login(user_id, user_pw){
         })
     }).done(function (data, textStatus, xhr) {
       if(data.status == 200){
-        alert("로그인 성공");
+        setCookie("user_data",JSON.stringify(data.data), 1);
+        location.href="./main/main.html";
       }else{
         alert(data.message);
       }
