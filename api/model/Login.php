@@ -10,9 +10,9 @@ class Login extends User
         $pw = $params['user_pw'];
 
         $sql = "select count({$this->primaryKey}) as cnt from {$this->table} where user_id = '{$id}'";
-        $result = $this->rowCount($sql);
+        $result = $this->fetch($sql)[0];
 
-        if ($result === 0) {
+        if ($result['cnt'] === 0) {
             return new Response(
                 406,
                 [],
@@ -24,22 +24,24 @@ class Login extends User
         $pw = $this->fetch($sql)[0]['pw'];
 
         $sql = "select id from {$this->table} where user_id = '{$id}' and user_pw = '{$pw}'";
+
         $result = $this->fetch($sql)[0];
+
+        if (!$result) {
+            return new Response(
+                406,
+                [],
+                "비밀번호가 일치하지 않습니다."
+            );
+        }
+
         $result['token'] = $this->getToken($result['id']);
 
-        if ($result) {
             return new Response(
                 200,
                 $result,
                 ""
             );
-        }
-
-        return new Response(
-            406,
-            [],
-            "비밀번호가 일치하지 않습니다."
-        );
     }
 
     protected function getToken ($id)

@@ -38,3 +38,9 @@ git checkout master
 git push origin master
 git pull origin master
 exit
+git pull origin master
+git commit -m "20200623"
+git add .
+git commit -m "20200623"
+git push origin master
+git pull origin master
