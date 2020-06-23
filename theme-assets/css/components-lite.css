@@ -435,7 +435,7 @@ footer.footer-dark
 .main-menu.menu-light .navigation > li.open > a
 {
     color: #2b345f;
-    color: #fa626b;
+    color: #6a3292;
 }
 .main-menu.menu-light .navigation > li.open .hover > a
 {
@@ -468,9 +468,9 @@ footer.footer-dark
             transform: translate(-10px, -50%);
 
     opacity: 1;
-    border-color: #fa626b;
+    border-color: #6a3292;
     border-radius: 50%;
-    background-color: #fa626b;
+    background-color: #6a3292;
 }
 .main-menu.menu-light .navigation > li:not(.open) > ul
 {
@@ -480,7 +480,7 @@ footer.footer-dark
 .main-menu.menu-light .navigation > li:hover > a,
 .main-menu.menu-light .navigation > li.active > a
 {
-    color: #fa626b;
+    color: #6a3292;
 }
 .main-menu.menu-light .navigation > li.hover > a > span,
 .main-menu.menu-light .navigation > li:hover > a > span,

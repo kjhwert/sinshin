@@ -2604,7 +2604,6 @@ pre code
 }
 .table thead th
 {
-    vertical-align: bottom;
 
     border-bottom: 2px solid #626e82;
 }
@@ -3016,9 +3015,9 @@ pre code
 
 select.form-control:not([size]):not([multiple])
 {
-    height: -webkit-calc(2.75rem + 2px);
-    height:    -moz-calc(2.75rem + 2px);
-    height:         calc(2.75rem + 2px);
+    height: -webkit-calc(2.75rem + 5px);
+    height:    -moz-calc(2.75rem + 5px);
+    height:         calc(2.75rem + 5px);
 }
 
 select.form-control:focus::-ms-value

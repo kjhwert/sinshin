@@ -26,14 +26,14 @@ body.vertical-layout.vertical-menu.menu-expanded .navbar-header
 {
     z-index: 999;
 
-    float: left; 
+    float: left;
 
     width: 260px;
 }
 
 body.vertical-layout.vertical-menu.menu-expanded .navbar.navbar-brand-center .navbar-header
 {
-    z-index: 999; 
+    z-index: 999;
 
     width: auto;
 }
@@ -98,7 +98,7 @@ body.vertical-layout.vertical-menu.menu-expanded .main-menu .navigation li.has-s
     display: inline-block;
 
     content: '\f112';
-    transition: -webkit-transform .2s ease-in-out; 
+    transition: -webkit-transform .2s ease-in-out;
     -webkit-transform: rotate(0deg);
        -moz-transform: rotate(0deg);
         -ms-transform: rotate(0deg);
@@ -143,8 +143,8 @@ body.vertical-layout.vertical-menu.menu-expanded .main-menu.menu-light .navigati
 body.vertical-layout.vertical-menu.menu-expanded .main-menu.menu-light .navigation:hover > a > i,
 body.vertical-layout.vertical-menu.menu-expanded .main-menu.menu-light .navigation .open > a > i
 {
-    -webkit-box-shadow: 0 0 20px rgba(253, 99, 107, .3);
-            box-shadow: 0 0 20px rgba(253, 99, 107, .3);
+    -webkit-box-shadow: 0 0 20px rgba(106, 50, 146, .3);
+            box-shadow: 0 0 20px rgba(106, 50, 146, .3);
 }
 body.vertical-layout.vertical-menu.menu-expanded .main-menu.menu-dark .navigation > li > a > i
 {
@@ -188,14 +188,14 @@ body.vertical-layout.vertical-menu.menu-collapsed .navbar-header
 {
     z-index: 999;
 
-    float: left; 
+    float: left;
 
     width: 60px;
 }
 
 body.vertical-layout.vertical-menu.menu-collapsed .navbar.navbar-brand-center .navbar-header
 {
-    z-index: 999; 
+    z-index: 999;
 
     width: auto;
 }
@@ -225,7 +225,7 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu
     -webkit-transition: 300ms ease all;
        -moz-transition: 300ms ease all;
          -o-transition: 300ms ease all;
-            transition: 300ms ease all; 
+            transition: 300ms ease all;
     -webkit-transform: translateZ(-160px) translateX(-160px);
     -webkit-transform: translate3d(0, 0, 0);
        -moz-transform: translateZ(-160px) translateX(-160px);
@@ -260,7 +260,7 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu .main-menu-content 
     left: 60px;
 
     width: 260px;
-    padding: 18px 30px; 
+    padding: 18px 30px;
 
     text-align: left;
     text-transform: uppercase;
@@ -281,13 +281,13 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu .main-menu-content 
             transition: visibility .25s, opacity .25s;
 
     border-bottom: 1px solid rgba(0, 0, 0, .2);
-    border-left: 1px solid rgba(0, 0, 0, .02); 
+    border-left: 1px solid rgba(0, 0, 0, .02);
     -webkit-box-shadow: 25px 5px 75px 2px rgba(64, 70, 74, .2);
             box-shadow: 25px 5px 75px 2px rgba(64, 70, 74, .2);
 }
 body.vertical-layout.vertical-menu.menu-collapsed .main-menu .main-menu-content > ul.menu-content li
 {
-    position: relative; 
+    position: relative;
 
     white-space: nowrap;
 }
@@ -318,7 +318,7 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu .main-menu-content 
     display: inline-block;
 
     content: '\f112';
-    transition: -webkit-transform .2s ease-in-out; 
+    transition: -webkit-transform .2s ease-in-out;
     -webkit-transform: rotate(0deg);
        -moz-transform: rotate(0deg);
         -ms-transform: rotate(0deg);
@@ -369,7 +369,7 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu .navigation > li.na
 }
 body.vertical-layout.vertical-menu.menu-collapsed .main-menu .navigation > li.navigation-header .ft-minus
 {
-    font-size: 1.3rem; 
+    font-size: 1.3rem;
 
     display: block;
 }
@@ -392,7 +392,7 @@ body.vertical-layout.vertical-menu.menu-collapsed .main-menu .navigation > li > 
     visibility: hidden;
 
     width: 260px;
-    padding: 14px 20px; 
+    padding: 14px 20px;
 
     text-align: left;
 
@@ -552,7 +552,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
     {
         -webkit-transform: translate3d(0px, 0, 0);
            -moz-transform: translate3d(0px, 0, 0);
-                transform: translate3d(0px, 0, 0); 
+                transform: translate3d(0px, 0, 0);
 
         opacity: 0;
     }
@@ -656,8 +656,8 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
 
 /*=========================================================================================
 	File Name: vertical-overlay-menu.scss
-	Description: A overlay style vertical menu with show and hide support. It support 
-	light & dark version, filpped layout, right side icons, native scroll and borders menu 
+	Description: A overlay style vertical menu with show and hide support. It support
+	light & dark version, filpped layout, right side icons, native scroll and borders menu
 	item seperation.
 	----------------------------------------------------------------------------------------
 	Item Name: Chameleon Admin - Modern Bootstrap 4 WebApp & Dashboard HTML Template + UI Kit
@@ -672,7 +672,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
 
 .vertical-overlay-menu .navbar .navbar-header
 {
-    z-index: 999; 
+    z-index: 999;
 
     width: 260px;
 }
@@ -684,7 +684,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
 
 .vertical-overlay-menu .navbar.navbar-brand-center .navbar-header
 {
-    z-index: 999; 
+    z-index: 999;
 
     width: auto;
 }
@@ -692,7 +692,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
 .vertical-overlay-menu .main-menu,
 .vertical-overlay-menu.menu-hide .main-menu
 {
-    left: -260px; 
+    left: -260px;
 
     width: 260px;
 
@@ -716,7 +716,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
 {
     font-size: 1.5rem;
 
-    float: left; 
+    float: left;
 
     margin-right: 12px;
 }
@@ -739,7 +739,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
     display: inline-block;
 
     content: '\f112';
-    transition: -webkit-transform .2s ease-in-out; 
+    transition: -webkit-transform .2s ease-in-out;
     -webkit-transform: rotate(0deg);
        -moz-transform: rotate(0deg);
         -ms-transform: rotate(0deg);
@@ -774,7 +774,7 @@ body.vertical-layout.vertical-menu.menu-collapsed.menu-flipped .footer
          -o-transition: width .25s,opacity .25s,-o-transform .25s;
             transition: width .25s,opacity .25s,-webkit-transform .25s;
             transition: width .25s,opacity .25s,transform .25s;
-            transition: width .25s,opacity .25s,transform .25s,-webkit-transform .25s,-moz-transform .25s,-o-transform .25s; 
+            transition: width .25s,opacity .25s,transform .25s,-webkit-transform .25s,-moz-transform .25s,-o-transform .25s;
     -webkit-transform: translate3d(260px, 0, 0);
        -moz-transform: translate3d(260px, 0, 0);
             transform: translate3d(260px, 0, 0);
