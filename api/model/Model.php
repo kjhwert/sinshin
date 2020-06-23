@@ -14,6 +14,7 @@ class Model
 
     public function __construct()
     {
+        $this->token = $this->tokenValidation();
         $this->db = Database::getInstance()->getDatabase();
     }
 
@@ -72,6 +73,32 @@ class Model
     {
         $sql = "update {$this->table} set stts = 'DELETE' where {$this->primaryKey} = {$id}";
         return new Response(200, $this->fetch($sql), '삭제되었습니다.');
+    }
+
+    public function tokenValidation ()
+    {
+        if (!array_key_exists('HTTP_AUTHORIZATION', $_SERVER)) {
+            return (new ErrorHandler())->unAuthorized();
+        }
+
+        $token = $_SERVER['HTTP_AUTHORIZATION'];
+
+        if (!$token) {
+            return (new ErrorHandler())->unAuthorized();
+        }
+
+        try {
+            $payload = JWT::decode($token, JWT::$tokenKey, array('HS256'));
+            $returnArray = array('id' => $payload->userId);
+            if (isset($payload->exp)) {
+                $returnArray['exp'] = date(DateTime::ISO8601, $payload->exp);;
+            }
+
+            return $returnArray;
+        }
+        catch(Exception $e) {
+            return new Response(400, [], $e->getMessage());
+        }
     }
 
     protected function pagination(array $params = [])

@@ -1,2 +1,2 @@
-GET http://sinshin.test/api/code?type=code&group_id=1
+GET http://sinshin.hlabpartner.com/api/code?type=code&group_id=1
 Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSlovc5GG7FHUQ2PTlrDM5FMBedqAweqvJY

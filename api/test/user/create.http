@@ -3,6 +3,12 @@ Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSl
 Content-Type: application/json
 
 {
-  "user_id" : "test1",
-  "user_pw" : "test"
+  "user_id": "test1",
+  "user_pw": "test",
+  "name": "test",
+  "dept_id": 1,
+  "tel": "sdfasdf",
+  "email": "asdf",
+  "position": 13,
+  "duty": "asdfa"
 }

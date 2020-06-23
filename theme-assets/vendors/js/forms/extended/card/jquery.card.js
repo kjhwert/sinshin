@@ -1747,12 +1747,12 @@ var card =
 	var is = module.exports = {};
 
 	/**
-	 * Test general.
+	 * User general.
 	 */
 
 	/**
 	 * is.type
-	 * Test if `value` is a type of `type`.
+	 * User if `value` is a type of `type`.
 	 *
 	 * @param {Mixed} value value to test
 	 * @param {String} type type
@@ -1766,7 +1766,7 @@ var card =
 
 	/**
 	 * is.defined
-	 * Test if `value` is defined.
+	 * User if `value` is defined.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if 'value' is defined, false otherwise
@@ -1779,7 +1779,7 @@ var card =
 
 	/**
 	 * is.empty
-	 * Test if `value` is empty.
+	 * User if `value` is empty.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is empty, false otherwise
@@ -1806,7 +1806,7 @@ var card =
 
 	/**
 	 * is.equal
-	 * Test if `value` is equal to `other`.
+	 * User if `value` is equal to `other`.
 	 *
 	 * @param {Mixed} value value to test
 	 * @param {Mixed} other value to compare with
@@ -1865,7 +1865,7 @@ var card =
 
 	/**
 	 * is.hosted
-	 * Test if `value` is hosted by `host`.
+	 * User if `value` is hosted by `host`.
 	 *
 	 * @param {Mixed} value to test
 	 * @param {Mixed} host host to test with
@@ -1880,7 +1880,7 @@ var card =
 
 	/**
 	 * is.instance
-	 * Test if `value` is an instance of `constructor`.
+	 * User if `value` is an instance of `constructor`.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an instance of `constructor`
@@ -1893,7 +1893,7 @@ var card =
 
 	/**
 	 * is.nil / is.null
-	 * Test if `value` is null.
+	 * User if `value` is null.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is null, false otherwise
@@ -1906,7 +1906,7 @@ var card =
 
 	/**
 	 * is.undef / is.undefined
-	 * Test if `value` is undefined.
+	 * User if `value` is undefined.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is undefined, false otherwise
@@ -1918,12 +1918,12 @@ var card =
 	};
 
 	/**
-	 * Test arguments.
+	 * User arguments.
 	 */
 
 	/**
 	 * is.args
-	 * Test if `value` is an arguments object.
+	 * User if `value` is an arguments object.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an arguments object, false otherwise
@@ -1937,12 +1937,12 @@ var card =
 	};
 
 	/**
-	 * Test array.
+	 * User array.
 	 */
 
 	/**
 	 * is.array
-	 * Test if 'value' is an array.
+	 * User if 'value' is an array.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an array, false otherwise
@@ -1955,7 +1955,7 @@ var card =
 
 	/**
 	 * is.arguments.empty
-	 * Test if `value` is an empty arguments object.
+	 * User if `value` is an empty arguments object.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an empty arguments object, false otherwise
@@ -1967,7 +1967,7 @@ var card =
 
 	/**
 	 * is.array.empty
-	 * Test if `value` is an empty array.
+	 * User if `value` is an empty array.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an empty array, false otherwise
@@ -1979,7 +1979,7 @@ var card =
 
 	/**
 	 * is.arraylike
-	 * Test if `value` is an arraylike object.
+	 * User if `value` is an arraylike object.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an arguments object, false otherwise
@@ -1995,12 +1995,12 @@ var card =
 	};
 
 	/**
-	 * Test boolean.
+	 * User boolean.
 	 */
 
 	/**
 	 * is.bool
-	 * Test if `value` is a boolean.
+	 * User if `value` is a boolean.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a boolean, false otherwise
@@ -2013,7 +2013,7 @@ var card =
 
 	/**
 	 * is.false
-	 * Test if `value` is false.
+	 * User if `value` is false.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is false, false otherwise
@@ -2026,7 +2026,7 @@ var card =
 
 	/**
 	 * is.true
-	 * Test if `value` is true.
+	 * User if `value` is true.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is true, false otherwise
@@ -2038,12 +2038,12 @@ var card =
 	};
 
 	/**
-	 * Test date.
+	 * User date.
 	 */
 
 	/**
 	 * is.date
-	 * Test if `value` is a date.
+	 * User if `value` is a date.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a date, false otherwise
@@ -2055,12 +2055,12 @@ var card =
 	};
 
 	/**
-	 * Test element.
+	 * User element.
 	 */
 
 	/**
 	 * is.element
-	 * Test if `value` is an html element.
+	 * User if `value` is an html element.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an HTML Element, false otherwise
@@ -2075,12 +2075,12 @@ var card =
 	};
 
 	/**
-	 * Test error.
+	 * User error.
 	 */
 
 	/**
 	 * is.error
-	 * Test if `value` is an error object.
+	 * User if `value` is an error object.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an error object, false otherwise
@@ -2092,12 +2092,12 @@ var card =
 	};
 
 	/**
-	 * Test function.
+	 * User function.
 	 */
 
 	/**
 	 * is.fn / is.function (deprecated)
-	 * Test if `value` is a function.
+	 * User if `value` is a function.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a function, false otherwise
@@ -2110,12 +2110,12 @@ var card =
 	};
 
 	/**
-	 * Test number.
+	 * User number.
 	 */
 
 	/**
 	 * is.number
-	 * Test if `value` is a number.
+	 * User if `value` is a number.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a number, false otherwise
@@ -2128,7 +2128,7 @@ var card =
 
 	/**
 	 * is.infinite
-	 * Test if `value` is positive or negative infinity.
+	 * User if `value` is positive or negative infinity.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is positive or negative Infinity, false otherwise
@@ -2140,7 +2140,7 @@ var card =
 
 	/**
 	 * is.decimal
-	 * Test if `value` is a decimal number.
+	 * User if `value` is a decimal number.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a decimal number, false otherwise
@@ -2153,7 +2153,7 @@ var card =
 
 	/**
 	 * is.divisibleBy
-	 * Test if `value` is divisible by `n`.
+	 * User if `value` is divisible by `n`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} n dividend
@@ -2170,7 +2170,7 @@ var card =
 
 	/**
 	 * is.integer
-	 * Test if `value` is an integer.
+	 * User if `value` is an integer.
 	 *
 	 * @param value to test
 	 * @return {Boolean} true if `value` is an integer, false otherwise
@@ -2183,7 +2183,7 @@ var card =
 
 	/**
 	 * is.maximum
-	 * Test if `value` is greater than 'others' values.
+	 * User if `value` is greater than 'others' values.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Array} others values to compare with
@@ -2210,7 +2210,7 @@ var card =
 
 	/**
 	 * is.minimum
-	 * Test if `value` is less than `others` values.
+	 * User if `value` is less than `others` values.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Array} others values to compare with
@@ -2237,7 +2237,7 @@ var card =
 
 	/**
 	 * is.nan
-	 * Test if `value` is not a number.
+	 * User if `value` is not a number.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is not a number, false otherwise
@@ -2250,7 +2250,7 @@ var card =
 
 	/**
 	 * is.even
-	 * Test if `value` is an even number.
+	 * User if `value` is an even number.
 	 *
 	 * @param {Number} value value to test
 	 * @return {Boolean} true if `value` is an even number, false otherwise
@@ -2263,7 +2263,7 @@ var card =
 
 	/**
 	 * is.odd
-	 * Test if `value` is an odd number.
+	 * User if `value` is an odd number.
 	 *
 	 * @param {Number} value value to test
 	 * @return {Boolean} true if `value` is an odd number, false otherwise
@@ -2276,7 +2276,7 @@ var card =
 
 	/**
 	 * is.ge
-	 * Test if `value` is greater than or equal to `other`.
+	 * User if `value` is greater than or equal to `other`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} other value to compare with
@@ -2293,7 +2293,7 @@ var card =
 
 	/**
 	 * is.gt
-	 * Test if `value` is greater than `other`.
+	 * User if `value` is greater than `other`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} other value to compare with
@@ -2310,7 +2310,7 @@ var card =
 
 	/**
 	 * is.le
-	 * Test if `value` is less than or equal to `other`.
+	 * User if `value` is less than or equal to `other`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} other value to compare with
@@ -2327,7 +2327,7 @@ var card =
 
 	/**
 	 * is.lt
-	 * Test if `value` is less than `other`.
+	 * User if `value` is less than `other`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} other value to compare with
@@ -2344,7 +2344,7 @@ var card =
 
 	/**
 	 * is.within
-	 * Test if `value` is within `start` and `finish`.
+	 * User if `value` is within `start` and `finish`.
 	 *
 	 * @param {Number} value value to test
 	 * @param {Number} start lower bound
@@ -2363,12 +2363,12 @@ var card =
 	};
 
 	/**
-	 * Test object.
+	 * User object.
 	 */
 
 	/**
 	 * is.object
-	 * Test if `value` is an object.
+	 * User if `value` is an object.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is an object, false otherwise
@@ -2381,7 +2381,7 @@ var card =
 
 	/**
 	 * is.hash
-	 * Test if `value` is a hash - a plain object literal.
+	 * User if `value` is a hash - a plain object literal.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a hash, false otherwise
@@ -2393,12 +2393,12 @@ var card =
 	};
 
 	/**
-	 * Test regexp.
+	 * User regexp.
 	 */
 
 	/**
 	 * is.regexp
-	 * Test if `value` is a regular expression.
+	 * User if `value` is a regular expression.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a regexp, false otherwise
@@ -2410,12 +2410,12 @@ var card =
 	};
 
 	/**
-	 * Test string.
+	 * User string.
 	 */
 
 	/**
 	 * is.string
-	 * Test if `value` is a string.
+	 * User if `value` is a string.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if 'value' is a string, false otherwise
@@ -2427,12 +2427,12 @@ var card =
 	};
 
 	/**
-	 * Test base64 string.
+	 * User base64 string.
 	 */
 
 	/**
 	 * is.base64
-	 * Test if `value` is a valid base64 encoded string.
+	 * User if `value` is a valid base64 encoded string.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if 'value' is a base64 encoded string, false otherwise
@@ -2444,12 +2444,12 @@ var card =
 	};
 
 	/**
-	 * Test base64 string.
+	 * User base64 string.
 	 */
 
 	/**
 	 * is.hex
-	 * Test if `value` is a valid hex encoded string.
+	 * User if `value` is a valid hex encoded string.
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if 'value' is a hex encoded string, false otherwise
@@ -2462,7 +2462,7 @@ var card =
 
 	/**
 	 * is.symbol
-	 * Test if `value` is an ES6 Symbol
+	 * User if `value` is an ES6 Symbol
 	 *
 	 * @param {Mixed} value value to test
 	 * @return {Boolean} true if `value` is a Symbol, false otherise

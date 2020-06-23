@@ -3,7 +3,6 @@ Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9.vJGJWHzEvSl
 Content-Type: application/json
 
 {
-  "id" : 2,
-  "user_id" : "test4",
+  "id" : 1,
   "name" : "홍갑수"
 }
