@@ -4,9 +4,12 @@ class Model
 {
     protected $db = null;
     protected $table = null;
-    public $primaryKey = null;
+    public $primaryKey = 'id';
     protected $searchable = [];
     protected $fields = [];
+    protected $paging = true;
+    protected $foreign = [];
+    public $token = [];
     public $types = [];
 
     public function __construct()
@@ -20,25 +23,7 @@ class Model
      */
     public function index (array $params = [])
     {
-        $params = $this->pagination($params);
-
-        $perPage = $params["perPage"];
-        $page = ((int)$params["page"] * (int)$perPage);
-        $params = $params["params"];
-
-        if ($params) {
-            $sql = "select {$this->getFields()} 
-                    from {$this->table} 
-                    where {$this->search($params)}
-                    order by {$this->primaryKey} desc
-                    limit {$page},{$perPage}";
-        } else {
-            $sql = "select {$this->getFields()} 
-                    from {$this->table}
-                    order by {$this->primaryKey} desc
-                    limit {$page},{$perPage}";
-        }
-
+        $sql = $this->getIndexQuery($params);
         return new Response(200, $this->fetch($sql), '');
     }
 
@@ -48,7 +33,7 @@ class Model
      */
     public function show ($id = null)
     {
-        $sql = "select {$this->getFields()} from {$this->table} where {$this->primaryKey} = {$id}";
+        $sql = "select {$this->getFields()} from {$this->table} where {$this->primaryKey} = {$id} and stts = 'ACT'";
         return new Response(200, $this->fetch($sql), '');
     }
 
@@ -58,7 +43,13 @@ class Model
      */
     public function create(array $data = [])
     {
-        $sql = "insert into {$this->table} set {$this->dataToString($data)}";
+        $sql = "insert into {$this->table} 
+                set {$this->dataToString($data)}, 
+                stts = 'ACT', 
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
+                ";
+
         return new Response(200, $this->fetch($sql), '등록되었습니다.');
     }
 
@@ -79,7 +70,7 @@ class Model
      */
     public function destroy ($id = null)
     {
-        $sql = "delete from {$this->table} where {$this->primaryKey} = {$id}";
+        $sql = "update {$this->table} set stts = 'DELETE' where {$this->primaryKey} = {$id}";
         return new Response(200, $this->fetch($sql), '삭제되었습니다.');
     }
 
@@ -102,6 +93,48 @@ class Model
         return ['page'=> $page, 'perPage'=>$perPage, 'params'=>$params];
     }
 
+    /**
+     * @param array $params
+     */
+    protected function getIndexQuery (array $params = [])
+    {
+        if ($this->paging) {
+            $params = $this->pagination($params);
+
+            $perPage = $params["perPage"];
+            $page = ((int)$params["page"] * (int)$perPage);
+            $params = $params["params"];
+
+            $sql = "select {$this->getFields()} from {$this->table}";
+
+            if (!empty($params)) {
+                $sql .= " where {$this->search($params)}
+                    and stts = 'ACT'
+                    order by {$this->primaryKey} desc
+                    limit {$page},{$perPage}";
+            } else {
+                $sql .= " where stts = 'ACT'
+                    order by {$this->primaryKey} desc
+                    limit {$page},{$perPage}";
+            }
+
+            return $sql;
+        }
+
+        $sql = "select {$this->getFields()} from {$this->table}";
+
+        if (!empty($params)) {
+            $sql .= " where {$this->search($params)}
+                    and stts = 'ACT'
+                    order by {$this->primaryKey} desc";
+        } else {
+            $sql .= " where stts = 'ACT'
+                    order by {$this->primaryKey} desc";
+        }
+
+        return $sql;
+    }
+
     protected function fetch ($sql = null)
     {
         $query = $this->db->prepare($sql);
@@ -122,6 +155,7 @@ class Model
                     return "{$val} like '%{$value}%'";
                 }, $this->searchable));
             }
+
             return "{$key} = {$value}";
         }, array_keys($params), $params));
     }
