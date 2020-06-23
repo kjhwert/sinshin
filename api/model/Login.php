@@ -1,15 +1,22 @@
 <?php
 
-require_once "User.php";
+require_once "../user/User.php";
 
-class Login extends User
+class Login
 {
+    protected $db = null;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getDatabase();
+    }
+
     public function verification (array $params = [])
     {
         $id = $params['user_id'];
         $pw = $params['user_pw'];
 
-        $sql = "select count({$this->primaryKey}) as cnt from {$this->table} where user_id = '{$id}'";
+        $sql = "select count('id') as cnt from user where user_id = '{$id}'";
         $result = $this->fetch($sql)[0];
 
         if ($result['cnt'] === 0) {
@@ -23,10 +30,16 @@ class Login extends User
         $sql = "select password('{$pw}') as pw";
         $pw = $this->fetch($sql)[0]['pw'];
 
-        $sql = "select id, name, tel, email, dept_id, position, duty from {$this->table} where user_id = '{$id}' and user_pw = '{$pw}' and stts = 'ACT'";
-        $result = $this->fetch($sql)[0];
+        $sql = "select a.id, user_id, a.name, tel, email, duty, b.name as dept, c.name as position from user as a
+                left join dept as b
+                on a.dept_id = b.id
+                left join code as c
+                on a.position = c.id 
+                where user_id = '{$id}' and user_pw = '{$pw}' and a.stts = 'ACT'";
 
-        if (!$result) {
+        $result = $this->fetch($sql);
+
+        if (empty($result)) {
             return new Response(
                 406,
                 [],
@@ -34,11 +47,9 @@ class Login extends User
             );
         }
 
-        $result['token'] = $this->getToken($result['id']);
+        $result = $result[0];
 
-        $result['dept'] = $this->getDept($result['dept_id']);
-        $result['position'] = $this->getPosition($result['position']);
-//        $result['auth'] = $this->getAuth($result[])
+        $result['token'] = $this->getToken($result['id']);
 
         unset($result['dept_id']);
         return new Response(

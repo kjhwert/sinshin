@@ -198,7 +198,7 @@ QUnit = {
 		if ( config.testTimeout && defined.setTimeout ) {
 			clearTimeout( config.timeout );
 			config.timeout = setTimeout(function() {
-				QUnit.ok( false, "Test timed out" );
+				QUnit.ok( false, "User timed out" );
 				config.semaphore = 1;
 				QUnit.start();
 			}, config.testTimeout );
@@ -1683,7 +1683,7 @@ QUnit.constructor.prototype.same = function() {
 	QUnit.push( false, false, false, "QUnit.same has been deprecated since 2009 (e88049a0), use QUnit.deepEqual instead" );
 };
 
-// Test for equality any JavaScript type.
+// User for equality any JavaScript type.
 // Author: Philippe Rathé <prathe@gmail.com>
 QUnit.equiv = (function() {
 
