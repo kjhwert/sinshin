@@ -8,9 +8,7 @@ class Model
     protected $searchable = [];
     protected $fields = [];
     protected $paging = true;
-    protected $foreign = [];
     public $token = [];
-    public $types = [];
 
     public function __construct()
     {
@@ -73,6 +71,11 @@ class Model
     {
         $sql = "update {$this->table} set stts = 'DELETE' where {$this->primaryKey} = {$id}";
         return new Response(200, $this->fetch($sql), '삭제되었습니다.');
+    }
+
+    protected function paramsValidation ()
+    {
+
     }
 
     public function tokenValidation ()

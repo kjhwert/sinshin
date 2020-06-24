@@ -1,7 +1,6 @@
 <?php
 
 require_once '../middleware.php';
-require_once 'User.php';
 
 $req = new Request();
 $params = $req->getParams();

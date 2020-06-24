@@ -5,6 +5,7 @@ class Dept extends Model
 {
     protected $fields = ['id','name'];
     protected $table = 'dept';
+    protected $paging = false;
 
     public function index (array $params = [])
     {
