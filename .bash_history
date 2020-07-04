@@ -89,3 +89,11 @@ git status
 git commit -m '20200623_4'
 git push origin master
 git pull origin master
+git status
+git commit -m '20200623_5'
+git add .
+git commit -m '20200623_5'
+git push origin master
+git pull origin master
+git status
+git pull origin master

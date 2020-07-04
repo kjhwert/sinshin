@@ -6,21 +6,21 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$user = new User();
-$id = $req->getParamsValue($user->primaryKey);
+$model = new User();
+$id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {
     case 'GET' :
-        if (!$req->hasId($user->primaryKey)) {
-            echo $user->index($params);
+        if (!$req->hasId($model->primaryKey)) {
+            $model->index($params);
         } else {
-            echo $user->show($id);
+            $model->show($id);
         }
         break;
-    case 'POST' : echo $user->create($params);
+    case 'POST' : $model->create($params);
         break;
-    case 'PUT' : echo $user->update($id, $params);
+    case 'PUT' : $model->update($id, $params);
         break;
-    case 'DELETE' : echo $user->destroy($id);
+    case 'DELETE' : $model->destroy($id);
         break;
 }

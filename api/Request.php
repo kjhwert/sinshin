@@ -15,18 +15,17 @@ class Request
 
     public function getParams ()
     {
-        if ($this->method === 'GET') {
-            $array = [];
-            parse_str($this->query, $array);
+        $array = [];
 
-            return $array;
+        if ($this->method === 'GET') {
+            parse_str($this->query, $array);
         }
 
         if ($this->method === 'POST' || $this->method === 'PUT' || $this->method === 'DELETE') {
-            return (array) json_decode(file_get_contents('php://input'));
+            $array = (array) json_decode(file_get_contents('php://input'));
         }
 
-        return [];
+        return $array;
     }
 
     public function getMethod ()

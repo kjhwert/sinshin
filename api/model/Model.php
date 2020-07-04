@@ -9,6 +9,7 @@ class Model
     protected $fields = [];
     protected $paging = true;
     public $token = [];
+    protected $required = [];
 
     public function __construct()
     {
@@ -207,5 +208,15 @@ class Model
 
             return "{$key} = \"{$value}\"";
         }, array_keys($filter), $filter));
+    }
+
+    protected function validate (array $data = [])
+    {
+        $result = array_diff_key($this->required, $data);
+        if ($result) {
+            $result = implode(',',array_keys($result));
+
+            (new ErrorHandler())->typeNull($result);
+        }
     }
 }

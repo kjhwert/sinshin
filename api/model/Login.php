@@ -1,7 +1,5 @@
 <?php
 
-require_once "../user/User.php";
-
 class Login
 {
     protected $db = null;
@@ -50,6 +48,7 @@ class Login
         $result = $result[0];
 
         $result['token'] = $this->getToken($result['id']);
+        $result['auth'] = $this->getUserAuth($result['id']);
 
         unset($result['dept_id']);
         return new Response(
@@ -58,6 +57,34 @@ class Login
             ""
         );
 
+    }
+
+    protected function getUserAuth ($id)
+    {
+        $sql = "select c.menu, c.function from user_auth as a
+                    right join user as b
+                    on a.user_uid = b.id
+                    left join (
+                        select aa.auth_group_id, bb.menu, bb.function from auth_list as aa
+                        left join auth_master as bb
+                        on aa.auth_id = bb.id
+                    ) as c
+                    on a.auth_group_id = c.auth_group_id
+                where a.user_uid = {$id}";
+
+        $result = $this->fetch($sql);
+
+        $auth = [];
+        foreach ($result as $item) {
+            $tmp = array_values($item);
+            if (array_key_exists($tmp[0],$auth)) {
+                array_push($auth[$tmp[0]], $tmp[1]);
+            } else {
+                $auth[$tmp[0]] = [$tmp[1]];
+            }
+        }
+
+        return $auth;
     }
 
     protected function getToken ($id)

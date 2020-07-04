@@ -6,6 +6,9 @@ html body{
   font-family: "Noto Sans KR", sans-serif !important;
 
 }
+.header-navbar{
+  font-family: "Noto Sans KR", sans-serif !important;
+}
 .login-container{
   max-width:500px;
   margin:100px auto 0;
@@ -35,6 +38,9 @@ html body{
   padding:12px 1.5rem 13px;
   margin-top:-4px;
 }
+.custom_btn2{
+  padding:10px 1.5rem 10px;
+}
 footer{
   position:fixed;
   bottom:0;
@@ -43,4 +49,140 @@ footer{
 }
 .pagination{
   justify-content: center;
+}
+.wd50{
+  width:50%;
+}
+.tag{
+  padding:5px 10px;
+  border-radius:5px;
+  margin-right:5px;
+}
+a .btn{
+  padding:.4rem 1rem;
+  font-size:.9rem;
+}
+.stock_ul{
+  list-style:none;
+  display: flex;
+  width:100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.stock_ul li{
+  width:182px;
+  position:relative;
+  margin:0 20px 20px 0;
+}
+.stock_ul li p.stock_name{
+  position:absolute;
+  top:35px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+}
+.stock_ul li p.stock_cnt{
+  position:absolute;
+  top:65px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+}
+.stock_ul li p.stock_area{
+  position:absolute;
+  top:95px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+}
+/* .mt-50{
+  margin-top:-50px;
+} */
+.card-header{
+  min-height:60px;
+}
+.insert_btn{
+  height:40px;
+}
+table{
+  font-size:14px;
+}
+.table th, .table td {
+    padding: .5rem 0.5rem;
+}
+.machine_num{
+  width:auto;
+  background-color:#666;
+  color:#fff;
+  width:30px;
+  height:30px;
+  line-height:30px;
+  text-align:center;
+  border-radius:50%;
+  position:absolute;
+  top:10px;
+  left:10px;
+}
+.machine_active{
+  background-color:#63d457;
+}
+.injection_table tr td{
+  position:relative;
+}
+.machine_product_name{
+  position:absolute;
+  top:65px;
+  left:0;
+  backgrond-color:#fff;
+  width:100%;
+  font-size:12px;
+}
+.machine_detail_num{
+  display:inline-block;
+  background-color:#63d457;
+  color:#fff;
+  width:30px;
+  height:30px;
+  line-height:30px;
+  text-align:center;
+  margin-right:5px;
+  border-radius:50%;
+}
+.bdb-1px{
+  border-bottom:1px solid #ccc;
+}
+.pd-20px{
+  padding-bottom:20px;
+}
+.process_tag_table p{
+  margin:0;
+  font-size:12px;
+}
+.process_tag_table tr td{
+  padding:0.3rem 0.3rem;
+}
+.process_tag_table select.form-control:not([size]):not([multiple]){
+  height:2.75rem;
+  padding:0.5rem;
+}
+.process_tag_table input.form-control{
+  padding:0.75rem 0.5rem;
 }

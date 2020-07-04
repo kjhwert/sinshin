@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="./assets/js/qrcode.js"></script>
+</HEAD>
+<BODY>
+    <div id="qrcode"></div>
+    <button id="print">프린트</button>
+</BODY>
+<script type="text/javascript">
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: "abc123",
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    /** 프린트 버튼 클릭 시 이벤트 */
+$("#print").click(function () {
+    let $container = $("#qrcode").clone()    // 프린트 할 특정 영역 복사
+    let cssText = ""                            // 스타일 복사
+    for (const node of $("style")) {
+        cssText += node.innerHTML
+    }
+    /** 팝업 */
+    let innerHtml = $container[0].innerHTML
+    let popupWindow = window.open("", "_blank", "width=500,height=500")
+    popupWindow.document.write("<!DOCTYPE html>"+
+      "<html>"+
+        "<head>"+
+        "<style>"+cssText+"</style>"+
+        "</head>"+
+        "<body>"+innerHtml+"</body>"+
+      "</html>")
+
+    popupWindow.document.close()
+    popupWindow.focus()
+
+    /** 1초 지연 */
+    setTimeout(() => {
+        popupWindow.print()         // 팝업의 프린트 도구 시작
+        popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
+    }, 1000)
+})
+</script>
+
+
+</HTML>

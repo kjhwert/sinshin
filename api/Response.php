@@ -3,18 +3,13 @@
 
 class Response
 {
-    protected $status;
-    protected $message;
-
-    public function __construct($status, $data, $message)
+    public function __construct($status, $data, $message, $total = null)
     {
-        $this->status = $status;
-        $this->message = $message;
-
         echo json_encode([
-            'status' => $this->status,
+            'status' => $status,
             'data' => $this->hasData($data),
-            'message' => $this->message
+            'message' => $message,
+            'total' => $total
         ]);
         exit;
     }

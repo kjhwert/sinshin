@@ -1,3 +1,6 @@
+var user_data = JSON.parse(getCookie("user_data"));
+
+
 function getHeader(){
 	var url;
 		url = '../include/header.html'
@@ -8,6 +11,16 @@ function getHeader(){
 		}).done(function(result){
 			document.write(result);
 		});
+}
+function getParam(sname) {
+    var params = location.search.substr(location.search.indexOf("?") + 1);
+    var sval = "";
+    params = params.split("&");
+    for (var i = 0; i < params.length; i++) {
+        temp = params[i].split("=");
+        if ([temp[0]] == sname) { sval = temp[1]; }
+    }
+    return sval;
 }
 
 function cancel(){
@@ -28,6 +41,7 @@ function deleteCookie(cookieName){
    var expireDate = new Date();
    expireDate.setDate(expireDate.getDate() - 1);
    document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+	 location.href="/login.html";
 }
 
 function getCookie(cookieName) {
@@ -42,4 +56,8 @@ function getCookie(cookieName) {
       cookieValue = cookieData.substring(start, end);
    }
    return unescape(cookieValue);
+}
+
+function logout(){
+	deleteCookie("user_data");
 }
