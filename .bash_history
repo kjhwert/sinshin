@@ -97,3 +97,8 @@ git push origin master
 git pull origin master
 git status
 git pull origin master
+git commit -m '20200704'
+git add .
+git commit -m '20200704'
+git push origin master
+exit

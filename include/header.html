@@ -28,7 +28,7 @@
                 </span>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="../system_management/mypage.html"><i class="ft-user"></i> 내정보 수정</a>
-                <a class="dropdown-item" href="#"><i class="ft-mail"></i> 비밀번호 변경</a>
+                <a class="dropdown-item" href="../system_management/pw_change.html"><i class="ft-mail"></i> 비밀번호 변경</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" onclick="logout();">
                   <i class="ft-power"></i> Logout
@@ -52,77 +52,77 @@
   </div>
   <div class="main-menu-content">
     <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-      <li class=" nav-item has-sub"><a href="index.html"><i class="ft-home"></i><span class="menu-title" data-i18n="">제품이력관리</span></a>
+      <li class=" nav-item has-sub" id="product_history"><a href="index.html"><i class="ft-home"></i><span class="menu-title" data-i18n="">제품이력관리</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="../product_history/material_status.html">원자재 입고현황</a>
+          <li><a class="menu-item" name="1" href="../product_history/material_status.html">원자재 입고현황</a>
           </li>
-          <li><a class="menu-item" href="../product_history/injection_status.html">사출</a>
+          <li><a class="menu-item" name="2" href="../product_history/injection_status.html">사출</a>
           </li>
-          <li><a class="menu-item" href="../product_history/painting_status.html">도장</a>
+          <li><a class="menu-item" name="3" href="../product_history/painting_status.html">도장</a>
           </li>
-          <li><a class="menu-item" href="../product_history/assembly_status.html">조립</a>
+          <li><a class="menu-item" name="4" href="../product_history/assembly_status.html">조립</a>
           </li>
-          <li><a class="menu-item" href="../product_history/chart.html">생산통계</a>
+          <li><a class="menu-item" name="5" href="../product_history/chart.html">생산통계</a>
           </li>
         </ul>
       </li>
-      <li class=" nav-item has-sub"><a href="charts.html"><i class="ft-pie-chart"></i><span class="menu-title" data-i18n="">생산관리</span></a>
+      <li class=" nav-item has-sub" id="production_management"><a href="charts.html"><i class="ft-pie-chart"></i><span class="menu-title" data-i18n="">생산관리</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="../production_management/injection.html">사출</a>
+          <li><a class="menu-item" name="6" href="../production_management/injection.html">사출</a>
           </li>
-          <li><a class="menu-item" href="../production_management/painting.html">도장</a>
+          <li><a class="menu-item" name="7" href="../production_management/painting.html">도장</a>
           </li>
-          <li><a class="menu-item" href="../production_management/assembly.html">조립</a>
+          <li><a class="menu-item" name="8" href="../production_management/assembly.html">조립</a>
           </li>
-          <li><a class="menu-item" href="../production_management/injection_machine_status.html">사출기 가동현황</a>
+          <li><a class="menu-item" name="9" href="../production_management/injection_machine_status.html">사출기 가동현황</a>
           </li>
         </ul>
       </li>
-      <li class=" nav-item has-sub"><a href="icons.html"><i class="ft-droplet"></i><span class="menu-title" data-i18n="">품질관리</span></a>
+      <li class=" nav-item has-sub" id="quality_management"><a href="icons.html"><i class="ft-droplet"></i><span class="menu-title" data-i18n="">품질관리</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="#">머신비전 일일통계</a>
+          <li><a class="menu-item" name="10" href="#">머신비전 일일통계</a>
           </li>
-          <li><a class="menu-item" href="#">머신비전 불량분석</a>
+          <li><a class="menu-item" name="11" href="#">머신비전 불량분석</a>
           </li>
-          <li><a class="menu-item" href="#">머신비전 통계분석</a>
+          <li><a class="menu-item" name="12" href="#">머신비전 통계분석</a>
           </li>
-          <li><a class="menu-item" href="../quality_management/receiving_inspection.html">수입검사관리</a>
+          <li><a class="menu-item" name="13" href="../quality_management/receiving_inspection.html">수입검사관리</a>
           </li>
         </ul>
       </li>
-      <li class=" nav-item has-sub"><a href="cards.html"><i class="ft-layers"></i><span class="menu-title" data-i18n="">모니터링</span></a>
+      <li class=" nav-item has-sub" id="monitoring"><a href="cards.html"><i class="ft-layers"></i><span class="menu-title" data-i18n="">모니터링</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="#">생산현황 모니터링</a>
+          <li><a class="menu-item" name="14" href="#">생산현황 모니터링</a>
           </li>
-          <li><a class="menu-item" href="#">입고현황 모니터링</a>
+          <li><a class="menu-item" name="15" href="#">입고현황 모니터링</a>
           </li>
-          <li><a class="menu-item" href="#">출하현황 모니터링</a>
+          <li><a class="menu-item" name="16" href="#">출하현황 모니터링</a>
           </li>
-          <li><a class="menu-item" href="#">불량현황 모니터링</a>
+          <li><a class="menu-item" name="17" href="#">불량현황 모니터링</a>
           </li>
         </ul>
       </li>
-      <li class=" nav-item has-sub"><a href="buttons.html"><i class="ft-box"></i><span class="menu-title" data-i18n="">자동차공정</span></a>
+      <li class=" nav-item has-sub" id="automotive_management"><a href="buttons.html"><i class="ft-box"></i><span class="menu-title" data-i18n="">자동차공정</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="../automotive_management/plating_status.html">도금</a>
+          <li><a class="menu-item" name="18" href="../automotive_management/plating_status.html">도금</a>
           </li>
         </ul>
       </li>
-      <li class="nav-item has-sub"><a href="#"><i class="ft-grid"></i><span class="menu-title" data-i18n="">시스템관리</span></a>
+      <li class="nav-item has-sub" id="system_management"><a href="#"><i class="ft-grid"></i><span class="menu-title" data-i18n="">시스템관리</span></a>
         <ul class="menu-content">
-          <li><a class="menu-item" href="../system_management/user_list.html">사용자관리</a>
+          <li><a class="menu-item" name="19" href="../system_management/user_list.html">사용자관리</a>
           </li>
-          <li><a class="menu-item" href="../system_management/authority_list.html">권한그룹관리</a>
+          <li><a class="menu-item" name="20" href="../system_management/authority_list.html">권한그룹관리</a>
           </li>
-          <li><a class="menu-item" href="#">QR코드 설정</a>
+          <li><a class="menu-item" name="21" href="#">QR코드 설정</a>
           </li>
-          <li><a class="menu-item" href="../system_management/qr_print_list.html">QR코드 발행목록</a>
+          <li><a class="menu-item" name="22" href="../system_management/qr_print_list.html">QR코드 발행목록</a>
           </li>
-          <li><a class="menu-item" href="../system_management/material_list.html">기준정보관리</a>
+          <li><a class="menu-item" name="23" href="../system_management/material_list.html">기준정보관리</a>
           </li>
-          <li><a class="menu-item" href="../system_management/user_log.html">사용이력관리</a>
+          <li><a class="menu-item" name="24" href="../system_management/user_log.html">사용이력관리</a>
           </li>
-          <li><a class="menu-item" href="#">시스템설정관리</a>
+          <li><a class="menu-item" name="25" href="#">시스템설정관리</a>
           </li>
         </ul>
       </li>
@@ -137,4 +137,12 @@
 </div>
 <script>
   $("#login_name").append(user_data.name);
+
+  var jsonResult = JSON.parse(getCookie("user_data")).auth;
+  for(var key in jsonResult){
+    $("#"+key).css("display","block");
+    for(var i=0;i<jsonResult[key].length;i++){
+      $("a[name="+jsonResult[key][i]+"]").css("display","block");
+    }
+  }
 </script>

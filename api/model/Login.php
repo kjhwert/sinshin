@@ -19,7 +19,7 @@ class Login
 
         if ($result['cnt'] === 0) {
             return new Response(
-                406,
+                403,
                 [],
                 "존재하지 않는 아이디입니다."
             );
@@ -39,7 +39,7 @@ class Login
 
         if (empty($result)) {
             return new Response(
-                406,
+                403,
                 [],
                 "비밀번호가 일치하지 않습니다."
             );
@@ -61,26 +61,50 @@ class Login
 
     protected function getUserAuth ($id)
     {
-        $sql = "select c.menu, c.function from user_auth as a
-                    right join user as b
-                    on a.user_uid = b.id
-                    left join (
-                        select aa.auth_group_id, bb.menu, bb.function from auth_list as aa
-                        left join auth_master as bb
-                        on aa.auth_id = bb.id
-                    ) as c
-                    on a.auth_group_id = c.auth_group_id
+        $sql = "select c.menu_en, c.function, c.id from user_auth as a
+                   right join user as b
+                              on a.user_uid = b.id
+                   inner join (
+                        select aa.auth_group_id, bb.menu_en, bb.function, bb.id from auth_list as aa
+                            inner join auth_group as cc
+                                on aa.auth_group_id = cc.id
+                            left join auth_master as bb
+                                on aa.auth_id = bb.id
+                   where aa.stts = 'ACT' and bb.stts = 'ACT' and cc.stts = 'ACT' ) as c
+                   on a.auth_group_id = c.auth_group_id
                 where a.user_uid = {$id}";
 
         $result = $this->fetch($sql);
 
         $auth = [];
+
+//        foreach ($result as $item) {
+//
+//            if (count($auth) === 0) {
+//                array_push($auth, [
+//                    'name' => $item['menu_en'],
+//                    'data' => [$item['id']]
+//                ]);
+//                continue;
+//            }
+//
+//            if ($auth[count($auth)-1]['name'] === $item['menu_en']) {
+//                array_push($auth[count($auth)-1]['data'], $item['id']);
+//            } else {
+//                array_push($auth, [
+//                    'name' => $item['menu_en'],
+//                    'data' => [$item['id']]
+//                ]);
+//            }
+//        }
+
         foreach ($result as $item) {
             $tmp = array_values($item);
+
             if (array_key_exists($tmp[0],$auth)) {
-                array_push($auth[$tmp[0]], $tmp[1]);
+                array_push($auth[$tmp[0]], $tmp[2]);
             } else {
-                $auth[$tmp[0]] = [$tmp[1]];
+                $auth[$tmp[0]] = [$tmp[2]];
             }
         }
 

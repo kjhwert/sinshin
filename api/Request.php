@@ -45,4 +45,9 @@ class Request
         }
     }
 
+    protected function createUserLog ()
+    {
+
+    }
+
 }

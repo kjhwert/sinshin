@@ -1,5 +1,6 @@
 //getParam("user_no");
 user_select();
+user_auth();
 
 $("#deptgroup").on("change", function(){
   var group_id = $(this).val();
@@ -176,8 +177,7 @@ function user_update(){
       }),
   }).done(function (response, textStatus, xhr) {
     if(response.status == 200){
-      alert("수정되었습니다");
-      location.href="../system_management/user_list.html";
+      auth_update();
     }else{
       alert(response.message);
       return;
@@ -216,4 +216,77 @@ function user_delete(){
   }else{
     return;
   }
+}
+
+function user_auth(){
+  $.ajax({
+      type    : "GET",
+      url        : "../api/user/auth/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        id: getParam("user_no")
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      var jsonResult = result.data;
+      var text = '';
+      console.log(jsonResult);
+      for(var i in jsonResult){
+        if(jsonResult[i].has == "YES"){
+          text +='<span class="tag btn-info" id="'+jsonResult[i].id+'">'+jsonResult[i].name+'</span>';
+        }else{
+          text +='<span class="tag btn-light" id="'+jsonResult[i].id+'">'+jsonResult[i].name+'</span>';
+        }
+      }
+    }else{
+      alert(result.message);
+      return;
+    }
+    $("#auth_group").empty();
+    $("#auth_group").append(text);
+
+    $("#auth_group span").on("click", function(){
+      if($(this).hasClass("btn-info") == true){
+        $(this).removeClass("btn-info");
+        $(this).addClass("btn-light");
+      }else{
+        $(this).addClass("btn-info");
+        $(this).removeClass("btn-light");
+      }
+    });
+
+  })
+}
+
+function auth_update(){
+  var activeNum = "";
+  $("span.btn-info").each(function() {
+    var id = this.id + ",";
+    activeNum += id;
+  });
+  $.ajax({
+      type    : "PUT",
+      url        : "../api/user/auth/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:JSON.stringify({
+        id: getParam("user_no"),
+        auth_group_id: activeNum
+      })
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      alert("수정되었습니다");
+      location.href="../system_management/user_list.html";
+    }else{
+      alert(result.message);
+      return;
+    }
+  })
 }

@@ -6,32 +6,51 @@ class UserAuth extends Model
     protected $table = 'user_auth';
     protected $paging = false;
 
+    public function index(array $params = [])
+    {
+        $sql = "select a.id, a.name, 'NO' as has from auth_group a where a.stts = 'ACT'";
+        return new Response(200, $this->fetch($sql),"");
+    }
+
     public function show($id = null)
     {
-        $sql = "select c.menu, c.function from user_auth as a
-                    inner join user as b
-                    on a.user_uid = b.id
+        $sql = "select a.id, a.name, IF(b.id iS NULL,'NO','YES') as has from auth_group a
                     left join (
-                        select aa.auth_group_id, bb.menu, bb.function from auth_list as aa
-                        left join auth_master as bb
-                        on aa.auth_id = bb.id
-                        where aa.stts = 'ACT' and bb.stts = 'ACT'
-                    ) as c
-                    on a.auth_group_id = c.auth_group_id
-                where a.user_uid = {$id} and a.stts = 'ACT'";
+                        select * from user_auth where user_uid = {$id} and stts = 'ACT'
+                        ) b
+                    on a.id = b.auth_group_id
+                    where a.stts = 'ACT'";
 
-        $result = $this->fetch($sql);
+        return new Response(200, $this->fetch($sql),"");
+    }
 
-        $auth = [];
-        foreach ($result as $item) {
-            $tmp = array_values($item);
-            if (array_key_exists($tmp[0],$auth)) {
-                array_push($auth[$tmp[0]], $tmp[1]);
-            } else {
-                $auth[$tmp[0]] = [$tmp[1]];
+    public function update($id = null, array $data = [])
+    {
+        $sql = "delete from {$this->table} where user_uid = {$id}";
+        $this->fetch($sql);
+
+        $sql = "insert into {$this->table} (user_uid, auth_group_id, stts, created_id, created_at) values ";
+
+        $authGroup = explode(',',$data['auth_group_id']);
+
+        foreach ($authGroup as $group) {
+            if ($group) {
+                $sql .= "({$id},{$group},'ACT',{$this->token['id']}, SYSDATE()),";
             }
         }
 
-        return $auth;
+        $sql = rtrim($sql, ",");
+
+        return new Response(200, $this->fetch($sql),"등록되었습니다.");
+    }
+
+    public function create(array $data = [])
+    {
+
+    }
+
+    public function destroy($id = null)
+    {
+
     }
 }

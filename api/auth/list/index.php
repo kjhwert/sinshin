@@ -17,7 +17,7 @@ switch ($method) {
             $model->show($id);
         }
         break;
-    case 'POST' : $model->create($params);
+    case 'POST' :$model->create($params);
         break;
     case 'PUT' : $model->update($id, $params);
         break;

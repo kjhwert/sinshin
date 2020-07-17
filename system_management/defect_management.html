@@ -29,6 +29,7 @@
     <!-- END Custom CSS-->
     <script src="../assets/js/jquery.js"></script>
     <script src="../assets/js/common.js" type="text/javascript"></script>
+    <script src="../assets/js/defect_management.js" type="text/javascript"></script>
   </head>
   <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-chartbg" data-col="2-columns">
 
@@ -61,30 +62,25 @@
                       <tr>
                         <th>부서명</th>
                         <td>
-                          <input class="form-control" id="search" type="text" value="사출" readonly>
+                          <input class="form-control" id="group_name" type="text" value="사출" readonly>
                         </td>
                       </tr>
                       <tr>
                         <th>불량유형명</th>
                         <td>
-                          <input class="wd50 custom_btn2" id="search" type="text" placeholder="유형명을 입력해주세요">
-                          <button type="button" class="btn btn-warning btn-min-width custom_btn">추가</button>
+                          <input class="wd50 custom_btn2" id="defect_name" type="text" placeholder="유형명을 입력해주세요">
                         </td>
                       </tr>
                       <tr>
-                        <td colspan="2">
-                          <span class="tag btn-info">
-                            미도금
-                            <a role="button" class="tag-i">×</a>
-                          </span>
-                          <span class="tag btn-info">
-                            스크레치
-                            <a role="button" class="tag-i">×</a>
-                          </span>
-                          <span class="tag btn-info">
-                            파손
-                            <a role="button" class="tag-i">×</a>
-                          </span>
+                        <th>불량유형 영문명</th>
+                        <td>
+                          <input class="wd50 custom_btn2" id="defect_name_en" type="text" placeholder="영문명을 입력해주세요">
+                          <button type="button" id="add_btn" class="btn btn-warning btn-min-width custom_btn">추가</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" id="defect_list">
+
                         </td>
                       </tr>
                     </tbody>

@@ -9,6 +9,12 @@ html body{
 .header-navbar{
   font-family: "Noto Sans KR", sans-serif !important;
 }
+.navigation .nav-item{
+  display:none;
+}
+.menu-content .menu-item{
+  display:none;
+}
 .login-container{
   max-width:500px;
   margin:100px auto 0;
@@ -57,6 +63,9 @@ footer{
   padding:5px 10px;
   border-radius:5px;
   margin-right:5px;
+  margin-bottom:5px;
+  display:inline-block;
+  cursor:pointer;
 }
 a .btn{
   padding:.4rem 1rem;
@@ -185,4 +194,107 @@ table{
 }
 .process_tag_table input.form-control{
   padding:0.75rem 0.5rem;
+}
+.print_table{
+  box-sizing:border-box;
+  margin-top:150px;
+  height:281px;
+  overflow:hidden;
+}
+.print_inner_line{
+  width:280px;
+  margin:10px;
+  height:431px;
+  border:2px solid #000;
+}
+.print_box{
+  width:302.3622047244px;
+  height:453.5433070866px;
+  border:1px solid #aaa;
+  box-sizing:border-box;
+  position:relative;
+  overflow:hidden;
+  background-color:#fff;
+}
+.print_table tr td, .print_table tr th{
+  padding:0 5px;
+}
+.print_table tr th{
+  width:64px;
+}
+.qrcode{
+  position:absolute;
+  top:30px;
+  left:92px;
+}
+.input_type1{
+  padding:9px 0.5rem;
+  border:1px solid #babfc7;
+  border-radius:0.25rem;
+  min-width:280px;
+}
+.modal_back{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-color:rgba(0,0,0,0.5);
+  display:none;
+}
+.search_modal{
+  z-index:1;
+  position:fixed;
+  top:15%;
+  left:50%;
+  min-width:400px;
+  margin-left:-200px;
+  max-height:70%;
+  background-color:#fff;
+  border:1px solid #fff;
+  border-radius:0.25rem;
+  padding:20px;
+  overflow:hidden;
+  display:none;
+}
+.custom_btn1{
+  margin-top:-5px;
+}
+.search_result_box{
+  max-height:500px;
+  overflow-y:auto;
+}
+.time, .mins, .meridian{
+  width:48px;
+  margin:0;
+}
+.timepicker_wrap {
+  width:170px;
+}
+.search_result_box tr{
+  cursor:pointer;
+}
+.cbarno_modal{
+  z-index:1;
+  position:fixed;
+  top:15%;
+  left:50%;
+  max-width:400px;
+  margin-left:-200px;
+  max-height:70%;
+  background-color:#fff;
+  border:1px solid #fff;
+  border-radius:0.25rem;
+  padding:20px;
+  overflow:hidden;
+  display:none;
+}
+.process_tag_table input.custon_date{
+  padding:9px 0.5rem 8px;
+}
+.table-striped tbody tr:nth-of-type(odd){
+  background-color:#fff;
+}
+.table-striped tbody tr.inmutable{
+  background-color:#f3f3f3;
 }

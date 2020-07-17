@@ -3,13 +3,13 @@
 
 class Response
 {
-    public function __construct($status, $data, $message, $total = null)
+    public function __construct($status, $data, $message = '', $paging = [])
     {
         echo json_encode([
             'status' => $status,
             'data' => $this->hasData($data),
             'message' => $message,
-            'total' => $total
+            'paging' => $paging
         ]);
         exit;
     }

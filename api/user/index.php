@@ -17,7 +17,12 @@ switch ($method) {
             $model->show($id);
         }
         break;
-    case 'POST' : $model->create($params);
+    case 'POST' :
+        if ($params['type'] === 'pw') {
+            return $model->changePw($params);
+        }
+
+        $model->create($params);
         break;
     case 'PUT' : $model->update($id, $params);
         break;

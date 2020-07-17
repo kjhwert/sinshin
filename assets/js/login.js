@@ -23,14 +23,13 @@ function login(user_id, user_pw){
         user_id: user_id,
         user_pw: user_pw
       })
-    }).done(function (data, textStatus, xhr) {
-      if(data.status == 200){
-        setCookie("user_data",JSON.stringify(data.data), 1);
+    }).done(function (result, textStatus, xhr) {
+      if(result.status == 200){
+        setCookie("user_data",JSON.stringify(result.data), 1);
         location.href="./main/main.html";
       }else{
-        alert(data.message);
+        alert(result.message);
       }
-      console.log(data);
     }).fail(function(data, textStatus, errorThrown){
         console.log("전송 실패");
     });

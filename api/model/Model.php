@@ -5,11 +5,13 @@ class Model
     protected $db = null;
     protected $table = null;
     public $primaryKey = 'id';
-    protected $searchable = [];
+    protected $searchableText = null;
+    protected $searchableDate = null;
     protected $fields = [];
     protected $paging = true;
     public $token = [];
-    protected $required = [];
+    protected $createRequired = [];
+    protected $updateRequired = [];
 
     public function __construct()
     {
@@ -23,8 +25,33 @@ class Model
      */
     public function index (array $params = [])
     {
-        $sql = $this->getIndexQuery($params);
+        if ($this->paging) {
+            return $this->getPagingQuery($params);
+        }
+
+        $sql = "select {$this->getFields()}, @rownum:= @rownum+1 AS RNUM 
+                from {$this->table},
+                (SELECT @rownum:= 0) AS R
+                where stts = 'ACT' {$this->searchText($params)}
+                order by RNUM desc";
+
         return new Response(200, $this->fetch($sql), '');
+    }
+
+    protected function getPagingQuery (array $params = [])
+    {
+        $params = $this->pagination($params);
+
+        $perPage = $params["perPage"];
+        $page = ((int)$params["page"] * (int)$perPage);
+
+        $sql = "select {$this->getFields()}, @rownum:= @rownum+1 AS RNUM from {$this->table},
+                (SELECT @rownum:= 0) AS R
+                where stts = 'ACT' {$this->searchText($params['params'])}
+                order by RNUM desc
+                limit {$page},{$perPage}";
+
+        return new Response(200, $this->fetch($sql), '', $params['paging']);
     }
 
     /**
@@ -43,6 +70,8 @@ class Model
      */
     public function create(array $data = [])
     {
+        $data = $this->validate($data, $this->createRequired);
+
         $sql = "insert into {$this->table} 
                 set {$this->dataToString($data)}, 
                 stts = 'ACT', 
@@ -60,6 +89,8 @@ class Model
      */
     public function update($id = null, array $data = [])
     {
+        $this->validate($data, $this->updateRequired);
+
         $sql = "update {$this->table} set {$this->dataToString($data)} where {$this->primaryKey} = {$id}";
         return new Response(200, $this->fetch($sql), '수정되었습니다.');
     }
@@ -72,11 +103,6 @@ class Model
     {
         $sql = "update {$this->table} set stts = 'DELETE' where {$this->primaryKey} = {$id}";
         return new Response(200, $this->fetch($sql), '삭제되었습니다.');
-    }
-
-    protected function paramsValidation ()
-    {
-
     }
 
     public function tokenValidation ()
@@ -105,6 +131,13 @@ class Model
         }
     }
 
+    protected function paginationQuery (array $params = [])
+    {
+        return "select count({$this->primaryKey}) as cnt 
+                from {$this->table} 
+                where stts = 'ACT' {$this->searchText($params)}";
+    }
+
     protected function pagination(array $params = [])
     {
         if (!array_key_exists('page', $params)) {
@@ -115,62 +148,46 @@ class Model
             (new ErrorHandler())->typeNull('perPage');
         }
 
-        $page = (int)$params["page"] - 1;
-        $perPage = $params["perPage"];
+        $page = (int)($params['page']-1);
+        $perPage = (int)$params['perPage'];
+        $pageLength = 10; // 페이징 길이
+
+        $sql = $this->paginationQuery($params);
+        $totalCount = $this->fetch($sql)[0]['cnt'];
+
+        $totalCount = (Int)$totalCount;
+
+        $totalPageCount = (int)(($totalCount - 1) / $perPage) + 1;
+        $startPage = ( (int)($page / $pageLength)) * $pageLength + 1;
+        $endPage = $startPage + $pageLength - 1;
+        if ( $totalPageCount <= $endPage){
+            $endPage = $totalPageCount;
+        }
 
         unset($params["page"]);
         unset($params["perPage"]);
 
-        return ['page'=> $page, 'perPage'=>$perPage, 'params'=>$params];
-    }
-
-    /**
-     * @param array $params
-     */
-    protected function getIndexQuery (array $params = [])
-    {
-        if ($this->paging) {
-            $params = $this->pagination($params);
-
-            $perPage = $params["perPage"];
-            $page = ((int)$params["page"] * (int)$perPage);
-            $params = $params["params"];
-
-            $sql = "select {$this->getFields()} from {$this->table}";
-
-            if (!empty($params)) {
-                $sql .= " where {$this->search($params)}
-                    and stts = 'ACT'
-                    order by {$this->primaryKey} desc
-                    limit {$page},{$perPage}";
-            } else {
-                $sql .= " where stts = 'ACT'
-                    order by {$this->primaryKey} desc
-                    limit {$page},{$perPage}";
-            }
-
-            return $sql;
-        }
-
-        $sql = "select {$this->getFields()} from {$this->table}";
-
-        if (!empty($params)) {
-            $sql .= " where {$this->search($params)}
-                    and stts = 'ACT'
-                    order by {$this->primaryKey} desc";
-        } else {
-            $sql .= " where stts = 'ACT'
-                    order by {$this->primaryKey} desc";
-        }
-
-        return $sql;
+        return [
+            'page'=> $page,
+            'perPage'=>$perPage,
+            'params'=>$params,
+            'paging' => [
+                'total_page' => $totalPageCount,
+                'start_page' => $startPage,
+                'end_page' => $endPage
+            ]
+        ];
     }
 
     protected function fetch ($sql = null)
     {
-        $query = $this->db->prepare($sql);
-        $query->execute();
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return new Response(403, [], '데이터 형식이 일치하지 않습니다.');
+        }
     }
 
     protected function getFields ()
@@ -178,17 +195,38 @@ class Model
         return implode(", ", $this->fields);
     }
 
-    protected function search (array $params = [])
+    protected function searchText (array $params = [])
     {
-        return implode(" and ", array_map(function ($key, $value) {
-            if ($key === "search") {
-                return implode(" and ", array_map(function ($val) use ($value) {
-                    return "{$val} like '%{$value}%'";
-                }, $this->searchable));
+        $search = $params['search'];
+
+        if ($search) {
+            if ($this->searchableText === null) {
+                return (new ErrorHandler())->typeNull('searchableText');
             }
 
-            return "{$key} = {$value}";
-        }, array_keys($params), $params));
+            return "and {$this->searchableText} like '%{$search}%'";
+        } else {
+            return "";
+        }
+    }
+
+    protected function searchDate (array $params = [])
+    {
+        if ($this->searchableDate === null) {
+            return (new ErrorHandler())->typeNull('searchableDate');
+        }
+
+        $search = "";
+
+        if ($params['start_date']) {
+            $search .= "and {$this->searchableDate} > '{$params['start_date']} 00:00:00' ";
+        }
+
+        if ($params['end_date']) {
+            $search .= "and {$this->searchableDate} < '{$params['end_date']} 23:59:59' ";
+        }
+
+        return $search;
     }
 
     protected function dataToString (array $data = [])
@@ -210,13 +248,45 @@ class Model
         }, array_keys($filter), $filter));
     }
 
-    protected function validate (array $data = [])
+    protected function validate (array $data = [], $required = [])
     {
-        $result = array_diff_key($this->required, $data);
+        $result = array_diff_key($required, $data);
         if ($result) {
             $result = implode(',',array_keys($result));
 
             (new ErrorHandler())->typeNull($result);
         }
+
+        foreach ($data as $key => $value) {
+            if (array_key_exists($key, $required) && $required[$key] === "integer") {
+                if(!is_numeric($value)) {
+                    (new ErrorHandler())->typeError($key);
+                }
+
+                $data[$key] = (int)$value;
+            }
+        }
+
+        return $data;
+    }
+
+    protected function setTransaction (array $data = [])
+    {
+        try {
+            $this->db->beginTransaction();
+
+            foreach ($data as $query) {
+                $stmt = $this->db->prepare($query);
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            return new Response(403, [],$e.getMessage());
+        }
+
+        return new Response(200, [], '등록되었습니다.');
     }
 }

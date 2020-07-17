@@ -9,7 +9,7 @@ class Dept extends Model
 
     public function index (array $params = [])
     {
-        $sql = "select {$this->getFields()} from {$this->table} where {$this->search($params)} and stts = 'ACT'";
+        $sql = "select {$this->getFields()} from {$this->table} where group_id = {$params['group_id']} and stts = 'ACT'";
         return new Response(200, $this->fetch($sql), '');
     }
 }
