@@ -102,3 +102,21 @@ git add .
 git commit -m '20200704'
 git push origin master
 exit
+ls
+git status
+cd assets/
+cd js
+ls
+cd plating_stock
+vi plating_stock.js
+cd ..
+ls
+cd ..
+ls
+git stash
+git stash list
+git stash drop
+git stash list
+exit
+git status
+exit

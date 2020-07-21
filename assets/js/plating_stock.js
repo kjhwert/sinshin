@@ -48,7 +48,7 @@ function stock_list (page_no, per_page) {
             text += '               <button type="button" class="btn btn-warning">상세보기</button>'
             text += '           </a>&nbsp;'
             text += '           <a href="../automotive_management/plating_release_create.html?id='+results[i].id+'">'
-            text += '               <button type="button" class="btn btn-info">출하</button>'
+            text += '               <button type="button" class="btn btn-info">출고</button>'
             text += '           </a>'
             text += '       </div>'
             text += '    </td>'

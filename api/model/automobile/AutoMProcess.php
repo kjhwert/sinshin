@@ -37,8 +37,9 @@ class AutoMProcess extends Model
         $sql = "
                 select a.id, a.lot_no, b.name as product_name, a.input, b.customer_code, b.supply_code,
                        a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
+                       ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
                        a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
-                       concat(b.brand_code,'/',b.car_code) as car_code,
+                       concat(b.brand_code,'/',b.car_code) as car_code, a.memo,
                        (case
                             when a.type = 1 then 'immutable'
                             when a.type = 0 then 'mutable'
@@ -115,7 +116,7 @@ class AutoMProcess extends Model
     {
         $sql = "select a.product_id, b.name as product_name, a.lot_no, a.charger,
                    b.customer, b.supplier, a.input_date, a.comp_date, a.carrier,
-                   a.mfr_date, a.rack, a.input, a.output, a.day_night, a.trust_loss, a.size_loss,
+                   a.mfr_date, a.rack, a.input, a.output, a.day_night, a.trust_loss, a.size_loss, a.memo,
                    (case
                         when a.type = 1 then 'immutable'
                         when a.type = 0 then 'mutable'
@@ -191,6 +192,11 @@ class AutoMProcess extends Model
                 output = {$data['output']},
                 trust_loss = {$data['trust_loss']},
                 size_loss = {$data['size_loss']},
+                package_manager = '{$data['package_manager']}',
+                package_date = '{$data['package_date']}',
+                output_count = {$data['output_count']},
+                remain_count = {$data['remain_count']},
+                as_part = {$data['as_part']}, 
                 type = 1,
                 updated_id = {$this->token['id']},
                 updated_at = SYSDATE()
@@ -209,6 +215,9 @@ class AutoMProcess extends Model
                 created_at = SYSDATE()"
         ];
 
+        print_r($querys);
+        exit;
+
         $defects = (array)$data['defect'];
 
         foreach ($defects as $key => $value) {
@@ -226,6 +235,17 @@ class AutoMProcess extends Model
         }
 
         return $this->setTransaction($querys);
+    }
+
+    public function updateMemo ($id, array $data = [])
+    {
+        $sql = "update {$this->table} set
+                memo = '{$data['memo']}',
+                updated_id = {$this->token['id']},
+                updated_at = SYSDATE()
+                where id = {$id}";
+
+        return new Response(200, $this->fetch($sql),'수정되었습니다.');
     }
 
     public function destroy($id = null)

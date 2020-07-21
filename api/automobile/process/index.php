@@ -22,9 +22,14 @@ switch ($method) {
             $model->show($id);
         }
         break;
-    case 'POST' : $model->create($params);
+    case 'POST' :
+        $model->create($params);
         break;
-    case 'PUT' : $model->update($id, $params);
+    case 'PUT' :
+        if(array_key_exists('memo',$params)) {
+            return $model->updateMemo($id, $params);
+        }
+        return $model->update($id, $params);
         break;
     case 'DELETE' : $model->destroy($id);
         break;

@@ -87,11 +87,11 @@ class AutoMReleaseLog extends Model
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
-        $sql = "select a.customer_code, a.supply_code, a.name as product_name,
+        $sql = "select a.customer_code, a.supply_code, a.name as product_name, b.id, b.memo,
                    a.customer, a.supplier, b.change_qty, b.remain_qty, b.created_at, c.name,
                    (case
                         when b.change_qty > 0 then '생산'
-                        when b.change_qty < 0 then '출하'
+                        when b.change_qty < 0 then '출고'
                     end) as type,
                     concat(a.brand_code,'/', a.car_code) as car_code,
                    @rownum:= @rownum+1 AS RNUM
@@ -113,6 +113,13 @@ class AutoMReleaseLog extends Model
         $sql = "select remain_qty from automobile_release_log 
                 where product_id = {$id} 
                 order by created_at desc limit 1";
+
+        return new Response(200, $this->fetch($sql)[0]);
+    }
+
+    public function showMemo ($id, array $data = [])
+    {
+        $sql = "select * from {$this->table} where id = {$id}";
 
         return new Response(200, $this->fetch($sql)[0]);
     }
@@ -197,6 +204,17 @@ class AutoMReleaseLog extends Model
                 created_at = SYSDATE()";
 
         return new Response(200, $this->fetch($sql), '등록되었습니다.');
+    }
+
+    public function update($id = null, array $data = [])
+    {
+        $sql = "update {$this->table} set
+                memo = '{$data['memo']}',
+                updated_id = {$this->token['id']},
+                updated_at = SYSDATE()
+                where id = {$id}";
+
+        return new Response(200, $this->fetch($sql), '수정되었습니다.');
     }
 
     protected function hasEnoughStock (array $data = [])

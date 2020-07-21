@@ -56,13 +56,23 @@ function plating_status(page_no, per_page){
         text +='  <td>'+comma(jsonResult[i].output)+'</td>';
         text +='  <td>'+comma(jsonResult[i].defect)+'</td>';
         text +='  <td>'+comma(jsonResult[i].loss)+'</td>';
+        text +='  <td>'+comma(jsonResult[i].drop_qty)+'</td>';
         text +='  <td>'+jsonResult[i].charger+'</td>';
         text +='  <td>'+jsonResult[i].created_at+'</td>';
         text +='  <td>';
         text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='      <a href="../automotive_management/plating_read.html?id='+jsonResult[i].id+'">';
         text +='        <button type="button" class="btn btn-warning">상세보기</button>';
-        text +='      </a>';
+        text +='      </a>&nbsp;';
+        if(jsonResult[i].memo == ""){
+          text +='      <a onclick="memo_modal('+jsonResult[i].id+');">';
+          text +='        <button type="button" class="btn btn-light">메모</button>';
+          text +='      </a>';
+        }else{
+          text +='      <a onclick="memo_modal('+jsonResult[i].id+');">';
+          text +='        <button type="button" class="btn btn-info">메모</button>';
+          text +='      </a>';
+        }
         text +='    </div>';
         text +='  </td>';
         text +='</tr>';
@@ -77,6 +87,58 @@ function plating_status(page_no, per_page){
     }
   }).fail(function(data, textStatus, errorThrown){
     console.log("전송 실패");
+  });
+}
+
+function memo_modal(id){
+  $("#modal_back").fadeIn("300");
+  $("#memo_modal").fadeIn("300");
+  $.ajax({
+      type    : "GET",
+      url        : "../api/automobile/process/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        id: id
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      $("#memo").val(result.data.memo);
+      $("#memo_id").val(id);
+    }else{
+      alert(result.message);
+    }
+  });
+}
+
+function modal_off(){
+  $("#modal_back").fadeOut("300");
+  $("#memo_modal").fadeOut("300");
+}
+
+function memo_save(){
+  $.ajax({
+      type    : "PUT",
+      url        : "../api/automobile/process/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data: JSON.stringify({
+        id: $("#memo_id").val(),
+        memo: $("#memo").val()
+      })
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      alert("저장 되었습니다");
+      location.reload();
+    }else{
+      alert(result.message);
+    }
   });
 }
 

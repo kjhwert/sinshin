@@ -34,23 +34,32 @@ function stock_detail_list (page_no, per_page) {
         var text = '';
 
         for (i in results) {
-            text += '<tr>'
-            text += '    <th>'+results[i].RNUM+'</th>'
-            text += '    <td>'+results[i].car_code+'</td>'
-            text += '    <td>'+results[i].customer_code+'</td>'
-            text += '    <td>'+results[i].product_name+'</td>'
-            text += '    <td>'+results[i].customer+'</td>'
-            text += '    <td>'+results[i].supplier+'</td>'
-            text += '    <td>'+results[i].type+'</td>'
+            text += '<tr>';
+            text += '    <th>'+results[i].RNUM+'</th>';
+            text += '    <td>'+results[i].car_code+'</td>';
+            text += '    <td>'+results[i].customer_code+'</td>';
+            text += '    <td>'+results[i].product_name+'</td>';
+            text += '    <td>'+results[i].customer+'</td>';
+            text += '    <td>'+results[i].supplier+'</td>';
+            text += '    <td>'+results[i].type+'</td>';
             if (results[i].change_qty < 0) {
-                text += '<td class="danger">'+comma(results[i].change_qty)+'</td>'
+                text += '<td class="danger">'+comma(results[i].change_qty)+'</td>';
             } else {
-                text += '<td class="info">'+comma(results[i].change_qty)+'</td>'
+                text += '<td class="info">'+comma(results[i].change_qty)+'</td>';
             }
-            text += '    <td>'+comma(results[i].remain_qty)+'</td>'
-            text += '    <td>'+results[i].created_at+'</td>'
-            text += '    <td>'+results[i].name+'</td>'
-            text += '</tr>'
+            text += '    <td>'+comma(results[i].remain_qty)+'</td>';
+            text += '    <td>'+results[i].created_at+'</td>';
+            text += '    <td>'+results[i].name+'</td>';
+            if(results[i].memo == ""){
+              text +='      <td><a onclick="memo_modal('+results[i].id+');">';
+              text +='        <button type="button" class="btn btn-light">메모</button>';
+              text +='      </a></td>';
+            }else{
+              text +='      <td><a onclick="memo_modal('+results[i].id+');">';
+              text +='        <button type="button" class="btn btn-info">메모</button>';
+              text +='      </a></td>';
+            }
+            text += '</tr>';
         }
 
         $("#stock_detail_list").empty();
@@ -61,6 +70,59 @@ function stock_detail_list (page_no, per_page) {
     }).fail(function(data, textStatus, errorThrown){
         console.log("전송 실패");
     });
+}
+
+function memo_modal(id){
+  $("#modal_back").fadeIn("300");
+  $("#memo_modal").fadeIn("300");
+  $.ajax({
+      type    : "GET",
+      url        : "../api/automobile/release/log/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        id: id,
+        type: "memo"
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      $("#memo").val(result.data.memo);
+      $("#memo_id").val(id);
+    }else{
+      alert(result.message);
+    }
+  });
+}
+
+function modal_off(){
+  $("#modal_back").fadeOut("300");
+  $("#memo_modal").fadeOut("300");
+}
+
+function memo_save(){
+  $.ajax({
+      type    : "PUT",
+      url        : "../api/automobile/release/log/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data: JSON.stringify({
+        id: $("#memo_id").val(),
+        memo: $("#memo").val()
+      })
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      alert("저장 되었습니다");
+      location.reload();
+    }else{
+      alert(result.message);
+    }
+  });
 }
 
 function paging(end, start, total){

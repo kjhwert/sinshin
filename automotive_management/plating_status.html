@@ -64,7 +64,7 @@
                       <a class="nav-link" id="base-tab4" href="../automotive_management/plating_stock.html">재고현황</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" id="base-tab5" href="../automotive_management/plating_release.html">출하현황</a>
+                      <a class="nav-link" id="base-tab5" href="../automotive_management/plating_release.html">출고현황</a>
                     </li>
                   </ul>
                 </p>
@@ -149,6 +149,7 @@
                         <th>투입량</th>
                         <th>양품수량</th>
                         <th>불량수량</th>
+                        <th>검사수량</th>
                         <th>손실수량</th>
                         <th>라인 담당자</th>
                         <th>등록시간</th>
@@ -180,7 +181,15 @@
       </div>
     </div>
     <!-- ////////////////////////////////////////////////////////////////////////////-->
-
+    <div class="modal_back" id="modal_back" onclick="modal_off();"></div>
+    <div class="memo_modal" id="memo_modal">
+      <textarea id="memo" class="memo_area" placeholder="메모를 입력 하세요"></textarea>
+      <input type="hidden" id="memo_id">
+      <p class="text-center">
+        <button type="button" class="btn btn-primary btn-min-width custom_btn insert_btn" onclick="memo_save();">저장</button>
+        <button type="button" class="btn btn-light btn-min-width custom_btn insert_btn" onclick="modal_off();">취소</button>
+      </p>
+    </div>
 
     <footer class="footer footer-static footer-light navbar-border navbar-shadow">
       <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">

@@ -22,13 +22,17 @@ switch ($method) {
                 unset($params['type']);
                 return $model->releasable($id, $params);
             }
+            if($params['type'] === "memo") {
+                unset($params['type']);
+                return $model->showMemo($id, $params);
+            }
             return $model->show($id, $params);
         }
         break;
     case 'POST' : $model->create($params);
         break;
-//    case 'PUT' : $model->update($id, $params);
-//        break;
+    case 'PUT' : $model->update($id, $params);
+        break;
 //    case 'DELETE' : $model->destroy($id);
 //        break;
 }

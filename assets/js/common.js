@@ -1,7 +1,7 @@
 var user_data = JSON.parse(getCookie("user_data"));
 var path = $(location).attr('href');
 
-user_log();
+// user_log();
 
 function getHeader(){
 	var url;
