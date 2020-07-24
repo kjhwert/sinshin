@@ -231,15 +231,16 @@ class Model
 
     protected function dataToString (array $data = [])
     {
-        $filter = array_filter($data, function ($key) {
-            return $key !== $this->primaryKey;
-        },ARRAY_FILTER_USE_KEY);
-
-        return implode(', ',array_map(function ($key, $value) {
-            if($key === $this->primaryKey) {
+        $filter = array_filter($data, function ($val, $key) {
+            echo empty($val)."\n";
+            if(!$val || is_object($val) || is_array($val)) {
                 return;
             }
 
+            return $key !== $this->primaryKey;
+        },ARRAY_FILTER_USE_BOTH);
+
+        return implode(', ',array_map(function ($key, $value) {
             if (gettype($value) === "integer") {
                 return "{$key} = {$value}";
             }
@@ -276,15 +277,19 @@ class Model
             $this->db->beginTransaction();
 
             foreach ($data as $query) {
-                $stmt = $this->db->prepare($query);
-                $stmt->execute();
+                try {
+                    $stmt = $this->db->prepare($query);
+                    $stmt->execute();
+                } catch (Exception $e) {
+                    throw $e;
+                }
             }
 
             $this->db->commit();
 
         } catch (Exception $e) {
             $this->db->rollBack();
-            return new Response(403, [],$e.getMessage());
+            return new Response(403, [],'데이터 입력 중 오류가 발생하였습니다.');
         }
 
         return new Response(200, [], '등록되었습니다.');

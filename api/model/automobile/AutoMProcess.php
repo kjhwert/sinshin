@@ -21,7 +21,8 @@ class AutoMProcess extends Model
     protected $updateRequired = [
         'input' => 'integer',
         'output' => 'integer',
-    ];
+        'day_night' => 'string',
+     ];
 
     /** 생산현황 index
      * @param array $params
@@ -116,6 +117,7 @@ class AutoMProcess extends Model
     {
         $sql = "select a.product_id, b.name as product_name, a.lot_no, a.charger,
                    b.customer, b.supplier, a.input_date, a.comp_date, a.carrier,
+                   a.package_manager, a.package_date, a.output_count, a.remain_count, a.as_part,
                    a.mfr_date, a.rack, a.input, a.output, a.day_night, a.trust_loss, a.size_loss, a.memo,
                    (case
                         when a.type = 1 then 'immutable'
@@ -167,9 +169,9 @@ class AutoMProcess extends Model
     public function update($id = null, array $data = [])
     {
         $data = $this->validate($data, $this->updateRequired);
-
         $this->hasEnoughStock($data);
         $this->isProceeded($id);
+        $this->isExceedInput($data);
 
         $sql = "select remain_qty from automobile_stock_log
                 where product_id = {$data['product_id']}
@@ -188,15 +190,7 @@ class AutoMProcess extends Model
 
         $querys = [
             "update automobile_process set
-                input = {$data['input']},
-                output = {$data['output']},
-                trust_loss = {$data['trust_loss']},
-                size_loss = {$data['size_loss']},
-                package_manager = '{$data['package_manager']}',
-                package_date = '{$data['package_date']}',
-                output_count = {$data['output_count']},
-                remain_count = {$data['remain_count']},
-                as_part = {$data['as_part']}, 
+                {$this->dataToString($data)},
                 type = 1,
                 updated_id = {$this->token['id']},
                 updated_at = SYSDATE()
@@ -215,23 +209,27 @@ class AutoMProcess extends Model
                 created_at = SYSDATE()"
         ];
 
-        print_r($querys);
-        exit;
+        $defects = json_decode($data['defect']);
 
-        $defects = (array)$data['defect'];
+        foreach ($defects as $defect) {
+            $d = (array)$defect;
 
-        foreach ($defects as $key => $value) {
-            if ($value) {
-                $sql = "insert into automobile_defect_log set
+            if (!$d['id'] || !$d['qty']) {
+                continue;
+            }
+
+            $defect_id = $d['id'];
+            $qty = $d['qty'];
+
+            $sql = "insert into automobile_defect_log set
                         process_id = {$id},
-                        defect_id = {$key},
-                        qty = {$value},
+                        defect_id = {$defect_id},
+                        qty = {$qty},
                         created_id = {$this->token['id']},
                         created_at = SYSDATE()
                     ";
 
-                array_push($querys, $sql);
-            }
+            array_push($querys, $sql);
         }
 
         return $this->setTransaction($querys);
@@ -261,6 +259,23 @@ class AutoMProcess extends Model
         return new Response(200, $this->fetch($sql), '삭제되었습니다.');
     }
 
+    protected function isExceedInput (array $data = [])
+    {
+        $input = $data['input'];
+        $output = $data['output'] + $data['trust_loss'] + $data['size_loss'];
+        $defects = json_decode($data['defect']);
+
+        foreach ($defects as $defect) {
+            $d = (array)$defect;
+
+            $output += $d['qty'];
+        }
+
+        if ($output > $input) {
+            return new Response(403, [], '투입량을 초과할 수 없습니다.');
+        }
+    }
+
     protected function isProceeded ($id)
     {
         $sql = "select type from {$this->table} where {$this->primaryKey} = {$id}";
@@ -279,5 +294,25 @@ class AutoMProcess extends Model
         if ($data['input'] > $remain_qty) {
             return new Response(403, [], '재고가 충분하지 않습니다.');
         }
+    }
+
+    protected function dataToString (array $data = [])
+    {
+        unset($data['defect']);
+        $filter = array_filter($data, function ($val, $key) {
+            if(!$val || is_object($val) || is_array($val)) {
+                return;
+            }
+
+            return $key !== $this->primaryKey;
+        },ARRAY_FILTER_USE_BOTH);
+
+        return implode(', ',array_map(function ($key, $value) {
+            if (gettype($value) === "integer") {
+                return "{$key} = {$value}";
+            }
+
+            return "{$key} = \"{$value}\"";
+        }, array_keys($filter), $filter));
     }
 }

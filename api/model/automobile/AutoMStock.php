@@ -21,6 +21,10 @@ class AutoMStock extends Model
         'type' => 'integer'
     ];
 
+    public static $SUCCESS = 1;
+    public static $FAIL = 0;
+    public static $UNPROCEED = 2;
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -67,12 +71,9 @@ class AutoMStock extends Model
 
     public function update($id = null, array $data = [])
     {
-        $sql = "select type from {$this->table} where {$this->primaryKey} = {$id}";
-        $type = $this->fetch($sql)[0]['type'];
-
-        if ($type === 1) {
-            return new Response(403, [], '이미 처리된 재고입니다.');
-        }
+        $this->isProceeded($id);
+        $data = $this->validate($data, $this->updateRequired);
+        $this->isNotSuccessType($id, $data);
 
         $input = ((int)$data['store_qty']) - ((int)$data['visual_defect'] + (int)$data['bing_defect']);
 
@@ -110,5 +111,42 @@ class AutoMStock extends Model
                 inner join user c
                     on a.created_id = c.id
                 where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' {$this->searchText($params)}";
+    }
+
+    protected function isNotSuccessType ($id, array $data = [])
+    {
+        if($data['type'] !== self::$SUCCESS) {
+            $sql = "update {$this->table} set {$this->dataToString($data)} where {$this->primaryKey} = {$id}";
+            return new Response(200, $this->fetch($sql),'수정되었습니다.');
+        }
+    }
+
+    protected function isProceeded ($id)
+    {
+        $sql = "select type from {$this->table} where {$this->primaryKey} = {$id}";
+        $type = $this->fetch($sql)[0]['type'];
+
+        if ($type === 1) {
+            return new Response(403, [], '이미 처리된 재고입니다.');
+        }
+    }
+
+    protected function dataToString (array $data = [])
+    {
+        $filter = array_filter($data, function ($val, $key) {
+            if(is_object($val) || is_array($val)) {
+                return;
+            }
+
+            return $key !== $this->primaryKey;
+        },ARRAY_FILTER_USE_BOTH);
+
+        return implode(', ',array_map(function ($key, $value) {
+            if (gettype($value) === "integer") {
+                return "{$key} = {$value}";
+            }
+
+            return "{$key} = \"{$value}\"";
+        }, array_keys($filter), $filter));
     }
 }

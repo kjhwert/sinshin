@@ -12,7 +12,10 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            $model->index($params);
+            if ($params['type'] === "main") {
+                return $model->mainIndex();
+            }
+            return $model->index($params);
         } else {
             $model->show($id, $params);
         }

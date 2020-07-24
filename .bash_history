@@ -120,3 +120,7 @@ git stash list
 exit
 git status
 exit
+git add .
+git commit -m "20200721"
+git push origin master
+exit

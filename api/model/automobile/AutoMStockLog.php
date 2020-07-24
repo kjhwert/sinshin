@@ -104,6 +104,36 @@ class AutoMStockLog extends Model
         return new Response(200, $this->fetch($sql), '', $params['paging']);
     }
 
+    public function mainIndex ()
+    {
+        $sql = "select a.id, concat(a.name,' (', a.brand_code,'/',a.car_code,')') as product_name, b.remain_qty
+                from automobile_master a
+                inner join (
+                    select * from (
+                        select * from automobile_release_log
+                        where stts = 'ACT'
+                        order by created_at desc LIMIT 18446744073709551615) a
+                    group by a.product_id
+                ) b
+                on a.id = b.product_id
+                inner join user c
+                on b.created_id = c.id
+                where a.stts = 'ACT' and c.stts = 'ACT'
+                order by b.remain_qty desc limit 10";
+
+        $result = $this->fetch($sql);
+        $cnt = 10 - count($result);
+        
+        if ($cnt > 0) {
+            while($cnt > 0) {
+                array_push($result, ['product_name' => '', 'remain_qty' => 0]);
+                $cnt--;
+            }
+        }
+
+        return new Response(200, $result, '');
+    }
+
     protected function paginationQuery (array $params = [])
     {
         return "select count(id) as cnt from (
