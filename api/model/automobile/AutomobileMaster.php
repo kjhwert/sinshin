@@ -3,7 +3,7 @@
 class AutomobileMaster extends Model
 {
     protected $table = 'automobile_master';
-    protected $searchableText = 'name';
+    protected $searchableText = 'customer_code';
     protected $fields = ['id','customer','supplier','customer_code','supply_code','car_code',
                         'name','brand_code','product_price','plating_price','supply_price','note1','note2'];
     protected $paging = true;

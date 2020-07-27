@@ -35,9 +35,9 @@ function stock_list (page_no, per_page) {
         for (i in results) {
             text += '<tr>'
             text += '    <th>'+results[i].RNUM+'</th>'
-            text += '    <td>'+results[i].car_code+'</td>'
             text += '    <td>'+results[i].customer_code+'</td>'
             text += '    <td>'+results[i].product_name+'</td>'
+            text += '    <td>'+results[i].car_code+'</td>'
             text += '    <td>'+results[i].customer+'</td>'
             text += '    <td>'+results[i].supplier+'</td>'
             text += '    <td align="right">'+comma(results[i].remain_qty)+'</td>'

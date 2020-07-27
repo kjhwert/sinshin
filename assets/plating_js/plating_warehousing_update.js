@@ -22,6 +22,7 @@ function warehousing_detail(){
       $("#customer_code").val(result.data[0].customer_code);
       $("#car_code").val(result.data[0].car_code);
       $("#mfr_date").val(result.data[0].mfr_date);
+      $("#input_date").val(result.data[0].input_date);
       $("#store_qty").val(comma(result.data[0].store_qty));
       $("#type").val(result.data[0].type);
       $("#bing_defect").val(comma(result.data[0].bing_defect));
@@ -37,36 +38,45 @@ function warehousing_detail(){
 $("#warehousing_update").on("click", function(){
   var product_id = $("#product_id").val();
   var mfr_date = $("#mfr_date").val();
+  var input_date = $("#input_date").val();
   var store_qty = $("#store_qty").val();
   var visual_defect = $("#visual_defect").val();
   var bing_defect = $("#bing_defect").val();
   var type = $("#type").val();
 
-  $.ajax({
-      type    : "PUT",
-      url        : "../api/automobile/stock/index.php",
-      headers : {
-        "content-type": "application/json",
-        Authorization : user_data.token,
-      },
-      dataType:"json",
-      data:JSON.stringify({
-        id : getParam("id"),
-        product_id : product_id,
-        mfr_date : mfr_date,
-        store_qty : uncomma(store_qty),
-        visual_defect : visual_defect,
-        bing_defect : bing_defect,
-        type : type
-      })
-  }).done(function (result, textStatus, xhr) {
-    if(result.status == 200){
-      alert("수정 되었습니다");
-      location.href="../automotive_management/plating_warehousing.html";
+  if(type != "2"){
+    var msg = confirm("[주의] 합격여부 선택후에는 수정할 수 없습니다 \n 계속 하시겠습니까?");
+    if(msg){
     }else{
-      alert(result.message);
+      return;
     }
-  }).fail(function(data, textStatus, errorThrown){
-      console.log("전송 실패");
-  });
+  }
+    $.ajax({
+        type    : "PUT",
+        url        : "../api/automobile/stock/index.php",
+        headers : {
+          "content-type": "application/json",
+          Authorization : user_data.token,
+        },
+        dataType:"json",
+        data:JSON.stringify({
+          id : getParam("id"),
+          product_id : product_id,
+          mfr_date : mfr_date,
+          input_date: input_date,
+          store_qty : uncomma(store_qty),
+          visual_defect : visual_defect,
+          bing_defect : bing_defect,
+          type : type
+        })
+    }).done(function (result, textStatus, xhr) {
+      if(result.status == 200){
+        alert("수정 되었습니다");
+        location.href="../automotive_management/plating_warehousing.html";
+      }else{
+        alert(result.message);
+      }
+    }).fail(function(data, textStatus, errorThrown){
+        console.log("전송 실패");
+    });
 });

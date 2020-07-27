@@ -3,6 +3,9 @@ var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
 var start_date = getParam("start_date");
 var end_date = getParam("end_date");
+var sort = "date";
+var order = "desc";
+
 if(start_date != ""){
   $("#start_date").val(start_date);
 }
@@ -17,8 +20,29 @@ if(getParam("page_no") == ""){
 }else{
   page_no = getParam("page_no");
 }
-warehousing(page_no, per_page);
-function warehousing(page_no, per_page){
+warehousing(page_no, per_page, sort, order);
+
+$("#basicSelect").on("change", function(){
+  if($(this).val() == "date1"){
+    sort = "date";
+    order = "desc";
+    warehousing(page_no, per_page, sort, order);
+  }else if($(this).val() == "date2"){
+    sort = "date";
+    order = "asc";
+    warehousing(page_no, per_page, sort, order);
+  }else if($(this).val() == "product1"){
+    sort = "product";
+    order = "asc";
+    warehousing(page_no, per_page, sort, order);
+  }else if($(this).val() == "product2"){
+    sort = "product";
+    order = "desc";
+    warehousing(page_no, per_page, sort, order);
+  }
+});
+
+function warehousing(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
       url        : "../api/automobile/stock/index.php",
@@ -32,7 +56,9 @@ function warehousing(page_no, per_page){
         perPage: per_page,
         search: search_text,
         start_date: start_date,
-        end_date: end_date
+        end_date: end_date,
+        sort: sort,
+        order: order
       }
   }).done(function (result, textStatus, xhr) {
     var text = '';
@@ -41,11 +67,11 @@ function warehousing(page_no, per_page){
       for(var i in jsonResult){
         text +='<tr>';
         text +='  <th>'+jsonResult[i].RNUM+'</th>';
-        text +='  <td>'+jsonResult[i].car_code+'</td>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+comma(jsonResult[i].store_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].loss+'</td>';
+        text +='  <td>'+jsonResult[i].car_code+'</td>';
+        text +='  <td align="right">'+comma(jsonResult[i].store_qty)+'</td>';
+        text +='  <td align="right">'+comma(jsonResult[i].loss)+'</td>';
         text +='  <td>'+jsonResult[i].customer+'</td>';
         text +='  <td>'+jsonResult[i].supplier+'</td>';
         text +='  <td>'+jsonResult[i].charger+'</td>';

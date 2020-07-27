@@ -12,6 +12,8 @@ class Model
     public $token = [];
     protected $createRequired = [];
     protected $updateRequired = [];
+    protected $reversedSort = false;
+    protected $sort = [];
 
     public function __construct()
     {
@@ -269,6 +271,30 @@ class Model
         }
 
         return $data;
+    }
+
+    protected function sorting (array $data = [])
+    {
+        $sort = $data['sort'];
+        $order = $data['order'];
+
+        if (!$sort) {
+            return (new ErrorHandler())->typeNull('sort');
+        }
+
+        if (!$order) {
+            return (new ErrorHandler())->typeNull('order');
+        }
+
+        if ($this->reversedSort) {
+            $order = $order === "asc" ? "desc" : "asc";
+        }
+
+        if (!$this->sort[$sort]) {
+            return new Response(403, [], '모델의 sort array를 명시해주세요.');
+        }
+
+        return "{$this->sort[$sort]} {$order}";
     }
 
     protected function setTransaction (array $data = [])

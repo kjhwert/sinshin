@@ -124,3 +124,9 @@ git add .
 git commit -m "20200721"
 git push origin master
 exit
+git add .
+add .
+git status
+git commit -m "20200724"
+git push origin master
+exit

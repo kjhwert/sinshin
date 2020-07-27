@@ -4,7 +4,7 @@ defect_list();
 function defect_list(){
   $.ajax({
       type    : "GET",
-      url        : "http://sinshin.hlabpartner.com/api/defect/index.php",
+      url        : "../api/defect/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -52,7 +52,7 @@ function defect_list(){
 function plating_read(){
   $.ajax({
       type    : "GET",
-      url        : "http://sinshin.hlabpartner.com/api/automobile/process/index.php",
+      url        : "../api/automobile/process/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -115,7 +115,7 @@ $("#plating_delete").on("click", function(){
   if(msg){
     $.ajax({
         type    : "DELETE",
-        url        : "http://sinshin.hlabpartner.com/api/automobile/process/index.php",
+        url        : "../api/automobile/process/index.php",
         headers : {
           "content-type": "application/json",
           Authorization : user_data.token,
@@ -127,7 +127,7 @@ $("#plating_delete").on("click", function(){
     }).done(function (result, textStatus, xhr) {
       if(result.status == 200){
         alert(result.message);
-        history.back();
+        location.href="../automotive_management/plating_status.html";
       }else{
         alert(result.message);
       }

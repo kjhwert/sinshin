@@ -36,17 +36,17 @@ function release_list (page_no, per_page) {
         console.log(results);
 
         for (i in results) {
-            text += '<tr>'
-            text += '    <th>'+results[i].RNUM+'</th>'
-            text += '    <td>'+results[i].car_code+'</td>'
-            text += '    <td>'+results[i].customer_code+'</td>'
-            text += '    <td>'+results[i].product_name+'</td>'
-            text += '    <td>'+results[i].customer+'</td>'
-            text += '    <td>'+results[i].supplier+'</td>'
-            text += '    <td align="right">'+comma(results[i].release_qty)+'</td>'
-            text += '    <td>'+results[i].created_at+'</td>'
-            text += '    <td>'+results[i].name+'</td>'
-            text += '</tr>'
+            text += '<tr>';
+            text += '    <th>'+results[i].RNUM+'</th>';
+            text += '    <td>'+results[i].customer_code+'</td>';
+            text += '    <td>'+results[i].product_name+'</td>';
+            text += '    <td>'+results[i].car_code+'</td>';
+            text += '    <td>'+results[i].customer+'</td>';
+            text += '    <td>'+results[i].supplier+'</td>';
+            text += '    <td align="right">'+comma(results[i].release_qty)+'</td>';
+            text += '    <td>'+results[i].created_at+'</td>';
+            text += '    <td>'+results[i].name+'</td>';
+            text += '</tr>';
         }
 
         $("#release_list").empty();

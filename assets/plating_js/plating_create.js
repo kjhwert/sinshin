@@ -68,7 +68,7 @@ function cbarno_insert(){
 function auto_search(search){
   $.ajax({
       type    : "GET",
-      url        : "http://sinshin.hlabpartner.com/api/automobile/master/index.php",
+      url        : "../api/automobile/master/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -84,20 +84,20 @@ function auto_search(search){
       var jsonResult = result.data;
       $(".search_result_box").css("display","block");
       var text = "<tr>";
-          text += "<th>제품명</th>";
+          text += "<th>품번</th>";
           text += "<th>차종</th>";
           text += "</tr>";
 
       for(var i in jsonResult){
         text +='<tr data-customer='+jsonResult[i].customer+' data-supplier='+jsonResult[i].supplier+' data-product_name='+jsonResult[i].name.replace(/\s/gi, "_")+' data-product_id='+jsonResult[i].id+'>';
-        text +="<td>"+jsonResult[i].name+"</td>";
+        text +="<td>"+jsonResult[i].customer_code+"</td>";
         text +="<td>"+jsonResult[i].car_code+"</td>";
         text +="</tr>";
       }
 
-      $("#search_table").empty();
-      $("#search_table").append(text);
-      $("#search_table tr").on("click", function(){
+        $("#search_table").empty();
+        $("#search_table").append(text);
+        $("#search_table tr").on("click", function(){
         var customer_data = $(this).data("customer");
         var supplier_data = $(this).data("supplier");
         var product_name = $(this).data("product_name");
@@ -160,7 +160,7 @@ $("#plating_insert").on("click", function(){
 
   $.ajax({
     type    : "POST",
-    url        : "http://sinshin.hlabpartner.com/api/automobile/process/index.php",
+    url        : "../api/automobile/process/index.php",
     headers : {
       "content-type": "application/json",
       Authorization : user_data.token,

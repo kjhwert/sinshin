@@ -15,7 +15,11 @@ $.ajax({
 }).done(function (result, textStatus, xhr) {
   var jsonResult = result.data;
   console.log(jsonResult);
+  var no_name = ["　","　　","　　　","　　　　","　　　　　","　　　　　　","　　　　　　　","　　　　　　　　","　　　　　　　　　","　　　　　　　　　　"];
   for(var i in jsonResult){
+    if(jsonResult[i].product_name == ""){
+      jsonResult[i].product_name = no_name[i];
+    }
     chart_data.push({country: jsonResult[i].product_name, visits: jsonResult[i].remain_qty});
   };
   am4core.useTheme(am4themes_animated);
@@ -70,6 +74,11 @@ $.ajax({
   series.columns.template.adapter.add("fill", function(fill, target) {
     return chart.colors.getIndex(target.dataItem.index);
   });
+  // chart.events.on("ready", function(ev){
+  //   var tsapn = document.querySelectorAll('#chartdiv text');
+  //   alert(tspan.length);
+  // });
+
 }).fail(function(data, textStatus, errorThrown){
   console.log("전송 실패");
 });

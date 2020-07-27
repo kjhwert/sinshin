@@ -3,22 +3,30 @@
 class AutoMStock extends Model
 {
     protected $table = 'automobile_stock';
-    protected $searchableText = 'b.name';
+    protected $searchableText = 'b.customer_code';
     protected $searchableDate = 'a.created_at';
     protected $createRequired = [
         'product_id' => 'integer',
         'mfr_date' => 'string',
+        'input_date' => 'string',
         'store_qty' => 'integer'
     ];
 
     protected $updateRequired = [
         'id' => 'integer',
         'mfr_date' => 'string',
+        'input_date' => 'string',
         'store_qty' => 'integer',
         'product_id' => 'integer',
         'visual_defect' => 'integer',
         'bing_defect' => 'integer',
         'type' => 'integer'
+    ];
+
+    protected $reversedSort = true;
+    protected $sort = [
+        'date' => 'a.created_at',
+        'product' => 'b.name'
     ];
 
     public static $SUCCESS = 1;
@@ -33,7 +41,7 @@ class AutoMStock extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $sql = "select a.id, concat(b.brand_code,'/',b.car_code) as car_code, b.customer_code, b.supply_code, b.name as product_name,
-                   a.store_qty, sum(a.bing_defect + a.visual_defect) as loss,
+                   a.store_qty, sum(a.bing_defect + a.visual_defect) as loss, a.input_date,
                    b.customer, b.supplier, c.name as charger, a.created_at,
                        (case
                             when a.type = 1 then '합격'
@@ -53,6 +61,28 @@ class AutoMStock extends Model
                 order by RNUM desc
                 limit {$page},{$perPage}";
 
+        $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* 
+                    from (select a.id, concat(b.brand_code,'/',b.car_code) as car_code, b.customer_code, b.supply_code, b.name as product_name,
+                       a.store_qty, sum(a.bing_defect + a.visual_defect) as loss,
+                       b.customer, b.supplier, c.name as charger, a.created_at,
+                       (case
+                            when a.type = 1 then '합격'
+                            when a.type = 0 then '불합격'
+                            when a.type = 2 then '미처리'
+                           end) as type
+                    from automobile_stock a
+                         inner join automobile_master b
+                                    on a.product_id = b.id
+                         inner join user c
+                                    on a.created_id = c.id
+                where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT'
+                {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
+                group by a.id having loss is not null
+                order by {$this->sorting($params['params'])}
+                ) as tot,
+                (SELECT @rownum:= 0) AS R
+                order by RNUM desc";
+
         return new Response(200, $this->fetch($sql), '', $params['paging']);
     }
 
@@ -60,7 +90,7 @@ class AutoMStock extends Model
     {
         $sql = "select a.id, b.name as product_name, a.product_id, b.customer, b.supplier,
                 b.customer_code, b.supply_code, concat(b.brand_code,'/', b.car_code) as car_code,
-                a.store_qty, a.visual_defect, a.bing_defect, a.type, a.mfr_date
+                a.store_qty, a.visual_defect, a.bing_defect, a.type, a.mfr_date, a.input_date
                 from automobile_stock a
                 inner join automobile_master b
                 on a.product_id = b.id

@@ -3,6 +3,8 @@ var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
 var start_date = getParam("start_date");
 var end_date = getParam("end_date");
+var sort = "date";
+var order = "desc";
 
 if(start_date != ""){
   $("#start_date").val(start_date);
@@ -19,31 +21,30 @@ if(getParam("page_no") == ""){
 }else{
   page_no = getParam("page_no");
 }
-/*
+plating_status(page_no, per_page, sort, order);
+
 $("#basicSelect").on("change", function(){
-  var sort = "";
-  var order = "";
+
   if($(this).val() == "date1"){
-    sort = "date";
-    order = "asc";
-    plating_status(page_no, per_page, sort, order);
-  }else if($(this).val() == "date2"){
     sort = "date";
     order = "desc";
     plating_status(page_no, per_page, sort, order);
+  }else if($(this).val() == "date2"){
+    sort = "date";
+    order = "asc";
+    plating_status(page_no, per_page, sort, order);
   }else if($(this).val() == "product1"){
     sort = "product";
-    order = "ASC";
+    order = "asc";
     plating_status(page_no, per_page, sort, order);
   }else if($(this).val() == "product2"){
     sort = "product";
-    order = "ASC";
+    order = "desc";
     plating_status(page_no, per_page, sort, order);
   }
 });
-*/
-plating_status(page_no, per_page);
-function plating_status(page_no, per_page){
+
+function plating_status(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
       url        : "../api/automobile/process/index.php",
@@ -57,9 +58,9 @@ function plating_status(page_no, per_page){
         perPage: per_page,
         search: search_text,
         start_date: start_date,
-        end_date: end_date
-        //,sort: sort,
-        //order: order
+        end_date: end_date,
+        sort: sort,
+        order: order
       }
   }).done(function (result, textStatus, xhr) {
     var text = '';

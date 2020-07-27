@@ -91,7 +91,7 @@
                 <p class="card-text search_box">
                   <input type="date" class="form-control custom_input2" id="start_date"> ~ &nbsp;
                   <input type="date" class="form-control custom_input2" id="end_date">
-                  <input type="search" class="form-control custom_input" id="search_text" placeholder="품명을 입력해주세요">
+                  <input type="search" class="form-control custom_input" id="search_text" placeholder="품번을 입력해주세요">
                   <button type="button" class="btn btn-primary btn-min-width custom_btn" id="search_btn">조회</button>
                 </p>
               </div>
@@ -100,10 +100,10 @@
               <div class="card-body">
                 <p class="card-text search_box text-right mt-50">
                   <select class="form-control" id="basicSelect">
-                    <option>최신순</option>
-                    <option>오래된순</option>
-                    <option>제품 가나다순</option>
-                    <option>제품 가나다역순</option>
+                    <option value="date1">최신순</option>
+                    <option value="date2">오래된순</option>
+                    <option value="product1">제품 가나다순</option>
+                    <option value="product2">제품 가나다역순</option>
                   </select>
                 </p>
                 <div class="table-responsive">
@@ -111,9 +111,9 @@
                     <thead>
                       <tr>
                         <th>No</th>
-                        <th>자동차사/차종</th>
                         <th>품번</th>
                         <th>품명</th>
+                        <th>자동차사/차종</th>
                         <th>입고량</th>
                         <th>수입검사</th>
                         <th>고객사</th>

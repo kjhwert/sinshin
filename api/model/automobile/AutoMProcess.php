@@ -3,7 +3,7 @@
 class AutoMProcess extends Model
 {
     protected $table = 'automobile_process';
-    protected $searchableText = 'b.name';
+    protected $searchableText = 'b.customer_code';
     protected $searchableDate = 'a.created_at';
     protected $createRequired = [
         'input' => 'integer',
@@ -24,6 +24,12 @@ class AutoMProcess extends Model
         'day_night' => 'string',
      ];
 
+    protected $reversedSort = true;
+    protected $sort = [
+        'date' => 'a.created_at',
+        'product' => 'b.name'
+    ];
+
     /** 생산현황 index
      * @param array $params
      * @return Response
@@ -36,34 +42,33 @@ class AutoMProcess extends Model
         $page = ((int)$params["page"] * $perPage);
 
         $sql = "
-                select a.id, a.lot_no, b.name as product_name, a.input, b.customer_code, b.supply_code,
-                       a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
-                       ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
-                       a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
-                       concat(b.brand_code,'/',b.car_code) as car_code, a.memo,
-                       (case
-                            when a.type = 1 then 'immutable'
-                            when a.type = 0 then 'mutable'
-                        end    
-                        ) as type,
-                       ifnull(truncate((a.output/a.input)*100,1),0) as output_percent,
-                       ifnull(truncate((sum(a.size_loss + a.trust_loss)/a.input)*100,1),0) as loss_percent,
-                       ifnull(truncate((c.defect/a.input)*100,1),0) as defect_percent,
-                       @rownum:= @rownum+1 AS RNUM
+                select @rownum:= @rownum+1 AS RNUM, tot.* from (select a.id, a.lot_no, b.name as product_name, a.input, b.customer_code, b.supply_code,
+                   a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
+                   ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
+                   a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
+                   concat(b.brand_code,'/',b.car_code) as car_code, a.memo,
+                   (case
+                        when a.type = 1 then 'immutable'
+                        when a.type = 0 then 'mutable'
+                       end
+                       ) as type,
+                   ifnull(truncate((a.output/a.input)*100,1),0) as output_percent,
+                   ifnull(truncate((sum(a.size_loss + a.trust_loss)/a.input)*100,1),0) as loss_percent,
+                   ifnull(truncate((c.defect/a.input)*100,1),0) as defect_percent
                 from automobile_process a
-                inner join automobile_master b
-                            on a.product_id = b.id
-                left join (
-                    select sum(qty) as defect, process_id
-                    from automobile_defect_log
-                    where stts = 'ACT' group by process_id
+                     inner join automobile_master b
+                                on a.product_id = b.id
+                     left join (
+                select sum(qty) as defect, process_id
+                from automobile_defect_log
+                where stts = 'ACT' group by process_id
                 ) c
-                on a.id = c.process_id,
-                (SELECT @rownum:= 0) AS R
+                               on a.id = c.process_id
                 where a.stts = 'ACT' and b.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id
-                order by a.type = 0 desc, RNUM desc
+                order by a.type = 0 asc, {$this->sorting($params['params'])} ) as tot,
+                (SELECT @rownum:= 0) AS R order by RNUM desc
                 limit {$page}, {$perPage}";
 
         return new Response(200, $this->fetch($sql), '', $params['paging']);
@@ -80,6 +85,7 @@ class AutoMProcess extends Model
                 select a.id, a.lot_no, b.name as product_name, a.input, b.customer_code, b.supply_code,
                        a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
                        a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
+                       ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
                        concat(b.brand_code,'/',b.car_code) as car_code,
                        ifnull(truncate((a.output/a.input)*100,1),0) as output_percent,
                        ifnull(truncate((sum(a.size_loss + a.trust_loss)/a.input)*100,1),0) as loss_percent,
@@ -119,6 +125,7 @@ class AutoMProcess extends Model
                    b.customer, b.supplier, a.input_date, a.comp_date, a.carrier,
                    a.package_manager, a.package_date, a.output_count, a.remain_count, a.as_part,
                    a.mfr_date, a.rack, a.input, a.output, a.day_night, a.trust_loss, a.size_loss, a.memo,
+                   b.customer_code,
                    (case
                         when a.type = 1 then 'immutable'
                         when a.type = 0 then 'mutable'
@@ -127,7 +134,7 @@ class AutoMProcess extends Model
                 from automobile_process a
                 inner join automobile_master b
                 on a.product_id = b.id
-                where a.id = {$id}";
+                where a.stts = 'ACT' and b.stts = 'ACT' and a.id = {$id}";
 
         $result = $this->fetch($sql)[0];
 

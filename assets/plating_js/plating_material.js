@@ -12,7 +12,7 @@ material_list(page_no, per_page);
 function material_list(page_no, per_page){
   $.ajax({
       type    : "GET",
-      url        : "http://sinshin.hlabpartner.com/api/automobile/stock/log/index.php",
+      url        : "../api/automobile/stock/log/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -31,9 +31,9 @@ function material_list(page_no, per_page){
       for(var i in jsonResult){
         text +='<tr>';
         text +='  <th>'+jsonResult[i].RNUM+'</th>';
-        text +='  <td>'+jsonResult[i].car_code+'</td>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td>'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].remain_qty)+'</td>';
         text +='  <td>'+jsonResult[i].customer+'</td>';
         text +='  <td>'+jsonResult[i].supplier+'</td>';

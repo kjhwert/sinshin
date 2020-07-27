@@ -1,5 +1,19 @@
 var page_no = "";
 var per_page = 15;
+var start_date = getParam("start_date");
+var end_date = getParam("end_date");
+var search_text = decodeURIComponent(getParam("search_text"));
+
+if(start_date != ""){
+  $("#start_date").val(start_date);
+}
+if(end_date != ""){
+  $("#end_date").val(end_date);
+}
+if(search_text != ""){
+  $("#search_text").val(search_text);
+}
+
 if(getParam("page_no") == ""){
     page_no = 1;
 }else{
@@ -22,7 +36,10 @@ function defect_list (page_no, per_page) {
         data:{
             type : "defect",
             page: page_no,
-            perPage: per_page
+            perPage: per_page,
+            search: search_text,
+            start_date: start_date,
+            end_date: end_date
         }
     }).done(function (data, textStatus, xhr) {
         if (data.status != 200) {
@@ -37,16 +54,16 @@ function defect_list (page_no, per_page) {
             text += '<tr>';
             text += '    <th>'+results[i].RNUM+'</th>';
             text += '    <th>'+results[i].lot_no+'</th>';
-            text += '    <td>'+results[i].car_code+'</td>';
             text += '    <td>'+results[i].customer_code+'</td>';
             text += '    <td>'+results[i].product_name+'</td>';
+            text += '    <td>'+results[i].car_code+'</td>';
             text += '    <td>'+results[i].customer+'</td>';
             text += '    <td>'+results[i].supplier+'</td>';
             text += '    <td>'+results[i].mfr_date+'</td>';
             text += '    <td align="right">'+comma(results[i].input)+'</td>';
             text += '    <td align="right">'+comma(results[i].output)+'</td>';
             text += '    <td align="right">'+comma(results[i].loss)+'</td>';
-            text += '    <td align="right"></td>'
+            text += '    <td align="right">'+comma(results[i].drop_qty)+'</td>'
             text += '    <td align="right">'+comma(results[i].defect)+'</td>';
             text += '    <td align="right">'+results[i].output_percent+'%</td>';
             text += '    <td align="right">'+results[i].loss_percent+'%</td>';
@@ -110,3 +127,6 @@ function paging(end, start, total){
     $("#pagination").empty();
     $("#pagination").append(text);
 }
+$("#search_btn").on("click", function(){
+  location.href="../automotive_management/plating_defect.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val();
+});

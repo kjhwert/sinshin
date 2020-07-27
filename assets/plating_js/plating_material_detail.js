@@ -12,7 +12,7 @@ material_detail_list(page_no, per_page);
 function material_detail_list(page_no, per_page){
   $.ajax({
       type    : "GET",
-      url        : "http://sinshin.hlabpartner.com/api/automobile/stock/log/index.php",
+      url        : "../api/automobile/stock/log/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
