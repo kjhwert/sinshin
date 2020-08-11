@@ -1,3 +1,8 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
+
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));

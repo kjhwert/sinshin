@@ -106,7 +106,7 @@ class AutoMStockLog extends Model
 
     public function mainIndex ()
     {
-        $sql = "select a.id, concat(a.name,' (', a.brand_code,'/',a.car_code,')') as product_name, b.remain_qty
+        $sql = "select a.id, a.name as product_name, b.remain_qty, a.supply_code
                 from automobile_master a
                 inner join (
                     select * from (
@@ -123,10 +123,10 @@ class AutoMStockLog extends Model
 
         $result = $this->fetch($sql);
         $cnt = 10 - count($result);
-        
+
         if ($cnt > 0) {
             while($cnt > 0) {
-                array_push($result, ['product_name' => '', 'remain_qty' => 0]);
+                array_push($result, ['product_name' => '', 'remain_qty' => 0, 'supply_code' => '']);
                 $cnt--;
             }
         }

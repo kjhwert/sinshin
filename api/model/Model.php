@@ -121,7 +121,7 @@ class Model
 
         try {
             $payload = JWT::decode($token, JWT::$tokenKey, array('HS256'));
-            $returnArray = array('id' => $payload->userId);
+            $returnArray = array('id' => $payload->userId, 'dept_id'=>$payload->dept_id);
             if (isset($payload->exp)) {
                 $returnArray['exp'] = date(DateTime::ISO8601, $payload->exp);;
             }

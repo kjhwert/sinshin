@@ -69,7 +69,7 @@ function print(){
         "<script type='text/javascript' src='../assets/js/qrcode.js'></script>"+
         "<link rel='stylesheet' type='text/css' href='../assets/css/style.css'>"+
         "</head>"+
-        "<body>"+innerHtml+"</body>"+
+        "<body style='margin:0'>"+innerHtml+"</body>"+
         "<script>"+
           "for(var i=1;i<="+print_cnt+";i++){"+
           "var qrcode = new QRCode(document.getElementById('qrcode'+i), {"+

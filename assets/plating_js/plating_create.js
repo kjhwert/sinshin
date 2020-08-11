@@ -1,5 +1,7 @@
 $(document).ready(function(){
   $(".time_element").timepicki();
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
 });
 
 $("#product_name").on("click", function(){

@@ -1,3 +1,7 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
 warehousing_detail();
 
 function warehousing_detail(){
@@ -79,4 +83,32 @@ $("#warehousing_update").on("click", function(){
     }).fail(function(data, textStatus, errorThrown){
         console.log("전송 실패");
     });
+});
+
+$("#plating_delete").on("click", function(){
+  var msg = confirm("정말 삭제 하시겠습니까?");
+
+  if(msg){
+    $.ajax({
+        type    : "DELETE",
+        url        : "../api/automobile/stock/index.php",
+        headers : {
+          "content-type": "application/json",
+          Authorization : user_data.token,
+        },
+        dataType:"json",
+        data:JSON.stringify({
+          id : getParam("id")
+        })
+    }).done(function (result, textStatus, xhr) {
+      if(result.status == 200){
+        alert("삭제 되었습니다");
+        location.href="../automotive_management/plating_warehousing.html";
+      }else{
+        alert(result.message);
+      }
+    }).fail(function(data, textStatus, errorThrown){
+        console.log("전송 실패");
+    });
+  }else{}
 });

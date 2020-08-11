@@ -1,3 +1,4 @@
+domain();
 $("#login_btn").on("click", function(){
   var user_id = $("#user_id").val();
   var user_pw = $("#user_pw").val();
@@ -16,7 +17,7 @@ $("#login_btn").on("click", function(){
 function login(user_id, user_pw){
     $.ajax({
         type    : "POST",
-        url        : "http://sinshin.hlabpartner.com/api/login/index.php",
+        url        : "../api/login/index.php",
         contentType: "appxlication/json",
         dataType:"json",
         data     : JSON.stringify({
@@ -33,4 +34,20 @@ function login(user_id, user_pw){
     }).fail(function(data, textStatus, errorThrown){
         console.log("전송 실패");
     });
+}
+
+function domain(){
+	$.ajax({
+      type    : "GET",
+      url        : "./api/domain/index.php",
+      headers : {
+        "content-type": "application/json"
+      },
+      dataType:"json",
+  }).done(function (result, textStatus, xhr) {
+		var domain = result.data.url;
+    localStorage.setItem("domain", domain);
+	}).fail(function (result, textStatus, errorThrown) {
+		alert(result.message);
+	})
 }

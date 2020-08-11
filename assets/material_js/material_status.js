@@ -1,60 +1,72 @@
-$(function(){
-  $("#automotive_management").addClass("open");
-  $("#plating").addClass("active");
+$(document).ready(function(){
+  $("#product_history").addClass("open");
+  $("#material").addClass("active");
 });
+
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
+var start_date = getParam("start_date");
+var end_date = getParam("end_date");
+var material_type = getParam("material_type");
 if(getParam("page_no") == ""){
   page_no = 1;
 }else{
   page_no = getParam("page_no");
 }
+if(search_text != ""){
+  $("#search_text").val(search_text);
+}
+if(start_date != ""){
+  $("#start_date").val(start_date);
+}
+if(end_date != ""){
+  $("#end_date").val(end_date);
+}
+if(end_date != ""){
+  $("#material_type").val(material_type);
+}
 
-material_detail_list(page_no, per_page);
 
-function material_detail_list(page_no, per_page){
+stock_list(page_no, per_page, search_text);
+
+function stock_list(page_no, per_page, search_text){
   $.ajax({
       type    : "GET",
-      url        : "../api/automobile/stock/log/index.php",
+      url        : "../api/cosmetics/stock/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
       },
       dataType:"json",
       data     : {
-        id: getParam("id"),
+        type: "warehouse",
         page: page_no,
         perPage: per_page,
+        material_type: $("#material_type").val(),
+        search: search_text,
+        start_date: start_date,
+        end_date: end_date
       }
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
       console.log(result);
       var jsonResult = result.data;
-      var text = "";
-
+      var text = '';
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <th>'+jsonResult[i].RNUM+'</th>';
-        text+='  <td>'+jsonResult[i].car_code+'</td>';
-        text+='  <td>'+jsonResult[i].customer_code+'</td>';
-        text+='  <td>'+jsonResult[i].product_name+'</td>';
-        text+='  <td>'+jsonResult[i].customer+'</td>';
-        text+='  <td>'+jsonResult[i].supplier+'</td>';
-        text+='  <td>'+jsonResult[i].type+'</td>';
-        if(jsonResult[i].type == "입고"){
-          text+='  <td class="info">'+comma(jsonResult[i].change_qty)+'</td>';
-        }else{
-          text+='  <td class="danger">'+comma(jsonResult[i].change_qty)+'</td>';
-        }
-        text+='  <td>'+comma(jsonResult[i].remain_qty)+'</td>';
-        text+='  <td>'+jsonResult[i].created_at+'</td>';
+        text+='  <th scope="row">'+jsonResult[i].RNUM+'</th>';
+        text+='  <td>'+jsonResult[i].code+'</td>';
         text+='  <td>'+jsonResult[i].name+'</td>';
+        text+='  <td>'+comma(jsonResult[i].qty)+'</td>';
+        text+='  <td>'+comma(jsonResult[i].total)+'</td>';
+        text+='  <td>'+jsonResult[i].unit+'</td>';
+        text+='  <td>'+jsonResult[i].stock_date+'</td>';
+        text+='  <td>'+jsonResult[i].manager+'</td>';
         text+='</tr>';
       }
-
-      $("#material_detail_list").empty();
-      $("#material_detail_list").append(text);
+      $("#search_list").empty();
+      $("#search_list").append(text);
 
       paging(result.paging.end_page, result.paging.start_page, result.paging.total_page);
     }else{
@@ -64,7 +76,6 @@ function material_detail_list(page_no, per_page){
       console.log("전송 실패");
   });
 }
-
 function paging(end, start, total){
   var paging_init_num = parseInt(start);
   var paging_end_num = parseInt(end);
@@ -104,3 +115,7 @@ function paging(end, start, total){
   $("#pagination").empty();
   $("#pagination").append(text);
 }
+
+$("#search_btn").on("click", function(){
+  location.href="../product_history/material_status.html?search_text="+$("#search_text").val()+"&start_date="+$("#start_date").val()+'&end_date='+$("#end_date").val()+'&material_type='+$("#material_type").val();
+});

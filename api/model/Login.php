@@ -28,7 +28,8 @@ class Login
         $sql = "select password('{$pw}') as pw";
         $pw = $this->fetch($sql)[0]['pw'];
 
-        $sql = "select a.id, user_id, a.name, tel, email, duty, b.name as dept, c.name as position from user as a
+        $sql = "select a.id, user_id, a.name, tel, email, duty, a.dept_id, c.name as position 
+                from user as a
                 left join dept as b
                 on a.dept_id = b.id
                 left join code as c
@@ -47,7 +48,7 @@ class Login
 
         $result = $result[0];
 
-        $result['token'] = $this->getToken($result['id']);
+        $result['token'] = $this->getToken($result);
         $result['auth'] = $this->getUserAuth($result['id']);
 
         unset($result['dept_id']);
@@ -111,10 +112,11 @@ class Login
         return $auth;
     }
 
-    protected function getToken ($id)
+    protected function getToken (array $data = [])
     {
         $payloadArray = array();
-        $payloadArray['userId'] = $id;
+        $payloadArray['userId'] = $data['id'];
+        $payloadArray['dept_id'] = $data['dept_id'];
         if (isset($nbf)) {$payloadArray['nbf'] = $nbf;}
         if (isset($exp)) {$payloadArray['exp'] = $exp;}
 

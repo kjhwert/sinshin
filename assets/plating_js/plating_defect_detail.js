@@ -1,3 +1,8 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
+
 defect_list();
 
 function defect_list(){

@@ -1,3 +1,7 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
 $("#customer_code").on("click", function(){
     $("#search_modal").fadeIn(300);
     $("#modal_back").fadeIn(300);

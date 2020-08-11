@@ -130,3 +130,8 @@ git status
 git commit -m "20200724"
 git push origin master
 exit
+git status
+git add .
+git commit -m '20200727_!'
+git push origin master
+exit

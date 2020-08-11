@@ -8,6 +8,8 @@ if(getParam("page_no") == ""){
 
 $(document).ready(function(){
     release_list(page_no, per_page);
+    $("#automotive_management").addClass("open");
+    $("#plating").addClass("active");
 });
 
 function release_list (page_no, per_page) {

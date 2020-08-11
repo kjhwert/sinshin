@@ -20,7 +20,10 @@ $.ajax({
     if(jsonResult[i].product_name == ""){
       jsonResult[i].product_name = no_name[i];
     }
-    chart_data.push({country: jsonResult[i].product_name, visits: jsonResult[i].remain_qty});
+    if(jsonResult[i].supply_code == ""){
+      jsonResult[i].supply_code = no_name[i];
+    }
+    chart_data.push({country: jsonResult[i].product_name +"\n"+ jsonResult[i].supply_code, visits: jsonResult[i].remain_qty});
   };
   am4core.useTheme(am4themes_animated);
   // Themes end

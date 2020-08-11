@@ -573,7 +573,7 @@ footer.footer-dark
 {
     font-weight: 700;
 
-    color: #fa626b;
+    color: #6a3292;;
 }
 .main-menu.menu-light .navigation > li ul .active > a:before
 {
@@ -598,9 +598,9 @@ footer.footer-dark
             transform: translate(-10px, -50%);
 
     opacity: 1;
-    border-color: #fa626b;
+    border-color: #6a3292;;
     border-radius: 50%;
-    background-color: #fa626b;
+    background-color: #6a3292;;
 }
 .main-menu.menu-light .navigation > li ul .active .hover > a
 {

@@ -1,3 +1,4 @@
+
 var page_no = "";
 var per_page = 15;
 var start_date = getParam("start_date");
@@ -22,6 +23,9 @@ if(getParam("page_no") == ""){
 
 $(document).ready(function(){
     defect_list(page_no, per_page);
+    $("#automotive_management").addClass("open");
+    $("#plating").addClass("active");
+
 });
 
 function defect_list (page_no, per_page) {

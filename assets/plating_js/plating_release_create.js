@@ -1,6 +1,8 @@
 var remain = 0;
 
 $(document).ready(function(){
+    $("#automotive_management").addClass("open");
+    $("#plating").addClass("active");
     get_product();
     getReleasable();
 

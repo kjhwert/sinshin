@@ -202,19 +202,19 @@ table{
   overflow:hidden;
 }
 .print_inner_line{
-  width:280px;
+  width:250px;
   margin:10px;
   height:431px;
   border:2px solid #000;
 }
 .print_box{
-  width:302.3622047244px;
+  width:270px;
   height:453.5433070866px;
-  border:1px solid #aaa;
   box-sizing:border-box;
   position:relative;
   overflow:hidden;
   background-color:#fff;
+  margin-left:25px;
 }
 .print_table tr td, .print_table tr th{
   padding:0 5px;

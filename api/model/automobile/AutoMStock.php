@@ -109,7 +109,7 @@ class AutoMStock extends Model
 
         $sql = "select remain_qty from automobile_stock_log 
                 where product_id = {$data['product_id']}
-                order by created_at desc";
+                order by created_at desc limit 1";
         $remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
         $remain = $input + $remain_qty;
 

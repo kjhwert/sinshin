@@ -30,7 +30,7 @@ $("#change_btn").on("click", function(){
 function pw_change(user_pw, new_pw){
     $.ajax({
         type    : "POST",
-        url        : "http://sinshin.hlabpartner.com/api/user/index.php",
+        url        : "../api/user/index.php",
         headers : {
           "content-type": "application/json",
           Authorization : user_data.token,

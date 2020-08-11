@@ -1,3 +1,7 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
 var defect_cnt = "";
 
 defect_list();
@@ -67,7 +71,8 @@ function plating_read(){
     var jsonResult = result.data;
     console.log(jsonResult);
     $("#product_id").val(jsonResult.product_id);
-    $("#product_name").val(jsonResult.product_name);
+    $("#product_name").text(jsonResult.product_name);
+    $("#customer_code").text(jsonResult.customer_code);
     $("#charger").val(jsonResult.charger);
     $("#lot_no").val(jsonResult.lot_no);
     $("#customer").val(jsonResult.customer);

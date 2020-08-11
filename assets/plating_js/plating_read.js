@@ -1,5 +1,8 @@
+$(function(){
+  $("#automotive_management").addClass("open");
+  $("#plating").addClass("active");
+});
 defect_list();
-
 
 function defect_list(){
   $.ajax({
@@ -91,6 +94,7 @@ function plating_read(){
     $("#charger").text(jsonResult.charger);
     $("#trust_loss").text(jsonResult.trust_loss);
     $("#size_loss").text(jsonResult.size_loss);
+    $("#customer_code").text(jsonResult.customer_code);
 
     if(jsonResult.type == "mutable"){
       $("#plating_delete").css("display", "inline-block");
