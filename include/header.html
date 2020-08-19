@@ -19,11 +19,17 @@
             </ul>
           </li>
         </ul>
+        <ul class="style-none display-flex">
+          <li class="mt-10">
+            <a onclick="lot_print();">
+              <button type="button" class="btn btn-warning">Lot QR코드 라벨지 발행</button>
+            </a>
+          </li>
           <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">             <span class="avatar avatar-online"><img src="../assets/images/user_image.png" alt="avatar"><i></i></span></a>
             <div class="dropdown-menu dropdown-menu-right">
               <div class="arrow_box_right">
                 <span class="avatar avatar-online">
-                  <img src="../assets/images/user_image.png" alt="avatar">
+                  <img src="../assets/images/user_image.png" alt="avatar" class="ml-10">
                   <span class="user-name text-bold-700 ml-1" id="login_name"></span>
                 </span>
                 <div class="dropdown-divider"></div>
@@ -56,7 +62,7 @@
         <ul class="menu-content">
           <li id="material"><a class="menu-item" name="1" href="../product_history/material_status.html">원자재 입고현황</a>
           </li>
-          <li><a class="menu-item" name="2" href="../product_history/injection_status.html">사출</a>
+          <li id="injection"><a class="menu-item" name="2" href="../product_history/injection_status.html">사출</a>
           </li>
           <li><a class="menu-item" name="3" href="../product_history/painting_status.html">도장</a>
           </li>

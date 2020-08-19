@@ -1,4 +1,3 @@
-domain();
 $("#login_btn").on("click", function(){
   var user_id = $("#user_id").val();
   var user_pw = $("#user_pw").val();

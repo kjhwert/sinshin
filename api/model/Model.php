@@ -188,13 +188,24 @@ class Model
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
-            return new Response(403, [], '데이터 형식이 일치하지 않습니다.');
+            return new Response(403, [], $e.message);
         }
     }
 
     protected function getFields ()
     {
         return implode(", ", $this->fields);
+    }
+
+    protected function searchAsset(array $params = [])
+    {
+        $asset_id = $params['asset_id'];
+
+        if (!$asset_id || $asset_id === 0) {
+            return "";
+        }
+
+        return "and aa.asset_id = {$asset_id}";
     }
 
     protected function searchText (array $params = [])
@@ -221,11 +232,11 @@ class Model
         $search = "";
 
         if ($params['start_date']) {
-            $search .= "and {$this->searchableDate} > '{$params['start_date']} 00:00:00' ";
+            $search .= "and {$this->searchableDate} >= '{$params['start_date']} 00:00:00' ";
         }
 
         if ($params['end_date']) {
-            $search .= "and {$this->searchableDate} < '{$params['end_date']} 23:59:59' ";
+            $search .= "and {$this->searchableDate} <= '{$params['end_date']} 23:59:59' ";
         }
 
         return $search;

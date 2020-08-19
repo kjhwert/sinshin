@@ -28,7 +28,6 @@ if(getParam("page_no") == ""){
 plating_status(page_no, per_page, sort, order);
 
 $("#basicSelect").on("change", function(){
-
   if($(this).val() == "date1"){
     sort = "date";
     order = "desc";
@@ -183,7 +182,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./user_list.html?page_no='+pre_no+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./plating_status.html?page_no='+pre_no+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -192,16 +191,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./plating_status.html?page_no='+k+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./plating_status.html?page_no='+k+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./user_list.html?page_no='+next_no+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./plating_status.html?page_no='+next_no+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';

@@ -6,7 +6,7 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$model = new QrLot();
+$model = new QrStart();
 $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {
@@ -21,6 +21,6 @@ switch ($method) {
         break;
     case 'PUT' : $model->update($id, $params);
         break;
-    case 'DELETE' : $model->destroy($id);
-        break;
+//    case 'DELETE' : $model->destroy($id);
+//        break;
 }

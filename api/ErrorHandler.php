@@ -35,6 +35,6 @@ class ErrorHandler
 
     public function typeError ($param) : Response
     {
-        return new Response(406, [], "{$param}의 데이터 타입이 일치하지 않습니다.");
+        return new Response(403, [], "{$param}의 데이터 타입이 일치하지 않습니다.");
     }
 }

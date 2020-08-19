@@ -6,7 +6,7 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$model = new QrLot();
+$model = new Box();
 $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {

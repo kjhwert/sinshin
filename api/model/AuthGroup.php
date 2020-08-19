@@ -7,6 +7,10 @@ class AuthGroup extends Model
     protected $fields = ['id','name'];
     protected $paging = true;
 
+    public static $INJECTION = 9;
+    public static $PAINTING = 10;
+    public static $ASSEMBLE = 11;
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -21,20 +25,6 @@ class AuthGroup extends Model
 
         return new Response(200, $this->fetch($sql), '', $params['paging']);
     }
-
-//    public function show($id = null)
-//    {
-//        $sql = "select a.id, a.menu, a.function, IF(b.auth_id iS NULL,'NO','YES') as has
-//                from auth_master a
-//                    left join (select a.auth_group_id, a.auth_id from auth_list a
-//                        inner join auth_group b
-//                        on a.auth_group_id = b.id
-//                        where a.stts = 'ACT' and b.stts = 'ACT' and b.id = {$id}) as b
-//                    on a.id = b.auth_id
-//                where a.stts = 'ACT'";
-//
-//        return new Response(200, $this->fetch($sql), '');
-//    }
 
     public function create(array $data = [])
     {
