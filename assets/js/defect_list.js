@@ -17,6 +17,7 @@ function get_defect_group() {
         text += '<tr>'
         text +=   '<td>'+defectGroup[i].RNUM+'</td>'
         text +=   '<td>'+defectGroup[i].name+'</td>'
+        text +=   '<td>'+defectGroup[i].dept_name+'</td>'
         text +=   '<td>'
         text +=     '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">'
         text +=       '<a href="../system_management/defect_management.html?defect_group='+defectGroup[i].id+'">'

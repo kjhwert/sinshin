@@ -9,6 +9,7 @@ class QrStock extends Model
 
     protected $searchableText = 'd.name';
     protected $searchableDate = 'b.process_date';
+    protected $searchableAsset = 'aa.asset_id';
 
     protected $updateRequired = [
         'lot_id' => 'integer'
@@ -22,7 +23,7 @@ class QrStock extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_stock = Code::$PROCESS_STOCK;
-        $injection = AuthGroup::$INJECTION;
+        $injection = Dept::$INJECTION;
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no,
@@ -35,7 +36,7 @@ class QrStock extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_stock} and bb.process_status = {$process_stock} 
-                            and aa.auth_group_id = {$injection}
+                            and aa.dept_id = {$injection}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
@@ -59,7 +60,7 @@ class QrStock extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_stock = Code::$PROCESS_STOCK;
-        $injection = AuthGroup::$INJECTION;
+        $injection = Dept::$INJECTION;
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -69,7 +70,7 @@ class QrStock extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where aa.process_stts = {$process_stock} and aa.auth_group_id = {$injection}
+                            where aa.process_stts = {$process_stock} and aa.dept_id = {$injection}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
@@ -86,15 +87,30 @@ class QrStock extends Model
     public function update($id = null, array $data = [])
     {
         $data = $this->validate($data, $this->updateRequired);
-        $sql = "select process_stts from qr_code where id = {$id}";
-        $process_stts = $this->fetch($sql)[0]['process_stts'];
-        $process_complete = Code::$PROCESS_COMPLETE;
 
-        if ($process_stts !== $process_complete) {
-            return new Response(403, [], '공정완료 상태인 제품을 스캔해주세요.');
+        $sql = "select process_stts, product_id from qr_code where id = {$id}";
+        $result = $this->fetch($sql)[0];
+        $process_complete = Code::$PROCESS_COMPLETE;
+        $process_stock = Code::$PROCESS_STOCK;
+
+//        $sql = "select qc.product_id from box a
+//                    inner join qr_code qc
+//                on a.qr_id = qc.id
+//                where a.lot_id = {$data['lot_id']}";
+//
+//        $lot_product_id = $this->fetch($sql)[0]['product_id'];
+//
+//        if ($result['product_id'] !== $lot_product_id) {
+//            return new Response(403, [], '동일한 제품만 올릴 수 있습니다.');
+//        }
+
+        if ($result['process_stts'] === $process_stock) {
+            return new Response(403, [], '이미 처리되었습니다.');
         }
 
-        $process_stock = Code::$PROCESS_STOCK;
+        if ($result['process_stts'] !== $process_complete) {
+            return new Response(403, [], '공정완료 상태인 제품을 스캔해주세요.');
+        }
 
         $sqls = [
             "update qr_code set
@@ -111,10 +127,18 @@ class QrStock extends Model
                 created_at = SYSDATE()
             ",
             "update box set
+                lot_id = {$data['lot_id']},
                 process_status = {$process_stock},
                 updated_id = {$this->token['id']},
                 updated_at = SYSDATE()
                 where qr_id = {$id}
+            ",
+            "insert into inventory set
+                qr_id = {$id},
+                lot_id = {$data['lot_id']},
+                inven_date = SYSDATE(),
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
             "
         ];
 

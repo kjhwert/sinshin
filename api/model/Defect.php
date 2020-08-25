@@ -4,13 +4,12 @@ class Defect extends Model
 {
     protected $table = 'defect';
     protected $paging = false;
-
+    
     static $TRUST_LOSS = 23;
     static $SIZE_LOSS = 24;
 
     public function index (array $params = [])
     {
-        $sql = "";
         if ($params['type'] === 'car') {
             $sql = "select a.id, a.name, a.name_en, b.name as group_name, a.group_id 
                     from {$this->table} a

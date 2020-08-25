@@ -36,7 +36,6 @@ class AutoMStock extends Model
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
-
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
@@ -121,7 +120,7 @@ class AutoMStock extends Model
                 inner join user c
                     on a.created_id = c.id
                 where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' 
-                {$this->searchText($params)} {$this->searchDate($params['params'])}";
+                {$this->searchText($params)} {$this->searchDate($params)}";
     }
 
     protected function isNotSuccessType ($id, array $data = [])

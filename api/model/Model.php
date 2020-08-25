@@ -7,6 +7,7 @@ class Model
     public $primaryKey = 'id';
     protected $searchableText = null;
     protected $searchableDate = null;
+    protected $searchableAsset = null;
     protected $fields = [];
     protected $paging = true;
     public $token = [];
@@ -153,10 +154,8 @@ class Model
         $page = (int)($params['page']-1);
         $perPage = (int)$params['perPage'];
         $pageLength = 10; // 페이징 길이
-
         $sql = $this->paginationQuery($params);
         $totalCount = $this->fetch($sql)[0]['cnt'];
-
         $totalCount = (Int)$totalCount;
 
         $totalPageCount = (int)(($totalCount - 1) / $perPage) + 1;
@@ -205,7 +204,7 @@ class Model
             return "";
         }
 
-        return "and aa.asset_id = {$asset_id}";
+        return "and {$this->searchableAsset} = {$asset_id}";
     }
 
     protected function searchText (array $params = [])
@@ -245,7 +244,6 @@ class Model
     protected function dataToString (array $data = [])
     {
         $filter = array_filter($data, function ($val, $key) {
-            echo empty($val)."\n";
             if(!$val || is_object($val) || is_array($val)) {
                 return;
             }

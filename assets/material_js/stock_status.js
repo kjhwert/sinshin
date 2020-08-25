@@ -6,6 +6,7 @@ $(document).ready(function(){
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
+var material_type = getParam("material_type");
 if(getParam("page_no") == ""){
   page_no = 1;
 }else{
@@ -14,7 +15,7 @@ if(getParam("page_no") == ""){
 if(search_text != ""){
   $("#search_text").val(search_text);
 }
-if(getParam("material_type") != ""){
+if(material_type != ""){
   $("#material_type").val(getParam("material_type"));
 }
 
@@ -53,7 +54,9 @@ function stock_list(page_no, per_page, search_text){
         text +='  <td>'+jsonResult[i].manager+'</td>';
         text +='   <td>';
         text +='      <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+        text +='        <a href="../product_history/injection_start_print.html?material_id='+jsonResult[i].id+'">';
         text +='         <button type="button" class="btn btn-bg-gradient-x-blue-cyan">출력</button>';
+        text +='        </a>';
         text +='      </div>';
         text +='   </td>';
         text +='</tr>';
@@ -80,7 +83,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./user_list.html?page_no='+pre_no+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./stock_status.html?page_no='+pre_no+'&search_text='+search_text+'&material_type='+material_type+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -89,16 +92,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'&material_type='+material_type+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'&material_type='+material_type+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./user_list.html?page_no='+next_no+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./stock_status.html?page_no='+next_no+'&search_text='+search_text+'&material_type='+material_type+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';

@@ -13,10 +13,11 @@ class QrStart extends Model
     ];
     protected $searchableText = 'd.name';
     protected $searchableDate = 'b.process_date';
+    protected $searchableAsset = 'aa.asset_id';
     protected $reversedSort = true;
     protected $sort = [
-        'process_date' => 'process_date',
-        'asset_name' => 'asset_name'
+        'date' => 'process_date',
+        'asset' => 'asset_name'
     ];
 
     protected $updateRequired = [
@@ -31,7 +32,7 @@ class QrStart extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_start = Code::$PROCESS_START;
-        $injection = AuthGroup::$INJECTION;
+        $injection = Dept::$INJECTION;
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, sum(b.qty) as product_qty, c.order_no, c.jaje_code,
@@ -44,7 +45,7 @@ class QrStart extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
-                            and aa.auth_group_id = {$injection}
+                            and aa.dept_id = {$injection}
                             {$this->searchAsset($params['params'])}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
@@ -68,7 +69,7 @@ class QrStart extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_start = Code::$PROCESS_START;
-        $injection = AuthGroup::$INJECTION;
+        $injection = Dept::$INJECTION;
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -78,10 +79,11 @@ class QrStart extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where aa.process_stts = {$process_start} and bb.process_status = {$process_start} 
-                            and aa.auth_group_id = {$injection}
+                            where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
+                            and aa.dept_id = {$injection}
                             {$this->searchAsset($params)}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT') b
+                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.process_order_id) b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
@@ -98,9 +100,9 @@ class QrStart extends Model
         $process_start = Code::$PROCESS_START;
 
         $sql = "select
-                    cs.process_date, a.name as asset_name, o.order_no, po.id, 
-                       MIN(cs.process_date) as start_date, MAX(cs.process_date) as end_date,
-                    pm.name as product_name, mm.name as material_name, o.jaje_code, sum(qc.qty) as qty
+                    cs.process_date, a.name as asset_name, o.order_no, po.id, a.id as asset_id, o.id as order_id,
+                       MIN(cs.process_date) as start_date, MAX(cs.process_date) as end_date, mm.id as material_master,
+                    pm.name as product_name, pm.id as product_id, mm.name as material_name, o.jaje_code, sum(qc.qty) as qty
                 from qr_code qc
                      inner join process_order po
                         on qc.process_order_id = po.id
@@ -156,8 +158,12 @@ class QrStart extends Model
     {
         $process_start = Code::$PROCESS_START;
 
-        $sql = "select qty, material_id from qr_code where id = {$id}";
+        $sql = "select qty, material_id, process_stts from qr_code where id = {$id}";
         $result = $this->fetch($sql)[0];
+
+        if ($result['process_stts'] === $process_start) {
+            return new Response(403, [], '이미 처리되었습니다.');
+        }
 
         $qty = (int)$result['qty'];
         $material_id = $result['material_id'];
@@ -177,7 +183,7 @@ class QrStart extends Model
         $remain_qty += $change_qty;
 
         $sqls = [
-            "update {$this->table} set
+            "update qr_code set
                 process_stts = {$process_start},
                 updated_id = {$this->token['id']},
                 updated_at = SYSDATE()
@@ -265,18 +271,15 @@ class QrStart extends Model
         $sql = "select id from product_master where material_id = {$data['material_id']}";
         $product_id = $this->fetch($sql)[0]['id'];
 
-        $injection = AuthGroup::$INJECTION;
-
         $print_result = [];
         try {
             $this->db->beginTransaction();
 
             for ($i = 0; $i < $print_qty; $i++) {
                 try {
-                    $sql = "insert into {$this->table} set
+                    $sql = "insert into qr_code set
                             {$this->dataToString($data)},
                             product_id = {$product_id},
-                            auth_group_id = {$injection},
                             dept_id = {$this->token['dept_id']},
                             created_id = {$this->token['id']},
                             created_at = SYSDATE()
@@ -286,9 +289,11 @@ class QrStart extends Model
                     $stmt->execute();
                     $qr_id = $this->db->lastInsertId();
 
-                    $sql = "select a.order_id, b.name as material_name, b.code,
+                    $sql = "select o.order_no, b.name as material_name, b.code as jaje_code, d.id as asset_id,
                                    a.qty, b.unit, c.name as product_name, d.name as asset_name
                                 from qr_code a
+                                inner join `order` o
+                                on a.order_id = o.id
                                 inner join material_master b
                                 on a.material_id = b.id
                                 left join product_master c

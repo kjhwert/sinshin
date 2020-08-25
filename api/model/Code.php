@@ -6,11 +6,11 @@ class Code extends Model
     protected $fields = ['id','name', 'name_en'];
     protected $table = 'code';
 
-    public static $PROCESS_START = 38;
-    public static $PROCESS_COMPLETE = 39;
-    public static $PROCESS_STOCK = 40;
-    public static $PROCESS_WAREHOUSING = 41;
-    public static $PROCESS_RELEASE = 42;
+    public static $PROCESS_START = 38; // 공정시작
+    public static $PROCESS_COMPLETE = 39; // 공정완료
+    public static $PROCESS_STOCK = 40; // 재고
+    public static $PROCESS_WAREHOUSING = 41; // 입고
+    public static $PROCESS_RELEASE = 42; // 출고
     public static $QRTYPE_BOX = 43;
     public static $QRTYPE_LOT = 44;
     public static $QRTYPE_BAG = 45;

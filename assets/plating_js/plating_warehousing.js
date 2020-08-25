@@ -3,13 +3,14 @@ $(function(){
   $("#plating").addClass("active");
 });
 
-var page_no = "";
+var page_no = getParam("page_no");
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
 var start_date = getParam("start_date");
 var end_date = getParam("end_date");
-var sort = "date";
-var order = "desc";
+var sort = getParam("sort");//date
+var order = getParam("order");//desc
+var sort_select = getParam("sort_select");
 
 if(start_date != ""){
   $("#start_date").val(start_date);
@@ -20,10 +21,17 @@ if(end_date != ""){
 if(search_text != ""){
   $("#search_text").val(search_text);
 }
+if(getParam("sort_select") != ""){
+  $("#basicSelect").val(sort_select);
+}
 if(getParam("page_no") == ""){
   page_no = 1;
-}else{
-  page_no = getParam("page_no");
+}
+if(getParam("sort") == ""){
+  sort = "date";
+}
+if(getParam("order") == ""){
+  order = "desc";
 }
 warehousing(page_no, per_page, sort, order);
 
@@ -115,7 +123,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./user_list.html?page_no='+pre_no+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./plating_warehousing.html?page_no='+pre_no+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -124,21 +132,22 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./plating_warehousing.html?page_no='+k+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./plating_warehousing.html?page_no='+k+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./user_list.html?page_no='+next_no+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./plating_warehousing.html?page_no='+next_no+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
     text +='</li>';
   }
+
   $("#pagination").empty();
   $("#pagination").append(text);
 }

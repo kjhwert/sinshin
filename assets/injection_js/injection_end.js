@@ -51,6 +51,14 @@ $("#basicSelect").on("change", function(){
     sort = "date";
     order = "asc";
     injection_start(page_no, per_page, sort, order);
+  }else if($(this).val() == "asset1"){
+    sort = "asset";
+    order = "asc";
+    injection_start(page_no, per_page, sort, order);
+  }else if($(this).val() == "asset2"){
+    sort = "asset";
+    order = "desc";
+    injection_start(page_no, per_page, sort, order);
   }else if($(this).val() == "product1"){
     sort = "asset";
     order = "asc";
@@ -66,7 +74,7 @@ $("#basicSelect").on("change", function(){
 function injection_start(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/qr/start/index.php",
+      url        : "../api/cosmetics/qr/complete/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -101,7 +109,7 @@ function injection_start(page_no, per_page, sort, order){
         text+='  <td>';
         text+='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text+='      <a href="../product_history/injection_end_print.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-bg-gradient-x-purple-blue">출력</button></a>&nbsp;';
-        text+='      <a href="../product_history/injection_start_detail.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-warning">상세보기</button></a>';
+        text+='      <a href="../product_history/injection_end_detail.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-warning">상세보기</button></a>';
         text+='    </div>';
         text+='  </td>';
         text+='</tr>';
@@ -131,7 +139,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./injection_start.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./injection_end.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -140,16 +148,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./injection_start.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./injection_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./injection_start.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./injection_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./injection_start.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./injection_end.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -160,5 +168,5 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/injection_start.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
+  location.href="../product_history/injection_end.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
 });

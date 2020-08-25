@@ -245,7 +245,21 @@ table{
 .qrcode{
   position:absolute;
   top:30px;
-  left:92px;
+  left:130px;
+}
+.qr_id{
+  width:100px;
+  position:absolute;
+  top:30px;
+  left:20px;
+}
+.injection_id{
+  position:absolute;
+  width:100px;
+  top:60px;
+  left:30px;
+  font-size:55px;
+  font-weight:bold;
 }
 .qrcode2{
   position:absolute;

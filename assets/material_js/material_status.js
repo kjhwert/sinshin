@@ -2,7 +2,6 @@ $(document).ready(function(){
   $("#product_history").addClass("open");
   $("#material").addClass("active");
 });
-
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
@@ -26,7 +25,9 @@ if(end_date != ""){
 if(end_date != ""){
   $("#material_type").val(material_type);
 }
-
+if(material_type == "P"){
+  $("#material_type").val(material_type);
+}
 
 stock_list(page_no, per_page, search_text);
 
@@ -87,7 +88,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./user_list.html?page_no='+pre_no+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./material_status.html?page_no='+pre_no+'&start_date='+start_date+'&end_date='+end_date+'&material_type='+material_type+'&search_text='+search_text+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -96,16 +97,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&material_type='+material_type+'&search_text='+search_text+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./user_list.html?page_no='+k+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&material_type='+material_type+'&search_text='+search_text+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./user_list.html?page_no='+next_no+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./material_status.html?page_no='+next_no+'&start_date='+start_date+'&end_date='+end_date+'&material_type='+material_type+'&search_text='+search_text+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';

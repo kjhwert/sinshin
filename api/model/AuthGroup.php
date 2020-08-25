@@ -7,10 +7,6 @@ class AuthGroup extends Model
     protected $fields = ['id','name'];
     protected $paging = true;
 
-    public static $INJECTION = 9;
-    public static $PAINTING = 10;
-    public static $ASSEMBLE = 11;
-
     public function index(array $params = [])
     {
         $params = $this->pagination($params);

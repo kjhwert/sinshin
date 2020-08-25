@@ -18,6 +18,8 @@ class MaterialStock extends Model
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
+        $material_type = $params['params']['material_type'];
+
         $sql = "select a.code, a.name, b.qty, (a.qty * b.qty) as total, a.unit, b.stock_date,
                        c.name as manager, @rownum:= @rownum+1 AS RNUM
                     from material_master a
@@ -26,7 +28,7 @@ class MaterialStock extends Model
                     inner join user c
                     on b.created_id = c.id,
                     (SELECT @rownum:= 0) AS R
-                    where a.stts = 'ACT' and b.stts = 'ACT' 
+                    where a.stts = 'ACT' and b.stts = 'ACT' and a.type = '{$material_type}'
                     {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 order by RNUM desc
                 limit {$page},{$perPage}
@@ -45,7 +47,7 @@ class MaterialStock extends Model
         $material_type = $params['params']['material_type'];
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* from (
-                       select a.code, a.name, a.type, a.model, c.remain_qty, a.unit,
+                       select a.id, a.code, a.name, a.type, a.model, c.remain_qty, a.unit,
                               (c.remain_qty * a.qty) as total,
                               b.stock_date, e.name as manager
                        from material_master a
@@ -66,7 +68,7 @@ class MaterialStock extends Model
                         inner join user e
                                    on b.created_id = e.id
                        where a.stts = 'ACT' and d.stts = 'ACT'
-                         and e.stts = 'ACT' and a.type = '{$material_type}' {$this->searchText($params)}
+                       and e.stts = 'ACT' and a.type = '{$material_type}' {$this->searchText($params)}
                     ) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
@@ -79,14 +81,24 @@ class MaterialStock extends Model
     {
         return "select count(a.id) as cnt 
                 from material_master a
-                inner join material_stock b
+                inner join (select * from (
+                              select material_id,created_id, stock_date from material_stock
+                              where stts = 'ACT'
+                              order by created_at desc LIMIT 18446744073709551615) aa
+                            group by aa.material_id ) b
                 on a.id = b.material_id
                 inner join (select * from (
-                      select material_id, remain_qty from material_stock_log
-                      where stts = 'ACT'
-                      order by created_at desc LIMIT 18446744073709551615) aa
-                group by aa.material_id) c
-                where a.stts = 'ACT' and b.stts = 'ACT' {$this->searchText($params)}";
+                              select material_id, remain_qty from material_stock_log
+                              where stts = 'ACT'
+                              order by created_at desc LIMIT 18446744073709551615) aa
+                            group by aa.material_id) c
+                on a.id = c.material_id
+                inner join customer_master d
+                           on a.supplier = d.id
+                inner join user e
+                           on b.created_id = e.id
+               where a.stts = 'ACT' and d.stts = 'ACT'
+               and e.stts = 'ACT' and a.type = '{$params['material_type']}' {$this->searchText($params)}";
     }
 
     /**

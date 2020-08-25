@@ -2,7 +2,20 @@
 
 class DefectGroup extends Model
 {
-    protected $fields = ['id','name'];
+    protected $fields = ['a.id','a.name'];
     protected $table = 'defect_group';
     protected $paging = false;
+
+    public function index(array $params = [])
+    {
+        $sql = "select {$this->getFields()}, b.name as dept_name, @rownum:= @rownum+1 AS RNUM 
+                from {$this->table} a
+                inner join dept_group b
+                on a.dept_group_id = b.id,
+                (SELECT @rownum:= 0) AS R
+                where a.stts = 'ACT' and b.stts = 'ACT' 
+                order by RNUM desc";
+
+        return new Response(200, $this->fetch($sql), '');
+    }
 }

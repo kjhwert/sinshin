@@ -7,6 +7,10 @@ class Dept extends Model
     protected $table = 'dept';
     protected $paging = false;
 
+    public static $PAINTING = 4;
+    public static $ASSEMBLE = 5;
+    public static $INJECTION = 6;
+
     public function index (array $params = [])
     {
         $sql = "select {$this->getFields()} from {$this->table} where group_id = {$params['group_id']} and stts = 'ACT'";
