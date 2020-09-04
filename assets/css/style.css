@@ -223,18 +223,18 @@ table{
 }
 .print_inner_line{
   width:250px;
-  margin:10px;
+  margin:15px 10px 5px;
   height:431px;
   border:2px solid #000;
 }
 .print_box{
   width:270px;
-  height:453.5433070866px;
+  height:452px;
   box-sizing:border-box;
   position:relative;
   overflow:hidden;
   background-color:#fff;
-  margin-left:25px;
+  margin-left:5px;
 }
 .print_table tr td, .print_table tr th{
   padding:0 5px;

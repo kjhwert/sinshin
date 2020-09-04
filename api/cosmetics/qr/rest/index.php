@@ -6,15 +6,12 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$model = new QrLot();
+$model = new QrRest();
 $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            if ($params['qr_id']) {
-                return $model->isLot($params);
-            }
             $model->index($params);
         } else {
             $model->show($id);
@@ -24,6 +21,6 @@ switch ($method) {
         break;
     case 'PUT' : $model->update($id, $params);
         break;
-    case 'DELETE' : $model->destroy($id);
-        break;
+//    case 'DELETE' : $model->destroy($id);
+//        break;
 }

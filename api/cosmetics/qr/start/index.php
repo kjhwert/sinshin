@@ -12,6 +12,9 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
+            if($params['qr_id']) {
+                return $model->qrShow($params['qr_id']);
+            }
             $model->index($params);
         } else {
             $model->show($id);
@@ -19,7 +22,12 @@ switch ($method) {
         break;
     case 'POST' : $model->create($params);
         break;
-    case 'PUT' : $model->update($id, $params);
+    case 'PUT' :
+        if ($params['type'] === 'rest') {
+            unset($params['type']);
+            return $model->restUpdate($id, $params);
+        }
+        $model->update($id, $params);
         break;
 //    case 'DELETE' : $model->destroy($id);
 //        break;

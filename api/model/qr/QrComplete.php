@@ -43,7 +43,7 @@ class QrComplete extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where aa.process_stts = {$process_complete} and bb.process_status = {$process_complete} 
+                            where bb.process_status = {$process_complete} 
                             and aa.dept_id = {$injection}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
@@ -115,15 +115,47 @@ class QrComplete extends Model
                     inner join material_master mm
                     on pm.material_id = mm.id,
                     (SELECT @rownum:= 0) AS R
-                where po.id = {$id} and qc.process_stts = {$process_complete} and cs.process_status = {$process_complete}
+                where po.id = {$id} and cs.process_status = {$process_complete}
                 order by RNUM desc
                 ";
 
         return new Response(200, $this->fetch($sql));
     }
 
+    public function qrShow ($id = null)
+    {
+        $sql = "select o.order_no, pm.name as product_name, a.name as asset_name,
+                    qr.id, qr.process_stts, qr.qty
+                from qr_code qr
+                inner join `order` o
+                on qr.order_id = o.id
+                inner join product_master pm
+                on qr.product_id = pm.id
+                inner join material_master mm
+                on qr.material_id = mm.id
+                inner join asset a
+                on qr.asset_id = a.id
+                where qr.id = {$id}
+                ";
+
+        $result = $this->fetch($sql)[0];
+        $process_start = Code::$PROCESS_START;
+        $process_complete = Code::$PROCESS_COMPLETE;
+
+        if ($result['process_stts'] === $process_complete) {
+            return new Response(403, [], '이미 처리 되었습니다.');
+        }
+
+        if ($result['process_stts'] !== $process_start) {
+            return new Response(403, [], 'QR코드를 확인해주세요.');
+        }
+
+        return new Response(200, $result);
+    }
+
     public function create(array $data = [])
     {
+        $this->isAvailableUser();
         $data = $this->validate($data, $this->createRequired);
 
         $print_qty = $data['print_qty'];
@@ -132,6 +164,7 @@ class QrComplete extends Model
         unset($data['created_at']);
 
         $injection = Dept::$INJECTION;
+        $process_start = Code::$PROCESS_START;
 
         $print_result = [];
         try {
@@ -140,11 +173,16 @@ class QrComplete extends Model
             $sql = "select name from dept where id = {$this->token['dept_id']}";
             $dept_name = $this->fetch($sql)[0]['name'];
 
+            $sql = "select material_id from product_master where id = {$data['product_id']}";
+            $material_id = $this->fetch($sql)[0]['material_id'];
+
             for ($i = 0; $i < $print_qty; $i++) {
                 try {
 
-                    $sql = "insert into qr_code set
+                    $sql = "insert into qr_code set    
                                 {$this->dataToString($data)},
+                                process_stts = {$process_start},
+                                material_id = {$material_id},
                                 dept_id = {$injection},
                                 created_id = {$this->token['id']},
                                 created_at = '{$created_at}'
@@ -155,7 +193,7 @@ class QrComplete extends Model
                     $qr_id = $this->db->lastInsertId();
 
                     $sql = "select o.order_no, b.name as material_name, b.code, a.created_at,
-                                   a.qty, c.unit, c.name as product_name, d.name as asset_name
+                                   a.qty, c.unit, c.name as product_name, d.name as asset_name, d.id as asset_id
                             from qr_code a
                                 inner join product_master b
                                 on a.product_id = b.id
@@ -191,7 +229,15 @@ class QrComplete extends Model
 
     public function update($id = null, array $data = [])
     {
+        $process_start = Code::$PROCESS_START;
         $process_complete = Code::$PROCESS_COMPLETE;
+
+        $sql = "select process_stts from qr_code where id = {$id}";
+        $stts = $this->fetch($sql)[0]['process_stts'];
+
+        if ($process_start !== $stts) {
+            return new Response(403, [], '이미 처리되었습니다.');
+        }
 
         $sqls = [
             "update {$this->table} set

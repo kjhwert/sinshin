@@ -3,7 +3,7 @@ $(function(){
   $("#product_history").addClass("open");
   $("#injection").addClass("active");
 
-  injection_start(page_no, per_page, sort, order);
+  injection_stock(page_no, per_page, sort, order);
 });
 
 var page_no = getParam("page_no");
@@ -46,35 +46,27 @@ $("#basicSelect").on("change", function(){
   if($(this).val() == "date1"){
     sort = "date";
     order = "desc";
-    injection_start(page_no, per_page, sort, order);
+    injection_stock(page_no, per_page, sort, order);
   }else if($(this).val() == "date2"){
     sort = "date";
     order = "asc";
-    injection_start(page_no, per_page, sort, order);
-  }else if($(this).val() == "asset1"){
-    sort = "asset";
-    order = "asc";
-    injection_start(page_no, per_page, sort, order);
-  }else if($(this).val() == "asset2"){
-    sort = "asset";
-    order = "desc";
-    injection_start(page_no, per_page, sort, order);
+    injection_stock(page_no, per_page, sort, order);
   }else if($(this).val() == "product1"){
-    sort = "asset";
+    sort = "product";
     order = "asc";
-    injection_start(page_no, per_page, sort, order);
+    injection_stock(page_no, per_page, sort, order);
   }else if($(this).val() == "product2"){
-    sort = "asset";
+    sort = "product";
     order = "desc";
-    injection_start(page_no, per_page, sort, order);
+    injection_stock(page_no, per_page, sort, order);
   }
 });
 
 
-function injection_start(page_no, per_page, sort, order){
+function injection_stock(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/qr/complete/index.php",
+      url        : "../api/cosmetics/qr/defect/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -95,25 +87,28 @@ function injection_start(page_no, per_page, sort, order){
     if(result.status == 200){
       var jsonResult = result.data;
       console.log(jsonResult);
-
       for(var i in jsonResult){
-        text+='<tr>';
-        text+='  <td>'+jsonResult[i].RNUM+'</td>';
-        text+='  <td>'+jsonResult[i].process_date+'</td>';
-        text+='  <td>'+jsonResult[i].asset_name+'</td>';
-        text+='  <td>'+jsonResult[i].order_no+'</td>';
-        text+='  <td>'+jsonResult[i].product_name+'</td>';
-        text+='  <td>'+comma(jsonResult[i].box_qty)+'</td>';
-        text+='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
-        text+='  <td>';
-        text+='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
-        text+='      <a href="../product_history/injection_end_detail.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-warning">상세보기</button></a>';
-        text+='    </div>';
-        text+='  </td>';
-        text+='</tr>';
+        text +='<tr>';
+        text +='  <td>'+jsonResult[i].RNUM+'</td>';
+        text +='  <td>'+jsonResult[i].process_date+'</td>';
+        text +='  <td>'+jsonResult[i].asset_name+'</td>';
+        text +='  <td>'+jsonResult[i].order_no+'</td>';
+        text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
+        text +='  <td>'+comma(jsonResult[i].defect_qty)+'</td>';
+        text +='  <td>'+jsonResult[i].defect_percent+'%</td>';
+        text +='  <td>'+jsonResult[i].manager+'</td>';
+        text +='  <td>';
+        text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+        text +='      <a href="../product_history/injection_defect_detail.html?id='+jsonResult[i].id+'">';
+        text +='        <button type="button" class="btn btn-warning">상세보기</button>';
+        text +='      </a>';
+        text +='    </div>';
+        text +='  </td>';
+        text +='</tr>';
       }
-      $("#injection_start_list").empty();
-      $("#injection_start_list").append(text);
+      $("#injection_defect_list").empty();
+      $("#injection_defect_list").append(text);
 
       paging(result.paging.end_page, result.paging.start_page, result.paging.total_page);
     }else{
@@ -137,7 +132,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./injection_end.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./injection_defect.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -146,16 +141,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./injection_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./injection_defect.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./injection_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./injection_defect.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./injection_end.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./injection_defect.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -166,5 +161,5 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/injection_end.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
+  location.href="../product_history/injection_defect.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
 });

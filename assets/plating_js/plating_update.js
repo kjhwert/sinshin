@@ -29,10 +29,10 @@ function defect_list(){
     for(var i in jsonResult){
       if(jsonResult[i].group_id == 1){
         text1 += '<td>'+jsonResult[i].name+'<br>'+jsonResult[i].name_en+'</td>';
-        text3 += '<td><input id="defect_'+jsonResult[i].id+'" type="text" class="form-control"></td>';
+        text3 += '<td><input id="defect_'+jsonResult[i].id+'" type="number" class="form-control"></td>';
       }else{
         text2 += '<td>'+jsonResult[i].name+'<br>'+jsonResult[i].name_en+'</td>';
-        text4 += '<td><input id="defect_'+jsonResult[i].id+'" type="text" class="form-control"></td>';
+        text4 += '<td><input id="defect_'+jsonResult[i].id+'" type="number" class="form-control"></td>';
       }
     }
     text1 +='</tr>';

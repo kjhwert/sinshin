@@ -33,7 +33,7 @@ function injection_end_detail(){
       text+='  <td>'+jsonResult[i].RNUM+'</td>';
       text+='  <td>'+jsonResult[i].qty+'</td>';
       text+='  <td>'+jsonResult[i].process_date+'</td>';
-      text+='  <td>'+jsonResult[i].RNUM+'</td>';
+      text+='  <td>'+jsonResult[i].manager+'</td>';
       text+='</tr>';
     }
     console.log(asset_name);

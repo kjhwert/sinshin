@@ -329,4 +329,19 @@ class Model
 
         return new Response(200, [], '등록되었습니다.');
     }
+
+    protected function isAvailableUser ()
+    {
+        $injection = Dept::$INJECTION;
+        $painting = Dept::$PAINTING;
+        $assemble = Dept::$ASSEMBLE;
+
+        if (
+            $this->token['dept_id'] !== $injection &&
+            $this->token['dept_id'] !== $painting &&
+            $this->token['dept_id'] !== $assemble
+        ) {
+            return new Response(403, [],'해당 부서 아이디로 다시 시도해주세요.');
+        }
+    }
 }

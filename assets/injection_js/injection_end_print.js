@@ -1,3 +1,18 @@
+var date = new Date();
+var year = date.getFullYear();
+var month = new String(date.getMonth()+1);
+var day = new String(date.getDate());
+
+// 한자리수일 경우 0을 채워준다.
+if(month.length == 1){
+  month = "0" + month;
+}
+if(day.length == 1){
+  day = "0" + day;
+}
+
+$("#create_at").val(year + "-" + month + "-" + day);
+
 injection_end_detail();
 
 function injection_end_detail(){
@@ -102,6 +117,7 @@ function print(){
           innerHtml +='    <div class="print_inner_line">';
           innerHtml +='      <div id="qrcode'+i+'" class="qrcode"></div>';
           innerHtml +='      <div id="qr_id" class="qr_id">No: '+jsonResult[i].qr_id+'</div> ';
+          innerHtml +='      <div id="injection_id" class="injection_id">'+jsonResult[i].asset_id+'</div> ';
           innerHtml +='      <table cellpadding="0" cellspacing="0" class="print_table" border="1" width="100%">';
           innerHtml +='        <tr>';
           innerHtml +='          <th>수주번호</th>';
@@ -121,14 +137,14 @@ function print(){
           innerHtml +='        </tr>';
           innerHtml +='        <tr>';
           innerHtml +='          <th>생산일자</th>';
-          innerHtml +='          <td>'+jsonResult[i].created_at+'</td>';
+          innerHtml +='          <td>'+jsonResult[i].created_at.substr(0,10)+'</td>';
           innerHtml +='        </tr>';
           innerHtml +='        <tr>';
           innerHtml +='          <th>부서</th>';
           innerHtml +='          <td>'+jsonResult[i].dept_name+'</td>';
           innerHtml +='        </tr>';
           innerHtml +='        <tr>';
-          innerHtml +='          <td colspan="2">(주)신신화학공업</td>';
+          innerHtml +='          <td colspan="2" align="center" style="font-weight:bold;">(주)신신화학공업</td>';
           innerHtml +='        </tr>';
           innerHtml +='      </table>';
           innerHtml +='    </div>';

@@ -125,7 +125,7 @@ class AutoMProcess extends Model
                    b.customer, b.supplier, a.input_date, a.comp_date, a.carrier,
                    a.package_manager, a.package_date, a.output_count, a.remain_count, a.as_part,
                    a.mfr_date, a.rack, a.input, a.output, a.day_night, a.trust_loss, a.size_loss, a.memo,
-                   b.customer_code,
+                   b.customer_code, b.supply_code,
                    (case
                         when a.type = 1 then 'immutable'
                         when a.type = 0 then 'mutable'

@@ -9,8 +9,8 @@ class QrDefect extends Model
     ];
 
     protected $sort = [
-        'process_date' => 'process_date',
-        'product_name' => 'product_name'
+        'date' => 'process_date',
+        'product' => 'product_name'
     ];
 
     protected $searchableText = 'product_name';

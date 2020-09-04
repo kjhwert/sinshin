@@ -12,7 +12,13 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            $model->index($params);
+            switch ($params['type']) {
+                case 'stock': $model->stockIndex($params);
+                    break;
+                case 'product': $model->productIndex($params);
+                    break;
+                default: $model->index($params);
+            }
         } else {
             $model->show($id);
         }

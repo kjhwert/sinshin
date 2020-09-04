@@ -4,7 +4,7 @@ $(document).ready(function(){
   $("#plating").addClass("active");
 });
 
-$("#product_name").on("click", function(){
+$("#product_num").on("click", function(){
     $("#search_modal").fadeIn(300);
     $("#modal_back").fadeIn(300);
     $("#search_text").val("");
@@ -91,25 +91,28 @@ function auto_search(search){
           text += "</tr>";
 
       for(var i in jsonResult){
-        text +='<tr data-customer='+jsonResult[i].customer+' data-supplier='+jsonResult[i].supplier+' data-product_name='+jsonResult[i].name.replace(/\s/gi, "_")+' data-product_id='+jsonResult[i].id+'>';
+        text +='<tr data-customer='+jsonResult[i].customer+' data-supplier='+jsonResult[i].supplier+' data-product_name='+jsonResult[i].name.replace(/\s/gi, "_")+' data-product_id='+jsonResult[i].id+' data-customer_code='+jsonResult[i].supply_code+'>';
         text +="<td>"+jsonResult[i].customer_code+"</td>";
         text +="<td>"+jsonResult[i].car_code+"</td>";
         text +="</tr>";
       }
 
-        $("#search_table").empty();
-        $("#search_table").append(text);
-        $("#search_table tr").on("click", function(){
+      $("#search_table").empty();
+      $("#search_table").append(text);
+      $("#search_table tr").on("click", function(){
         var customer_data = $(this).data("customer");
         var supplier_data = $(this).data("supplier");
         var product_name = $(this).data("product_name");
         var product_id = $(this).data("product_id");
+        var customer_code = $(this).data("customer_code");
+
         $("#customer").val(customer_data);
         $("#supplier").val(supplier_data);
         $("#product_name").val(product_name);
         $("#product_id").val(product_id);
         $("#search_modal").fadeOut("300");
         $("#modal_back").fadeOut("300");
+        $("#product_num").val(customer_code);
       })
     }else{
       alert(result.message);

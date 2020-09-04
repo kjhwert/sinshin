@@ -78,7 +78,7 @@ function injection_start(page_no, per_page, sort, order){
         sort: sort,
         order: order,
         asset_id: asset_id,
-        search_text: search_text,
+        search: search_text,
         start_date: start_date,
         end_date: end_date
       }

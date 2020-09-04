@@ -20,9 +20,7 @@ class QrStart extends Model
         'asset' => 'asset_name'
     ];
 
-    protected $updateRequired = [
-
-    ];
+    protected $updateRequired = [];
 
     public function index(array $params = [])
     {
@@ -128,17 +126,6 @@ class QrStart extends Model
      */
     public function create(array $data = [])
     {
-        /**
-         *  material, product, color 에 대한 정보가 필요하네.
-         *  order_id *
-         *  process_order_id *
-         *  production_plan_id - 얘는 어떻게하지? 얘는 ERP 데이터 받아봐야 알라나...
-         *  process_id (공정유형 : 사상, 유업 등) - 선택
-         *  asset_id - 선택(사출은 필수)
-         *  from_id - 입고처 id (거래처 검색해서 해야하나?)
-         *  qty *
-         */
-
         $this->hasUniqueType($data);
 
         if (array_key_exists('product_id',$data)) {
@@ -152,6 +139,27 @@ class QrStart extends Model
         if (array_key_exists('color_id',$data)) {
             return $this->createColorQrCode($data);
         }
+    }
+
+    public function qrShow ($id = null)
+    {
+        $sql = "select o.order_no, pm.name as product_name, mm.name as material_name, mm.id as material_id,
+                        a.name as asset_name, qr.id, qr.process_stts, qr.qty, mm.unit, 1 as box_qty
+                from qr_code qr
+                inner join `order` o
+                on qr.order_id = o.id
+                inner join product_master pm
+                on qr.product_id = pm.id
+                inner join material_master mm
+                on qr.material_id = mm.id
+                inner join asset a
+                on qr.asset_id = a.id
+                where qr.id = {$id}
+                ";
+
+        $result = $this->fetch($sql)[0];
+
+        return new Response(200, $result);
     }
 
     public function update($id = null, array $data = [])
@@ -212,7 +220,30 @@ class QrStart extends Model
 //            "
         ];
 
-        return $this->setTransaction($sqls);
+        $this->setTransaction($sqls);
+        return $this->qrShow($id);
+    }
+
+    protected function setTransaction (array $data = [])
+    {
+        try {
+            $this->db->beginTransaction();
+
+            foreach ($data as $query) {
+                try {
+                    $stmt = $this->db->prepare($query);
+                    $stmt->execute();
+                } catch (Exception $e) {
+                    throw $e;
+                }
+            }
+
+            $this->db->commit();
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            return new Response(403, [],'데이터 입력 중 오류가 발생하였습니다.');
+        }
     }
 
     protected function hasUniqueType (array $data = [])
@@ -252,6 +283,11 @@ class QrStart extends Model
     protected function createMaterialQrCode (array $data = [])
     {
         $data = $this->validate($data, $this->injectionCreateRequired);
+
+        $dept_id = Dept::$INJECTION;
+        if ($this->token['dept_id'] !== $dept_id) {
+            return new Response(403, [], '사출 부서 직원이 아닙니다.');
+        }
 
         $print_qty = $data['print_qty'];
         unset($data['print_qty']);

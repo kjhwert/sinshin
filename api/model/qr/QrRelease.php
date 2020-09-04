@@ -10,7 +10,8 @@ class QrRelease extends Model
 
     protected $sort = [
         'date' => 'process_date',
-        'name' => 'product_name'
+        'product' => 'product_name',
+        'customer' => 'b.to_name'
     ];
 
     protected $searchableText = 'd.name';
@@ -116,6 +117,11 @@ class QrRelease extends Model
                 $sql = "select id from box where qr_id = {$qr_id}";
                 $box_id = $this->fetch($sql)[0]['id'];
 
+                /** Lot일 경우 pass */
+                if (!$box_id) {
+                    continue;
+                }
+
                 $sqls = [
                     "insert into `release` set
                      box_id = {$box_id},
@@ -157,9 +163,8 @@ class QrRelease extends Model
                         throw $e;
                     }
                 }
-
-                $this->db->commit();
             }
+            $this->db->commit();
 
         } catch (Exception $e) {
             $this->db->rollBack();
@@ -198,8 +203,13 @@ class QrRelease extends Model
     protected function isStockQrCode($qr_id = null)
     {
         $process_stock = Code::$PROCESS_STOCK;
+        $process_complete = Code::$PROCESS_COMPLETE;
         $sql = "select process_stts from qr_code where id = {$qr_id}";
         $process_stts = $this->fetch($sql)[0]['process_stts'];
+
+        if ($process_stts === $process_complete) {
+            return new Response(403, [], '재고처리 후 출고하세요.');
+        }
 
         if ($process_stock !== $process_stts) {
             return new Response(403, [], '재고상태의 제품이 아닙니다.');
@@ -208,8 +218,11 @@ class QrRelease extends Model
 
     protected function printBox($box_id = null)
     {
+        $sql = "update box set lot_id = null where id = {$box_id}";
+        $this->fetch($sql);
+
         $process_stock = Code::$PROCESS_STOCK;
-        $sql = "select qc.qty, qc.id as qr_id, pm.name as product_name, pm.id as product_id
+        $sql = "select 1 as box_qty, qc.qty, qc.id as qr_id, pm.name as product_name, pm.id as product_id
                     from box a
                     inner join qr_code qc
                     on a.qr_id = qc.id
@@ -217,13 +230,13 @@ class QrRelease extends Model
                     on qc.product_id = pm.id
                 where a.id = {$box_id} and qc.process_stts = {$process_stock}";
 
-        return new Response(200, $this->fetch($sql)[0]);
+        return new Response(200, $this->fetch($sql));
     }
 
     protected function printLotList($lot_id = null)
     {
         $process_stock = Code::$PROCESS_STOCK;
-        $sql = "select qc.qty, qc.id as qr_id, pm.name as product_name, pm.id as product_id
+        $sql = "select 1 as box_qty, qc.qty, qc.id as qr_id, pm.name as product_name, pm.id as product_id
                     from box a
                     inner join qr_code qc
                     on a.qr_id = qc.id
@@ -236,7 +249,7 @@ class QrRelease extends Model
 
     protected function isLotQrCode ($id = null)
     {
-        $sql = "select id from lot where id = {$id}";
+        $sql = "select id from lot where qr_id = {$id}";
         return $this->fetch($sql)[0]['id'];
     }
 

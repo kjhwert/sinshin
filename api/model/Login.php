@@ -51,7 +51,6 @@ class Login
         $result['token'] = $this->getToken($result);
         $result['auth'] = $this->getUserAuth($result['id']);
 
-        unset($result['dept_id']);
         return new Response(
             200,
             $result,

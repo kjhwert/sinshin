@@ -95,10 +95,12 @@ function plating_read(){
     $("#trust_loss").text(jsonResult.trust_loss);
     $("#size_loss").text(jsonResult.size_loss);
     $("#customer_code").text(jsonResult.customer_code);
-
+    //공정이 끝났으면 (immutable) supply_code(E) 사출코드 적용 / 공정이 안끝났으면 (mutable) customer_code(A) 고객사코드 적용
     if(jsonResult.type == "mutable"){
+      $("#supply_code").text(jsonResult.supply_code);
       $("#plating_delete").css("display", "inline-block");
     }else{
+      $("#supply_code").text(jsonResult.customer_code);
       $("#plating_delete").css("display", "none");
     }
 
