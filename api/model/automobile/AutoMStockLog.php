@@ -11,9 +11,9 @@ class AutoMStockLog extends Model
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
-        $sql = "select a.id, a.customer_code, a.supply_code, a.name as product_name,
-                    concat(a.brand_code,'/',a.car_code) as car_code,
-                    a.customer, a.supplier, b.remain_qty, c.name, @rownum:= @rownum+1 AS RNUM
+        $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM from (select a.id, a.customer_code, a.supply_code, a.name as product_name,
+                    concat(a.brand_code,'/',a.car_code) as car_code, b.created_at,
+                    a.customer, a.supplier, b.remain_qty, c.name
                     from automobile_master a
                     inner join (
                         select * from (
@@ -24,9 +24,9 @@ class AutoMStockLog extends Model
                     ) b
                     on a.id = b.product_id
                     inner join user c
-                    on b.created_id = c.id,
+                    on b.created_id = c.id
+                where a.stts = 'ACT' and c.stts = 'ACT' order by b.created_at asc) as tot,
                 (SELECT @rownum:= 0) AS R
-                where a.stts = 'ACT' and c.stts = 'ACT'
                 order by RNUM desc
                 limit {$page},{$perPage}";
 

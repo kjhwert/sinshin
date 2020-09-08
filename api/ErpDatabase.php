@@ -5,8 +5,8 @@ class ErpDatabase
 {
     private $servername = "erp.sinshin.co.kr";
     private $username = "mes_hlab";
-    private $password = "AjdAjd8689!@";
-    private $database = "sinshin";
+    private $password = "hlab!234";
+    private $database = "dynamicerp";
     private $db = null;
     private static $_instance; //The single instance
 

@@ -17,15 +17,10 @@ switch ($method) {
             $model->show($id);
         }
         break;
-//    case 'POST' :
-//        if ($params['type'] === 'pw') {
-//            return $model->changePw($params);
-//        }
-//
-//        $model->create($params);
-//        break;
-//    case 'PUT' : $model->update($id, $params);
-//        break;
+    case 'POST' : $model->create($params);
+        break;
+    case 'PUT' : $model->update($id, $params);
+        break;
 //    case 'DELETE' : $model->destroy($id);
 //        break;
 }

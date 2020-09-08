@@ -6,6 +6,8 @@ class QrDefect extends Model
         'order_id' => 'integer',
         'process_order_id' => 'integer',
         'product_id' => 'integer',
+        'defect_id' => 'integer',
+        'qty' => 'integer'
     ];
 
     protected $sort = [
@@ -18,6 +20,11 @@ class QrDefect extends Model
     protected $searchableAsset = 'c.asset_id';
     protected $reversedSort = true;
 
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -26,6 +33,7 @@ class QrDefect extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, ifnull(d.defect_qty, 0) as defect_qty,
@@ -42,7 +50,7 @@ class QrDefect extends Model
                          on a.defect_id = b.id
                          inner join user c
                          on a.created_id = c.id
-                    where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT'
+                    where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and a.dept_id = {$dept_id}
                     group by a.process_order_id) as d
                 on a.id = d.process_order_id
                 inner join (
@@ -74,6 +82,7 @@ class QrDefect extends Model
     protected function paginationQuery(array $params = [])
     {
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         return "select count(tot.id) as cnt from (
                     select d.created_at, p.product_name, a.id
@@ -86,7 +95,7 @@ class QrDefect extends Model
                              on a.defect_id = b.id
                              inner join user c
                              on a.created_id = c.id
-                        where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT'
+                        where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and a.dept_id = {$dept_id}
                         group by a.process_order_id) as d
                     on a.id = d.process_order_id
                     inner join (
@@ -111,6 +120,9 @@ class QrDefect extends Model
 
     public function show($id = null)
     {
+        $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
+
         $sql = "select po.id, a.created_at, b.asset_name, o.order_no, b.product_name,
                    b.product_qty, a.defect_qty, round((a.defect_qty/b.product_qty)*100,1) as defect_percent,
                    a.manager
@@ -124,7 +136,7 @@ class QrDefect extends Model
                          on a.defect_id = b.id
                          inner join user c
                          on a.created_id = c.id
-                    where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT'
+                    where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and a.dept_id = {$dept_id}
                     group by a.process_order_id) a
                 on po.id = a.process_order_id
                 inner join (
@@ -137,7 +149,7 @@ class QrDefect extends Model
                          on a.asset_id = c.id
                          inner join product_master d
                          on a.product_id = d.id
-                    where b.process_status = 39
+                    where b.process_status = {$process_complete}
                       and a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                     group by a.process_order_id) b
                 on po.id = b.process_order_id
@@ -160,19 +172,32 @@ class QrDefect extends Model
     public function create(array $data = [])
     {
         $data = $this->validate($data, $this->createRequired);
+        $this->isAvailableUser();
 
-        $sqls = array_map(function ($d) use ($data) {
-            $defect = (array)$d;
-            return "insert into cosmetics_defect_log set
+        $sql = "select id from cosmetics_defect_log
+                where order_id = {$data['order_id']}
+                and process_order_id = {$data['process_order_id']}
+                and defect_id = {$data['defect_id']}
+                ";
+
+        $log_id = $this->fetch($sql)[0]['id'];
+
+        if ($log_id) {
+            $sql = "update cosmetics_defect_log set
+                        qty = {$data['qty']},
+                        updated_id = {$this->token['id']},
+                        updated_at = SYSDATE()
+                        where id = {$log_id}
+                    ";
+        } else {
+            $sql = "insert into cosmetics_defect_log set
                         {$this->dataToString($data)},
                         dept_id = {$this->token['dept_id']},
-                        defect_id = {$defect['id']},
-                        qty = {$defect['qty']},
                         created_id = {$this->token['id']},
                         created_at = SYSDATE()
                     ";
-        }, $data['defect']);
+        }
 
-        return $this->setTransaction($sqls);
+        return new Response(200, $this->fetch($sql), '등록 되었습니다.');
     }
 }

@@ -57,7 +57,7 @@ function balju_select(order_no){
       var text = '';
       for(var i in jsonResult){
         text +='<option selected hidden disabled>발주번호를 선택하세요</option>';
-        text +='<option id='+jsonResult[i].id+'>'+jsonResult[i].id+'</option>'
+        text +='<option value='+jsonResult[i].id+'>'+jsonResult[i].code+'</option>'
       }
       $("#barju_no").empty();
       $("#barju_no").append(text);
@@ -92,6 +92,8 @@ function balju_data(barju_no){
       $("#material_name").val(jsonResult[0].material_name);
       $("#jaje_code").val(jsonResult[0].jaje_code);
       $("#product_name").val(jsonResult[0].product_name);
+      $("#asset_name").val(jsonResult[0].asset_no);
+      $("#asset_id").val(jsonResult[0].asset_id);
     }else{
       alert(result.message);
     }

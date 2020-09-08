@@ -3,7 +3,11 @@ $(function(){
   $("#injection").addClass("active");
 
   injection_status(page_no, per_page, sort, order);
+  injection_status_cnt();
+  injection_stock();
 });
+setDateBox();
+
 var page_no = getParam("page_no");
 var per_page = 15;
 var sort = getParam("sort");//date
@@ -24,6 +28,71 @@ if(getParam("sort") == ""){
 if(getParam("order") == ""){
   order = "desc";
 }
+function setDateBox(){
+  var dt = new Date();
+  var year = "";
+  var com_year = dt.getFullYear();
+  // 발행 뿌려주기
+  $("#years_select").append("<option value=''>년도</option>");
+  // 올해 기준으로 -1년부터 +5년을 보여준다.
+  for(var y = (com_year); y >= (com_year-15); y--){
+      $("#years_select").append("<option value='"+ y +"'>"+ y + " 년" +"</option>");
+  }
+  // 월 뿌려주기(1월부터 12월)
+  var month;
+  $("#monthly_select").append("<option value=''>월</option>");
+  for(var i = 1; i <= 12; i++){
+      $("#monthly_select").append("<option value='"+ i +"'>"+ i + " 월" +"</option>");
+  }
+
+  let today = new Date();
+
+  let today_year = today.getFullYear(); // 년도
+  let today_month = today.getMonth() + 1;  // 월
+  let today_date = today.getDate();  // 날짜
+  let today_day = today.getDay();  // 요일
+
+  $("#years_select").val(today_year);
+  $("#monthly_select").val(today_month);
+}
+
+$("#search_btn_cnt").on("click", function(){
+  injection_status_cnt();
+});
+function injection_status_cnt(){
+  var years_select = $("#years_select").val();
+  var monthly_select = $("#monthly_select").val();
+
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/injection/main/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        type: "product",
+        year: years_select,
+        month: monthly_select
+      }
+  }).done(function (result, textStatus, xhr) {
+    console.log(result);
+    var jsonResult = result.data;
+    if(result.status == 200){
+      $("#start_qty").text(comma(jsonResult.start_qty));
+      $("#complete_qty").text(comma(jsonResult.complete_qty));
+      $("#defect_qty").text(comma(jsonResult.defect_qty));
+      $("#release_qty").text(comma(jsonResult.release_qty));
+    }else{
+      alert(result.message);
+      return;
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+}
+
 $("#basicSelect").on("change", function(){
   if($(this).val() == "date1"){
     sort = "order_date";
@@ -43,7 +112,40 @@ $("#basicSelect").on("change", function(){
     injection_status(page_no, per_page, sort, order);
   }
 });
-
+function injection_stock(){
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/injection/main/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        type: "stock",
+      }
+  }).done(function (result, textStatus, xhr) {
+    var text = '';
+    if(result.status == 200){
+      var jsonResult = result.data;
+      console.log(jsonResult);
+      for(var i in jsonResult){
+        text +='<li>';
+        text +='  <img src="../assets/images/pallet.png">';
+        text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
+        text +='  <p class="stock_cnt">'+jsonResult[i].box_qty+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
+        text +='</li>';
+      }
+      $("#stock_ul").empty();
+      $("#stock_ul").append(text);
+    }else{
+      alert(result.message);
+      return;
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+}
 function injection_status(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",

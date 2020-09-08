@@ -6,7 +6,7 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$model = new Order();
+$model = new ProductMaster();
 $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {

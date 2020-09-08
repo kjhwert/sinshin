@@ -15,6 +15,11 @@ class QrStock extends Model
         'lot_id' => 'integer'
     ];
 
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -23,7 +28,7 @@ class QrStock extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_stock = Code::$PROCESS_STOCK;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no,
@@ -36,15 +41,15 @@ class QrStock extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_stock} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
@@ -60,7 +65,7 @@ class QrStock extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_stock = Code::$PROCESS_STOCK;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -70,15 +75,15 @@ class QrStock extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where bb.process_stts = {$process_stock} and aa.dept_id = {$injection}
+                            where bb.process_status = {$process_stock} and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
@@ -110,13 +115,13 @@ class QrStock extends Model
     public function update($id = null, array $data = [])
     {
         $data = $this->validate($data, $this->updateRequired);
+        $this->isAvailableUser();
+        (new QrBox())->isBox($id);
 
         $sql = "select process_stts, product_id from qr_code where id = {$id}";
         $result = $this->fetch($sql)[0];
         $process_complete = Code::$PROCESS_COMPLETE;
         $process_stock = Code::$PROCESS_STOCK;
-
-        (new QrBox())->isBox($id);
 
         /** Lot을 변경할 경우 */
         if ($result['process_stts'] === $process_stock) {

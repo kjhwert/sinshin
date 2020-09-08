@@ -18,6 +18,11 @@ class QrRelease extends Model
     protected $searchableDate = 'b.process_date';
     protected $reversedSort = true;
 
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -26,7 +31,7 @@ class QrRelease extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_release = Code::$PROCESS_RELEASE;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no, c.jaje_code,
@@ -44,14 +49,14 @@ class QrRelease extends Model
                             inner join `user` ee
                             on aa.created_id = ee.id
                             where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
@@ -67,7 +72,7 @@ class QrRelease extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_release = Code::$PROCESS_RELEASE;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -80,14 +85,14 @@ class QrRelease extends Model
                             inner join customer_master dd
                             on cc.to_id = dd.id
                             where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
@@ -106,6 +111,8 @@ class QrRelease extends Model
          *  lot은 입고될 때 dept_id 업데이트
          *  box update
          */
+        $this->isAvailableUser();
+
         $process_release = Code::$PROCESS_RELEASE;
         $group_id = $this->generateRandomString();
 
@@ -185,6 +192,7 @@ class QrRelease extends Model
         if (!$id) {
             return (new ErrorHandler())->typeNull('id');
         }
+        $this->isAvailableUser();
 
         $lot_id = $this->isLotQrCode($id);
         if ($lot_id) {

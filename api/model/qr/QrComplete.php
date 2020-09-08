@@ -23,6 +23,11 @@ class QrComplete extends Model
     protected $searchableAsset = 'aa.asset_id';
     protected $reversedSort = true;
 
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -31,11 +36,11 @@ class QrComplete extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_complete = Code::$PROCESS_COMPLETE;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no, c.jaje_code,
-                   d.name as product_name, e.name as material_name, b.asset_name, b.process_date
+                   d.name as product_name, ifnull(e.name,'') as material_name, b.asset_name, b.process_date
                 from process_order a
                 inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date, cc.name as asset_name
                             from qr_code aa
@@ -44,15 +49,15 @@ class QrComplete extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_complete} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
@@ -68,7 +73,7 @@ class QrComplete extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_complete = Code::$PROCESS_COMPLETE;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -79,15 +84,15 @@ class QrComplete extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_complete} and bb.process_status = {$process_complete} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
@@ -163,7 +168,7 @@ class QrComplete extends Model
         unset($data['print_qty']);
         unset($data['created_at']);
 
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
         $process_start = Code::$PROCESS_START;
 
         $print_result = [];
@@ -183,7 +188,7 @@ class QrComplete extends Model
                                 {$this->dataToString($data)},
                                 process_stts = {$process_start},
                                 material_id = {$material_id},
-                                dept_id = {$injection},
+                                dept_id = {$dept_id},
                                 created_id = {$this->token['id']},
                                 created_at = '{$created_at}'
                             ";
@@ -229,6 +234,8 @@ class QrComplete extends Model
 
     public function update($id = null, array $data = [])
     {
+        $this->isAvailableUser();
+
         $process_start = Code::$PROCESS_START;
         $process_complete = Code::$PROCESS_COMPLETE;
 

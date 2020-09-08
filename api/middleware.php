@@ -11,7 +11,9 @@ spl_autoload_register(function ($class) {
         '/model/automobile/',
         '/model/cosmetic/',
         '/model/qr/',
-        '/model/cosmetic/injection/'
+        '/model/cosmetic/injection/',
+        '/model/cosmetic/painting/',
+        '/model/cosmetic/assemble/',
     ];
 
     array_map(function ($dir) use ($class) {

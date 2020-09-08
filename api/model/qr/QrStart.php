@@ -20,7 +20,14 @@ class QrStart extends Model
         'asset' => 'asset_name'
     ];
 
+    protected $dept = null;
+
     protected $updateRequired = [];
+
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
 
     public function index(array $params = [])
     {
@@ -30,28 +37,30 @@ class QrStart extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_start = Code::$PROCESS_START;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, sum(b.qty) as product_qty, c.order_no, c.jaje_code,
-                   d.name as product_name, e.name as material_name, b.asset_name, b.process_date
+                from (select a.id, b.product_qty, c.order_no, c.jaje_code,
+                   d.name as product_name, ifnull(e.name,'') as material_name, b.asset_name, b.process_date
                 from process_order a
-                inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date, cc.name as asset_name
+                inner join (select aa.process_order_id, aa.id, sum(aa.qty) as product_qty, bb.process_date, cc.name as asset_name
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT') b
+                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.process_order_id
+                            ) b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
@@ -67,7 +76,7 @@ class QrStart extends Model
     protected function paginationQuery (array $params = [])
     {
         $process_start = Code::$PROCESS_START;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
                 from process_order a 
@@ -78,7 +87,7 @@ class QrStart extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id) b
@@ -86,8 +95,8 @@ class QrStart extends Model
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d
-                on a.product_id = d.id
-                inner join material_master e
+                on a.product_code = d.code
+                left join material_master e
                 on d.material_id = e.id
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
@@ -127,6 +136,7 @@ class QrStart extends Model
     public function create(array $data = [])
     {
         $this->hasUniqueType($data);
+        $this->isAvailableUser();
 
         if (array_key_exists('product_id',$data)) {
             return $this->createProductQrCode($data);
@@ -164,6 +174,8 @@ class QrStart extends Model
 
     public function update($id = null, array $data = [])
     {
+        $this->isAvailableUser();
+
         $process_start = Code::$PROCESS_START;
 
         $sql = "select qty, material_id, process_stts from qr_code where id = {$id}";
@@ -211,13 +223,6 @@ class QrStart extends Model
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
             ",
-//            "insert into box set
-//                qr_id = {$id},
-//                process_start_at = SYSDATE(),
-//                process_status = {$process_start},
-//                created_id = {$this->token['id']},
-//                created_at = SYSDATE()
-//            "
         ];
 
         $this->setTransaction($sqls);
@@ -284,9 +289,9 @@ class QrStart extends Model
     {
         $data = $this->validate($data, $this->injectionCreateRequired);
 
-        $dept_id = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
         if ($this->token['dept_id'] !== $dept_id) {
-            return new Response(403, [], '사출 부서 직원이 아닙니다.');
+            return new Response(403, [], '해당 부서 직원이 아닙니다.');
         }
 
         $print_qty = $data['print_qty'];

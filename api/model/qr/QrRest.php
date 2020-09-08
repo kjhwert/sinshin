@@ -36,6 +36,7 @@ class QrRest extends Model
     public function update ($id = null, array $data = [])
     {
         $this->validate($data, $this->updateRequired);
+        $this->isAvailableUser();
         $process_start = Code::$PROCESS_START;
 
         $sql = "select material_id, process_stts, qty from qr_code where id = {$id}";
