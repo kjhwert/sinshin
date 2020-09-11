@@ -18,11 +18,6 @@ class QrRelease extends Model
     protected $searchableDate = 'b.process_date';
     protected $reversedSort = true;
 
-    protected function getDeptId ()
-    {
-        return Dept::$INJECTION;
-    }
-
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -34,11 +29,11 @@ class QrRelease extends Model
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no, c.jaje_code,
+                from (select a.id, b.box_qty, b.product_qty, c.order_no, c.jaje_code,
                    d.name as product_name, e.name as material_name, b.process_date, b.to_name, b.manager
                 from process_order a
-                inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date, 
-                                    dd.name as to_name, ee.name as manager
+                inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
+                                    bb.process_date, dd.name as to_name, ee.name as manager
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
@@ -50,7 +45,8 @@ class QrRelease extends Model
                             on aa.created_id = ee.id
                             where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
                             and aa.dept_id = {$dept_id}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT') b
+                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.process_order_id) b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
@@ -104,13 +100,7 @@ class QrRelease extends Model
      */
     public function create(array $data = [])
     {
-        /**
-         *  release insert
-         *  qr_code update
-         *  change_stts insert
-         *  lot은 입고될 때 dept_id 업데이트
-         *  box update
-         */
+        $this->validate($data, $this->createRequired);
         $this->isAvailableUser();
 
         $process_release = Code::$PROCESS_RELEASE;
@@ -121,6 +111,7 @@ class QrRelease extends Model
 
             foreach ($data['qr_ids'] as $qr_id) {
 
+                $this->isDeptProcess($qr_id);
                 $sql = "select id from box where qr_id = {$qr_id}";
                 $box_id = $this->fetch($sql)[0]['id'];
 
@@ -149,6 +140,7 @@ class QrRelease extends Model
                     ",
                     "insert into change_stts set
                      qr_id = {$qr_id},
+                     dept_id = {$this->token['dept_id']},
                      process_status = {$process_release},
                      process_date = SYSDATE(),
                      created_id = {$this->token['id']},
@@ -193,6 +185,7 @@ class QrRelease extends Model
             return (new ErrorHandler())->typeNull('id');
         }
         $this->isAvailableUser();
+        $this->isDeptProcess($id);
 
         $lot_id = $this->isLotQrCode($id);
         if ($lot_id) {
@@ -265,15 +258,5 @@ class QrRelease extends Model
     {
         $sql = "select id from box where qr_id = {$id}";
         return $this->fetch($sql)[0]['id'];
-    }
-
-    protected function generateRandomString($length = 10) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
     }
 }

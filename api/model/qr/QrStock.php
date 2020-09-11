@@ -15,9 +15,11 @@ class QrStock extends Model
         'lot_id' => 'integer'
     ];
 
+    protected $reversedSort = true;
+
     protected function getDeptId ()
     {
-        return Dept::$INJECTION;
+        return Dept::$PAINTING;
     }
 
     public function index(array $params = [])
@@ -31,10 +33,11 @@ class QrStock extends Model
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no,
-                   d.name as product_name, b.asset_name, b.process_date
+                from (select a.id, b.box_qty, b.product_qty, c.order_no,
+                   d.name as product_name, b.asset_name, b.process_date, b.display_name
                 from process_order a
-                inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date, cc.name as asset_name
+                inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
+                                bb.process_date, cc.name as asset_name, cc.display_name
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
@@ -43,7 +46,8 @@ class QrStock extends Model
                             where bb.process_status = {$process_stock} 
                             and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])} 
-                            and aa.stts = 'ACT' and bb.stts = 'ACT') b
+                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.process_order_id ) b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
@@ -69,7 +73,8 @@ class QrStock extends Model
 
         return "select count(a.id) as cnt
                 from process_order a 
-                inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date, cc.name as asset_name
+                inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty,
+                                    bb.process_date, cc.name as asset_name
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
@@ -77,7 +82,8 @@ class QrStock extends Model
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_stock} and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT') b
+                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.process_order_id ) b
                 on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
@@ -93,17 +99,13 @@ class QrStock extends Model
     {
         (new QrBox())->isBox($id);
 
-        $sql = "select o.order_no, pm.name as product_name, a.name as asset_name,
+        $sql = "select o.order_no, pm.name as product_name,
                     qr.id as qr_id, qr.process_stts, qr.qty, pm.id as product_id, 1 as box_qty
                 from qr_code qr
                 inner join `order` o
                 on qr.order_id = o.id
                 inner join product_master pm
                 on qr.product_id = pm.id
-                inner join material_master mm
-                on qr.material_id = mm.id
-                inner join asset a
-                on qr.asset_id = a.id
                 where qr.id = {$id}
                 ";
 
@@ -116,6 +118,7 @@ class QrStock extends Model
     {
         $data = $this->validate($data, $this->updateRequired);
         $this->isAvailableUser();
+        $this->isDeptProcess($id);
         (new QrBox())->isBox($id);
 
         $sql = "select process_stts, product_id from qr_code where id = {$id}";
@@ -165,6 +168,7 @@ class QrStock extends Model
             ",
             "insert into change_stts set
                 qr_id = {$id},
+                dept_id = {$this->token['dept_id']},
                 process_status = {$process_stock},
                 process_date = SYSDATE(),
                 created_id = {$this->token['id']},

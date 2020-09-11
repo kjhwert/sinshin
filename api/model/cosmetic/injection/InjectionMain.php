@@ -17,16 +17,19 @@ class InjectionMain extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (
                     select ifnull(f.name,'') as asset_name, c.order_no, c.ord, e.code as mold_code, c.jaje_code, d.name as product_name,
-                a.order_date, a.request_date, a.qty as process_qty, ifnull(sum(b.qty),0) as product_qty,
+                a.order_date, a.request_date, a.qty as process_qty, ifnull(sum(b.qty),0) as product_qty, f.display_name,
                 ifnull(ROUND((sum(b.qty)/a.qty)*100, 1),0) as process_percent
-         from process_order a
-                  left join (select process_order_id, process_stts, qty, asset_id
+                from process_order a
+                  inner join (select process_order_id, process_stts, qty, asset_id
                                 from qr_code
-                            where process_stts >= {$process_complete} and stts = 'ACT') b
+                            where process_stts >= {$process_complete} 
+                            and stts = 'ACT'
+                            and dept_id = {$dept_id}) b
                             on a.id = b.process_order_id
                   inner join `order` c
                     on a.order_id = c.id
@@ -49,14 +52,18 @@ class InjectionMain extends Model
     protected function paginationQuery(array $params = [])
     {
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
                 from process_order a
-                     left join (select bb.id, bb.process_order_id, bb.asset_id, bb.process_stts
+                     inner join (select bb.id, bb.process_order_id, bb.asset_id, bb.process_stts
                                     from process_order aa
                                     inner join qr_code bb
                                     on aa.id = bb.process_order_id
-                                    where aa.stts = 'ACT' and bb.stts = 'ACT' and bb.process_stts >= {$process_complete}
+                                    where aa.stts = 'ACT' 
+                                    and bb.stts = 'ACT' 
+                                    and bb.process_stts >= {$process_complete}
+                                    and bb.dept_id = {$dept_id}
                                     group by aa.id) b
                         on a.id = b.process_order_id
                      inner join `order` c
@@ -73,7 +80,7 @@ class InjectionMain extends Model
     public function stockIndex (array $params = [])
     {
         $process_stock = Code::$PROCESS_STOCK;
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, count(b.id) as box_qty, sum(b.qty) as product_qty, c.order_no,
@@ -86,7 +93,7 @@ class InjectionMain extends Model
                             inner join asset cc
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_stock} and bb.process_status = {$process_stock} 
-                            and aa.dept_id = {$injection}
+                            and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c
@@ -110,13 +117,15 @@ class InjectionMain extends Model
         $start = Code::$PROCESS_START;
         $complete = Code::$PROCESS_COMPLETE;
         $release = Code::$PROCESS_RELEASE;
+        $stock = Code::$PROCESS_STOCK;
 
-        $injection = Dept::$INJECTION;
+        $dept_id = $this->getDeptId();
         $year = $params['year'];
         $month = $params['month'];
 
         $sql = "select start.qty as start_qty,
                        comp.qty as complete_qty,
+                       stock.qty as stock_qty,
                        defect.qty as defect_qty,
                        rel.qty as release_qty
                 from
@@ -125,7 +134,7 @@ class InjectionMain extends Model
                         left join change_stts as start
                         on qc.id = start.qr_id
                     where start.process_status = {$start}
-                    and qc.dept_id = {$injection}
+                    and qc.dept_id = {$dept_id}
                     and start.process_date >= '{$year}-{$month}-01'
                     and start.process_date < '{$year}-{$month}-31 23:59:59') as start,
                 (select ifnull(sum(qc.qty),0) as qty
@@ -133,12 +142,20 @@ class InjectionMain extends Model
                         left join change_stts as comp
                         on qc.id = comp.qr_id
                     where comp.process_status = {$complete}
-                    and qc.dept_id = {$injection}
+                    and qc.dept_id = {$dept_id}
                     and comp.process_date >= '{$year}-{$month}-01'
                     and comp.process_date < '{$year}-{$month}-31 23:59:59') as comp,
+                (select ifnull(sum(qc.qty),0) as qty
+                    from qr_code as qc
+                        left join change_stts as comp
+                        on qc.id = comp.qr_id
+                    where comp.process_status = {$stock}
+                    and qc.dept_id = {$dept_id}
+                    and comp.process_date >= '{$year}-{$month}-01'
+                    and comp.process_date < '{$year}-{$month}-31 23:59:59') as stock,
                 (select ifnull(sum(d.qty),0) as qty
                     from cosmetics_defect_log as d
-                    where d.dept_id = {$injection}
+                    where d.dept_id = {$dept_id}
                     and d.created_at >= '{$year}-{$month}-01'
                     and d.created_at < '{$year}-{$month}-31 23:59:59') as defect,
                 (select ifnull(sum(qc.qty),0) as qty
@@ -146,7 +163,7 @@ class InjectionMain extends Model
                          left join change_stts as rel
                          on qc.id = rel.qr_id
                     where rel.process_status = {$release}
-                    and qc.dept_id = {$injection}
+                    and qc.dept_id = {$dept_id}
                     and rel.process_date >= '{$year}-{$month}-01'
                     and rel.process_date < '{$year}-{$month}-31 23:59:59') as rel
                 ";

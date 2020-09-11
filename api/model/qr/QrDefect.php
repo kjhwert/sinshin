@@ -20,11 +20,6 @@ class QrDefect extends Model
     protected $searchableAsset = 'c.asset_id';
     protected $reversedSort = true;
 
-    protected function getDeptId ()
-    {
-        return Dept::$INJECTION;
-    }
-
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -39,7 +34,8 @@ class QrDefect extends Model
                 from (select a.id, ifnull(d.defect_qty, 0) as defect_qty,
                    round((ifnull(d.defect_qty,0)/p.product_qty)*100,1) as defect_percent,
                    ifnull(p.product_qty,0) as product_qty, p.asset_name, o.order_no, p.product_name,
-                   ifnull(d.created_at,'') as process_date, ifnull(d.user_name,'') as manager
+                   ifnull(d.created_at,'') as process_date, ifnull(d.user_name,'') as manager,
+                   p.display_name
                 from process_order a
                 inner join `order` o
                 on a.order_id = o.id
@@ -55,7 +51,7 @@ class QrDefect extends Model
                 on a.id = d.process_order_id
                 inner join (
                     select sum(a.qty) as product_qty, a.process_order_id, c.name as asset_name,
-                           d.name as product_name
+                           d.name as product_name, c.display_name
                     from qr_code a
                       inner join change_stts b
                       on a.id = b.qr_id
@@ -125,7 +121,7 @@ class QrDefect extends Model
 
         $sql = "select po.id, a.created_at, b.asset_name, o.order_no, b.product_name,
                    b.product_qty, a.defect_qty, round((a.defect_qty/b.product_qty)*100,1) as defect_percent,
-                   a.manager
+                   a.manager, b.display_name, po.code as process_code
                 from process_order po
                 inner join `order` o
                 on po.order_id = o.id
@@ -141,7 +137,7 @@ class QrDefect extends Model
                 on po.id = a.process_order_id
                 inner join (
                     select sum(a.qty) as product_qty, a.process_order_id, c.name as asset_name,
-                           d.name as product_name
+                           d.name as product_name, c.display_name
                     from qr_code a
                          inner join change_stts b
                          on a.id = b.qr_id

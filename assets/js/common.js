@@ -116,6 +116,7 @@ function lot_print(){
 		}).done(function (result, textStatus, xhr) {
 			if(result.status == 200){
 				console.log(result.data.qr_id);
+				lot_id = result.data.lot_id;
 				qr_no = result.data.qr_id;
 
 				/** 팝업 */
@@ -123,7 +124,7 @@ function lot_print(){
 					innerHtml +='<div id="print_box">';
 					innerHtml +='  <div class="print_box">';
 					innerHtml +='    <div class="print_inner_line">';
-					innerHtml +='			 <p class="qr_no">No. '+qr_no+'</p>';
+					innerHtml +='			 <p class="qr_no">No. '+lot_id+'</p>';
 					innerHtml +='      <div id="qrcode" class="qrcode2"></div>';
 					innerHtml +='      <table cellpadding="0" cellspacing="0" class="print_table2" border="1">';
 					innerHtml +='        <tr>';

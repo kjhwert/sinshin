@@ -90,7 +90,7 @@ function injection_stock(page_no, per_page, sort, order){
       for(var i in jsonResult){
         text +='<tr>';
         text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+jsonResult[i].asset_name+'</td>';
+        text +='  <td>'+jsonResult[i].display_name+'</td>';
         text +='  <td>'+jsonResult[i].order_no+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
         text +='  <td>'+comma(jsonResult[i].box_qty)+'</td>';

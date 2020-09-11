@@ -107,6 +107,9 @@ a .btn{
   text-align:center;
   border-radius:15px;
   margin-bottom:5px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
 }
 .stock_ul li p.stock_cnt{
   position:absolute;

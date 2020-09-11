@@ -21,11 +21,11 @@ function injection_end_detail(){
     for(var i in jsonResult){
       qty = Number(qty)+Number(jsonResult[i].qty);
 
-      if(asset_name != jsonResult[i].asset_name){
+      if(asset_name != jsonResult[i].display_name){
         if(asset_name == ""){
-          asset_name += jsonResult[i].asset_name;
+          asset_name += jsonResult[i].display_name;
         }else{
-          asset_name += ", "+jsonResult[i].asset_name;
+          asset_name += ", "+jsonResult[i].display_name;
         }
       }
 
@@ -41,7 +41,7 @@ function injection_end_detail(){
     $("#injection_end_list").append(text);
     $("#process_date").text(jsonResult[0].process_date);
     $("#order_no").text(jsonResult[0].order_no);
-    $("#barju_id").text(jsonResult[0].id);
+    $("#barju_id").text(jsonResult[0].process_code);
     $("#product_name").text(jsonResult[0].product_name);
     $("#total_row").text(jsonResult.length + "박스");
     $("#total_qty").text(qty + "ea");

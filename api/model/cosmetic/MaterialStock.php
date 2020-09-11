@@ -28,7 +28,7 @@ class MaterialStock extends Model
                     inner join user c
                     on b.created_id = c.id,
                     (SELECT @rownum:= 0) AS R
-                    where a.stts = 'ACT' and b.stts = 'ACT' and a.type = '{$material_type}'
+                    where a.stts = 'ACT' and b.stts = 'ACT' {$this->getMaterialType($material_type)}
                     {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 order by RNUM desc
                 limit {$page},{$perPage}
@@ -48,7 +48,7 @@ class MaterialStock extends Model
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* from (
                        select a.id, a.code, a.name, a.type, a.model, c.remain_qty, a.unit,
-                              (c.remain_qty * a.qty) as total,
+                              (c.remain_qty * a.qty) as total, c.created_at,
                               b.stock_date, e.name as manager
                        from material_master a
                         inner join (select * from (
@@ -58,7 +58,7 @@ class MaterialStock extends Model
                                     group by aa.material_id ) b
                         on a.id = b.material_id
                         inner join (select * from (
-                                      select material_id, remain_qty from material_stock_log
+                                      select material_id, remain_qty, created_at from material_stock_log
                                       where stts = 'ACT'
                                       order by created_at desc LIMIT 18446744073709551615) aa
                                     group by aa.material_id) c
@@ -68,7 +68,8 @@ class MaterialStock extends Model
                         inner join user e
                                    on b.created_id = e.id
                        where a.stts = 'ACT' and d.stts = 'ACT'
-                       and e.stts = 'ACT' and a.type = '{$material_type}' {$this->searchText($params)}
+                       and e.stts = 'ACT' {$this->getMaterialType($material_type)} {$this->searchText($params['params'])}
+                       order by c.created_at asc
                     ) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
@@ -99,6 +100,25 @@ class MaterialStock extends Model
                            on b.created_id = e.id
                where a.stts = 'ACT' and d.stts = 'ACT'
                and e.stts = 'ACT' and a.type = '{$params['material_type']}' {$this->searchText($params)}";
+    }
+
+    protected function getMaterialType ($type = null)
+    {
+        $injection = Dept::$INJECTION;
+        $painting = Dept::$PAINTING;
+
+        $m_injection = Code::$MATERIAL_INJECTION;
+        $m_painting = Code::$MATERIAL_PAINTING;
+
+        if ($this->token['dept_id'] === $injection) {
+            return "and a.type = '{$m_injection}'";
+        }
+
+        if ($this->token['dept_id'] === $painting) {
+            return "and a.type = '{$m_painting}'";
+        }
+
+        return "and a.type = '{$type}'";
     }
 
     /**

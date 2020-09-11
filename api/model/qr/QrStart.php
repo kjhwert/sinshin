@@ -24,11 +24,6 @@ class QrStart extends Model
 
     protected $updateRequired = [];
 
-    protected function getDeptId ()
-    {
-        return Dept::$INJECTION;
-    }
-
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -40,16 +35,17 @@ class QrStart extends Model
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, b.product_qty, c.order_no, c.jaje_code,
+                from (select a.id, b.product_qty, c.order_no, c.jaje_code, b.display_name,
                    d.name as product_name, ifnull(e.name,'') as material_name, b.asset_name, b.process_date
                 from process_order a
-                inner join (select aa.process_order_id, aa.id, sum(aa.qty) as product_qty, bb.process_date, cc.name as asset_name
+                inner join (select aa.process_order_id, aa.id, sum(aa.qty) as product_qty, 
+                                bb.process_date, cc.name as asset_name, cc.display_name
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
+                            where bb.process_status = {$process_start}
                             and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
@@ -86,7 +82,7 @@ class QrStart extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
+                            where bb.process_status = {$process_start}
                             and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
@@ -109,7 +105,8 @@ class QrStart extends Model
         $sql = "select
                     cs.process_date, a.name as asset_name, o.order_no, po.id, a.id as asset_id, o.id as order_id,
                        MIN(cs.process_date) as start_date, MAX(cs.process_date) as end_date, mm.id as material_master,
-                    pm.name as product_name, pm.id as product_id, mm.name as material_name, o.jaje_code, sum(qc.qty) as qty
+                    pm.name as product_name, pm.id as product_id, mm.name as material_name, o.jaje_code, sum(qc.qty) as qty,
+                    a.display_name, a.asset_no, po.code as process_code
                 from qr_code qc
                      inner join process_order po
                         on qc.process_order_id = po.id
@@ -154,7 +151,7 @@ class QrStart extends Model
     public function qrShow ($id = null)
     {
         $sql = "select o.order_no, pm.name as product_name, mm.name as material_name, mm.id as material_id,
-                        a.name as asset_name, qr.id, qr.process_stts, qr.qty, mm.unit, 1 as box_qty
+                        a.name as asset_name, qr.id, qr.process_stts, qr.qty, mm.unit, 1 as box_qty, a.asset_no
                 from qr_code qr
                 inner join `order` o
                 on qr.order_id = o.id
@@ -175,17 +172,17 @@ class QrStart extends Model
     public function update($id = null, array $data = [])
     {
         $this->isAvailableUser();
+        $this->isDeptProcess($id);
 
         $process_start = Code::$PROCESS_START;
 
-        $sql = "select qty, material_id, process_stts from qr_code where id = {$id}";
+        $sql = "select material_id, process_stts from qr_code where id = {$id}";
         $result = $this->fetch($sql)[0];
 
         if ($result['process_stts'] === $process_start) {
             return new Response(403, [], '이미 처리되었습니다.');
         }
 
-        $qty = (int)$result['qty'];
         $material_id = $result['material_id'];
 
         $sql = "select change_qty, remain_qty from material_stock_log 
@@ -195,11 +192,11 @@ class QrStart extends Model
 
         $remain_qty = (int)$result['remain_qty'];
 
-        if ($remain_qty < $qty) {
+        if ($remain_qty < 0) {
             return new Response(403, [], '재고가 부족합니다.');
         }
 
-        $change_qty = -$qty;
+        $change_qty = -1;
         $remain_qty += $change_qty;
 
         $sqls = [
@@ -211,6 +208,7 @@ class QrStart extends Model
                 ",
             "insert into change_stts set
                 qr_id = {$id},
+                dept_id = {$this->token['dept_id']},
                 process_status = {$process_start},
                 process_date = SYSDATE(),
                 created_id = {$this->token['id']},
@@ -297,20 +295,32 @@ class QrStart extends Model
         $print_qty = $data['print_qty'];
         unset($data['print_qty']);
 
+        $sql = "select pm.id, mm.id as material_id
+                    from process_order po
+                    inner join product_master pm
+                    on po.product_code = pm.code
+                    inner join material_master mm   
+                    on pm.material_id = mm.id
+                    where po.id = {$data['process_order_id']}";
+        $result = $this->fetch($sql)[0];
+        $product_id = $result['id'];
+        $material_id = $result['material_id'];
+
+        if(!$material_id) {
+            return new Response(403, [], '원자재 정보가 없습니다.');
+        }
+
         $sql = "select remain_qty 
                 from material_stock_log 
-                where material_id = {$data['material_id']} 
+                where material_id = {$material_id} 
                 order by created_at desc limit 1";
 
         $remain_qty = $this->fetch($sql)[0]['remain_qty'];
-        $necessary_qty = $data['qty'] * $print_qty;
+        $necessary_qty = $print_qty;
 
         if ($necessary_qty > $remain_qty) {
             return new Response(403, [], "원자재 재고량이 부족합니다. 출력 수량 : {$necessary_qty} 재고량 : {$remain_qty}");
         }
-
-        $sql = "select id from product_master where material_id = {$data['material_id']}";
-        $product_id = $this->fetch($sql)[0]['id'];
 
         $print_result = [];
         try {
@@ -331,14 +341,14 @@ class QrStart extends Model
                     $qr_id = $this->db->lastInsertId();
 
                     $sql = "select o.order_no, b.name as material_name, b.code as jaje_code, d.id as asset_id,
-                                   a.qty, b.unit, c.name as product_name, d.name as asset_name
+                                   a.qty, b.unit, c.name as product_name, d.asset_no
                                 from qr_code a
                                 inner join `order` o
                                 on a.order_id = o.id
+                                inner join product_master c
+                                on a.product_id = c.id
                                 inner join material_master b
-                                on a.material_id = b.id
-                                left join product_master c
-                                on b.id = c.material_id
+                                on c.material_id = b.id
                                 inner join asset d
                                 on a.asset_id = d.id
                             where a.id = {$qr_id}";

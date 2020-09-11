@@ -40,6 +40,23 @@ class QrLot extends Model
         return new Response(200, ['qr_id'=>$qr_id, 'lot_id'=>$lot_id]);
     }
 
+    /**
+     * @param null $id
+     * @param array $data
+     * Lot의 상태를 변경한다.
+     */
+    public function update($id = null, array $data = [])
+    {
+        $sql = "update lot set
+                    dept_id = {$this->token['dept_id']},
+                    updated_id = {$this->token['id']},
+                    updated_at = SYSDATE()
+                    where id = {$id}
+               ";
+
+        return new Response(200, $this->fetch($sql), '변경 되었습니다.');
+    }
+
     protected function createQrCode ()
     {
         $sql = "insert into {$this->table} set

@@ -25,7 +25,20 @@ if(end_date != ""){
 if(end_date != ""){
   $("#material_type").val(material_type);
 }
-if(material_type == "P"){
+
+if(JSON.parse(getCookie("user_data")).dept_id == 6){
+  //사출팀
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option>');
+}else if(JSON.parse(getCookie("user_data")).dept_id == 4){
+  //도장팀
+  $("#material_type").empty();
+  $("#material_type").append('<option value="CO">도료</option>');
+}else{
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option><option value="CO">도료</option>');
+}
+if(material_type == "CO"){
   $("#material_type").val(material_type);
 }
 

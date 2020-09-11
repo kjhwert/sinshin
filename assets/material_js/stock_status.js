@@ -15,6 +15,18 @@ if(getParam("page_no") == ""){
 if(search_text != ""){
   $("#search_text").val(search_text);
 }
+if(JSON.parse(getCookie("user_data")).dept_id == 6){
+  //사출팀
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option>');
+}else if(JSON.parse(getCookie("user_data")).dept_id == 4){
+  //도장팀
+  $("#material_type").empty();
+  $("#material_type").append('<option value="CO">도료</option>');
+}else{
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option><option value="CO">도료</option>');
+}
 if(material_type != ""){
   $("#material_type").val(getParam("material_type"));
 }

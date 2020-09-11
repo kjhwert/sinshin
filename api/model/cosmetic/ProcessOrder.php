@@ -76,6 +76,10 @@ class ProcessOrder extends Model
                         created_at = SYSDATE()
                     ";
 
+            if ($result['priority']) {
+                $sql .= ", ord = {$result['priority']}";
+            }
+
             if ($result['orderDate']) {
                 $sql .= ", order_date = '{$result['orderDate']}'";
             }
@@ -102,7 +106,7 @@ class ProcessOrder extends Model
         $sql = "select id from process_order order by id desc limit 1";
         $max_id = $this->fetch($sql, $mes)[0]['id'];
 
-        $max_id = (int)$max_id - 100;
+        $max_id = (int)$max_id - 1000;
 
         $sql = "select * from MES_ProcessOrder where id >= {$max_id}";
         $erp_results = $this->fetch($sql, $erp);
@@ -112,6 +116,11 @@ class ProcessOrder extends Model
                         updated_id = {$this->token['id']},
                         updated_at = SYSDATE()
                     ";
+
+            if ($result['priority']) {
+                $sql .= ", ord = {$result['priority']}";
+            }
+
             if ($result['orderDate']) {
                 $sql .= ", order_date = '{$result['orderDate']}'";
             }
@@ -123,6 +132,8 @@ class ProcessOrder extends Model
             if ($result['machineId']) {
                 $sql .= ", asset_id = {$result['machineId']}";
             }
+
+            $sql .= " where id = {$result['id']}";
 
             $this->fetch($sql, $mes);
         }

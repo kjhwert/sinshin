@@ -169,7 +169,7 @@ function injection_status(page_no, per_page, sort, order){
       for(var i in jsonResult){
         text +='<tr>';
         text +='  <th>'+jsonResult[i].RNUM+'</th>';
-        text +='  <td>'+jsonResult[i].asset_name+'</td>';
+        text +='  <td>'+jsonResult[i].display_name+'</td>';
         text +='  <td>'+jsonResult[i].ord+'</td>';
         text +='  <td>'+jsonResult[i].order_no+'</td>';
         text +='  <td>'+jsonResult[i].jaje_code+'</td>';

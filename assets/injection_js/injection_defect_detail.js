@@ -19,9 +19,9 @@ function injection_defect_detail(){
       var jsonResult = result.data;
       console.log(jsonResult);
       $("#created_at").text(jsonResult[0].created_at);
-      $("#asset_name").text(jsonResult[0].asset_name);
+      $("#asset_name").text(jsonResult[0].display_name);
       $("#order_no").text(jsonResult[0].order_no);
-      $("#barju_id").text(jsonResult[0].barju_id);
+      $("#barju_id").text(jsonResult[0].process_code);
       $("#product_name").text(jsonResult[0].product_name);
       $("#product_qty").text(jsonResult[0].product_qty);
       $("#defect_qty").text(jsonResult[0].defect_qty);

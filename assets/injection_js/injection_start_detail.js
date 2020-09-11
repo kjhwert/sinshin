@@ -20,9 +20,9 @@ function injection_start_detail(){
       var jsonResult = result.data[0];
       console.log(jsonResult);
       $("#process_date").text(jsonResult.process_date);
-      $("#asset_name").text(jsonResult.asset_name);
+      $("#asset_name").text(jsonResult.display_name);
       $("#order_no").text(jsonResult.order_no);
-      $("#barju_id").text(jsonResult.id);
+      $("#barju_id").text(jsonResult.process_code);
       $("#product_name").text(jsonResult.product_name);
       $("#jaje_code").text(jsonResult.jaje_code);
       $("#material_name").text(jsonResult.material_name);

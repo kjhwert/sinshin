@@ -332,16 +332,35 @@ class Model
 
     protected function isAvailableUser ()
     {
-        $injection = Dept::$INJECTION;
-        $painting = Dept::$PAINTING;
-        $assemble = Dept::$ASSEMBLE;
+        $dept_id = $this->getDeptId();
 
-        if (
-            $this->token['dept_id'] !== $injection &&
-            $this->token['dept_id'] !== $painting &&
-            $this->token['dept_id'] !== $assemble
-        ) {
+        if ($this->token['dept_id'] !== $dept_id) {
             return new Response(403, [],'해당 부서 아이디로 다시 시도해주세요.');
         }
+    }
+
+    protected function isDeptProcess ($qr_id = null)
+    {
+        $sql = "select dept_id from qr_code where id = {$qr_id}";
+        $created_dept_id = $this->fetch($sql)[0]['dept_id'];
+
+        if ($created_dept_id !== $this->token['dept_id']) {
+            return new Response(403, [], '타 부서의 QR코드를 처리할 수 없습니다.');
+        }
+    }
+
+    protected function getDeptId ()
+    {
+        return Dept::$INJECTION;
+    }
+
+    protected function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 }

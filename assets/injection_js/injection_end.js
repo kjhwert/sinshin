@@ -98,13 +98,13 @@ function injection_start(page_no, per_page, sort, order){
 
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <td>'+jsonResult[i].RNUM+'</td>';
-        text+='  <td>'+jsonResult[i].process_date+'</td>';
-        text+='  <td>'+jsonResult[i].asset_name+'</td>';
-        text+='  <td>'+jsonResult[i].order_no+'</td>';
-        text+='  <td>'+jsonResult[i].product_name+'</td>';
-        text+='  <td>'+comma(jsonResult[i].box_qty)+'</td>';
-        text+='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].process_date+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].display_name+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
+        text+='  <td class="text-left">'+jsonResult[i].product_name+'</td>';
+        text+='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
+        text+='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
         text+='  <td>';
         text+='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text+='      <a href="../product_history/injection_end_detail.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-warning">상세보기</button></a>';

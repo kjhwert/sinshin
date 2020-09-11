@@ -91,7 +91,7 @@ function injection_stock(page_no, per_page, sort, order){
         text +='<tr>';
         text +='  <td>'+jsonResult[i].RNUM+'</td>';
         text +='  <td>'+jsonResult[i].process_date+'</td>';
-        text +='  <td>'+jsonResult[i].asset_name+'</td>';
+        text +='  <td>'+jsonResult[i].display_name+'</td>';
         text +='  <td>'+jsonResult[i].order_no+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
         text +='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
@@ -99,11 +99,14 @@ function injection_stock(page_no, per_page, sort, order){
         text +='  <td>'+jsonResult[i].defect_percent+'%</td>';
         text +='  <td>'+jsonResult[i].manager+'</td>';
         text +='  <td>';
-        text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
-        text +='      <a href="../product_history/injection_defect_detail.html?id='+jsonResult[i].id+'">';
-        text +='        <button type="button" class="btn btn-warning">상세보기</button>';
-        text +='      </a>';
-        text +='    </div>';
+
+        if (jsonResult[i].defect_qty > 0) {
+          text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+          text +='      <a href="../product_history/injection_defect_detail.html?id='+jsonResult[i].id+'">';
+          text +='        <button type="button" class="btn btn-warning">상세보기</button>';
+          text +='      </a>';
+          text +='    </div>';
+        }
         text +='  </td>';
         text +='</tr>';
       }

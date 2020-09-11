@@ -167,7 +167,7 @@ function print(){
           innerHtml +='    <div class="print_inner_line">';
           innerHtml +='      <div id="qrcode'+i+'" class="qrcode"></div>';
           innerHtml +='      <div id="qr_id" class="qr_id">No: '+jsonResult[i].qr_id+'</div> ';
-          innerHtml +='      <div id="injection_id" class="injection_id">'+jsonResult[i].asset_id+'</div> ';
+          innerHtml +='      <div id="injection_id" class="injection_id">'+jsonResult[i].asset_no.substring(3,5)+'</div> ';
           innerHtml +='      <table cellpadding="0" cellspacing="0" class="print_table" border="1" width="100%">';
           innerHtml +='        <tr>';
           innerHtml +='          <th>수주번호</th>';
@@ -191,7 +191,7 @@ function print(){
           innerHtml +='        </tr>';
           innerHtml +='        <tr>';
           innerHtml +='        <th>설비번호</th>';
-          innerHtml +='          <td>'+jsonResult[i].asset_name+'</td>';
+          innerHtml +='          <td>'+jsonResult[i].asset_no+'</td>';
           innerHtml +='        </tr>';
           innerHtml +='      </table>';
           innerHtml +='    </div>';
