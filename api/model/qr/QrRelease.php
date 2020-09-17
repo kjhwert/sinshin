@@ -45,6 +45,7 @@ class QrRelease extends Model
                             on aa.created_id = ee.id
                             where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id) b
                 on a.id = b.process_order_id
@@ -82,6 +83,7 @@ class QrRelease extends Model
                             on cc.to_id = dd.id
                             where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT') b
                 on a.id = b.process_order_id
                 inner join `order` c

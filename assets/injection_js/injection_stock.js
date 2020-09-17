@@ -154,3 +154,9 @@ function paging(end, start, total){
 $("#search_btn").on("click", function(){
   location.href="../product_history/injection_stock.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
 });
+
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});

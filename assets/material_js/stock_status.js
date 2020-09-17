@@ -127,3 +127,8 @@ function paging(end, start, total){
 $("#search_btn").on("click", function(){
   location.href="../product_history/stock_status.html?search_text="+$("#search_text").val()+"&material_type="+$("#material_type").val();
 });
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});

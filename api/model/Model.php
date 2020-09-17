@@ -75,12 +75,18 @@ class Model
     {
         $data = $this->validate($data, $this->createRequired);
 
+        print_r($data);
+        exit;
+
         $sql = "insert into {$this->table} 
                 set {$this->dataToString($data)}, 
                 stts = 'ACT', 
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
                 ";
+
+        echo $sql;
+        exit;
 
         return new Response(200, $this->fetch($sql), '등록되었습니다.');
     }
@@ -275,7 +281,11 @@ class Model
                     (new ErrorHandler())->typeError($key);
                 }
 
-                $data[$key] = (int)$value;
+                if (gettype($value) === 'double') {
+                    $data[$key] = (float)$value;
+                } else {
+                    $data[$key] = (int)$value;
+                }
             }
         }
 

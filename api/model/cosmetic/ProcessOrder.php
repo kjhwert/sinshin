@@ -4,6 +4,11 @@ class ProcessOrder extends Model
 {
     protected $table = 'process_order';
 
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getDatabase();
+    }
+
     public function index(array $params = [])
     {
         if (!$params['order_id']) {
@@ -43,8 +48,6 @@ class ProcessOrder extends Model
 
     public function create(array $data = [])
     {
-        (new Order())->create();
-
         $erp = ErpDatabase::getInstance()->getDatabase();
         $mes = Database::getInstance()->getDatabase();
 
@@ -72,7 +75,7 @@ class ProcessOrder extends Model
                         qty = {$result['quantity']},
                         customer_id = {$result['companyId']},
                         order_status = '{$result['status']}',
-                        created_id = {$this->token['id']},
+                        created_id = 1,
                         created_at = SYSDATE()
                     ";
 
@@ -94,8 +97,6 @@ class ProcessOrder extends Model
 
             $this->fetch($sql, $mes);
         }
-
-        return new Response(200, [], '등록 되었습니다.');
     }
 
     public function update($id = null, array $data = [])
@@ -106,16 +107,20 @@ class ProcessOrder extends Model
         $sql = "select id from process_order order by id desc limit 1";
         $max_id = $this->fetch($sql, $mes)[0]['id'];
 
-        $max_id = (int)$max_id - 1000;
+        $max_id = (int)$max_id - 5000;
 
         $sql = "select * from MES_ProcessOrder where id >= {$max_id}";
         $erp_results = $this->fetch($sql, $erp);
 
         foreach ($erp_results as $result) {
             $sql = "update process_order set
-                        updated_id = {$this->token['id']},
+                        updated_id = 1,
                         updated_at = SYSDATE()
                     ";
+
+            if ($result['code']) {
+                $sql .= ", code = '{$result['code']}'";
+            }
 
             if ($result['priority']) {
                 $sql .= ", ord = {$result['priority']}";

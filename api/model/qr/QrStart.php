@@ -47,6 +47,7 @@ class QrStart extends Model
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_start}
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id
@@ -84,6 +85,7 @@ class QrStart extends Model
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_start}
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id) b
@@ -185,8 +187,11 @@ class QrStart extends Model
 
         $material_id = $result['material_id'];
 
-        $sql = "select change_qty, remain_qty from material_stock_log 
-                where material_id = {$material_id} order by created_at desc limit 1";
+        $sql = "select log.change_qty, log.remain_qty, mm.qty
+                from material_master mm
+                inner join material_stock_log log
+                where mm.id = {$material_id} order by log.created_at desc limit 1
+                ";
 
         $result = $this->fetch($sql)[0];
 
@@ -196,7 +201,7 @@ class QrStart extends Model
             return new Response(403, [], '재고가 부족합니다.');
         }
 
-        $change_qty = -1;
+        $change_qty = -(int)$result['qty'];
         $remain_qty += $change_qty;
 
         $sqls = [
@@ -295,7 +300,7 @@ class QrStart extends Model
         $print_qty = $data['print_qty'];
         unset($data['print_qty']);
 
-        $sql = "select pm.id, mm.id as material_id
+        $sql = "select pm.id, mm.id as material_id, mm.qty
                     from process_order po
                     inner join product_master pm
                     on po.product_code = pm.code
@@ -303,6 +308,8 @@ class QrStart extends Model
                     on pm.material_id = mm.id
                     where po.id = {$data['process_order_id']}";
         $result = $this->fetch($sql)[0];
+
+        $qty = $result['qty'];
         $product_id = $result['id'];
         $material_id = $result['material_id'];
 
@@ -317,6 +324,8 @@ class QrStart extends Model
 
         $remain_qty = $this->fetch($sql)[0]['remain_qty'];
         $necessary_qty = $print_qty;
+
+        $remain_qty = (int)($remain_qty / $qty);
 
         if ($necessary_qty > $remain_qty) {
             return new Response(403, [], "원자재 재고량이 부족합니다. 출력 수량 : {$necessary_qty} 재고량 : {$remain_qty}");

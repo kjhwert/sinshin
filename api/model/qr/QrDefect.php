@@ -60,6 +60,7 @@ class QrDefect extends Model
                       inner join product_master d
                       on a.product_id = d.id
                       where b.process_status = {$process_complete}
+                      and b.dept_id = {$dept_id}
                       and a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                       {$this->searchAsset($params['params'])}
                     group by a.process_order_id) as p
@@ -105,6 +106,7 @@ class QrDefect extends Model
                           inner join product_master d
                           on a.product_id = d.id
                           where b.process_status = {$process_complete}
+                          and b.dept_id = {$dept_id}
                           and a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                           {$this->searchAsset($params)}
                         group by a.process_order_id) as p
@@ -112,6 +114,34 @@ class QrDefect extends Model
                     where a.stts = 'ACT'
                     {$this->searchDate($params)} {$this->searchText($params)}) as tot
                 ";
+    }
+
+    public function tabletIndex (array $params = [])
+    {
+        if (!$params['order_no']) {
+            return (new ErrorHandler())->typeNull('order_no');
+        }
+
+        if (!$params['process_type']) {
+            return (new ErrorHandler())->typeNull('process_type');
+        }
+
+        $sql = "select a.asset_no, pm.name as product_name, o.order_no, po.id,
+                    o.id as order_id, pm.id as product_id, mm.name as material_name, mm.qty, mm.unit
+                    from process_order po
+                    inner join `order` o
+                    on po.order_id = o.id
+                    inner join product_master pm
+                    on po.product_code = pm.code
+                    inner join asset a
+                    on po.asset_id = a.id
+                    inner join material_master mm
+                    on pm.material_id = mm.id
+                where pm.name like '%{$params['product_name']}%'
+                and po.process_type = '{$params['process_type']}'
+                and o.order_no like '%{$params['order_no']}%' order by o.created_at desc limit 20";
+
+        return new Response(200, $this->fetch($sql), '');
     }
 
     public function show($id = null)

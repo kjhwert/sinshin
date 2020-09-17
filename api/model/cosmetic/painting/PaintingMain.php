@@ -26,9 +26,10 @@ class PaintingMain extends InjectionMain
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (
-                    select c.order_no, c.ord, c.jaje_code, d.name as product_name,
+                    select c.order_no, c.ord, c.jaje_code, d.name as product_name, a.id,
                 a.order_date, a.request_date, a.qty as process_qty, ifnull(sum(b.qty),0) as product_qty,
-                ifnull(ROUND((sum(b.qty)/a.qty)*100, 1),0) as process_percent
+                ifnull(ROUND((sum(b.qty)/a.qty)*100, 1),0) as process_percent, e.name as type,
+                p.work_qty, p.humidity_max, p.humidity_min, p.humidity_average, p.conveyor_speed
                 from process_order a
                   inner join (select process_order_id, process_stts, qty
                                 from qr_code
@@ -36,11 +37,15 @@ class PaintingMain extends InjectionMain
                             and stts = 'ACT'
                             and dept_id = {$dept_id}) b
                             on a.id = b.process_order_id
-                  inner join `order` c
-                    on a.order_id = c.id
-                  inner join product_master d
-                    on a.product_code = d.code
-                 where a.stts = 'ACT'
+                inner join `order` c
+                on a.order_id = c.id
+                inner join product_master d
+                on a.product_code = d.code
+                left join process_code e
+                on a.process_type = e.code
+                left join painting_process_setting p
+                on a.id = p.process_order_id
+                where a.stts = 'ACT'
                 group by a.id order by {$params['params']['sort']} {$params['params']['order']}) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc

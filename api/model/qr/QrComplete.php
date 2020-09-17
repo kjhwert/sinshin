@@ -42,6 +42,7 @@ class QrComplete extends Model
                             from qr_code aa
                             inner join (select * from change_stts 
                                         where process_status = {$process_complete}
+                                        and dept_id = {$dept_id}
                                         order by created_at desc LIMIT 18446744073709551615
                                         ) bb
                             on aa.id = bb.qr_id
@@ -85,6 +86,7 @@ class QrComplete extends Model
                             on aa.asset_id = cc.id
                             where aa.process_stts = {$process_complete} and bb.process_status = {$process_complete} 
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b
@@ -199,8 +201,8 @@ class QrComplete extends Model
                     $stmt->execute();
                     $qr_id = $this->db->lastInsertId();
 
-                    $sql = "select o.order_no, b.name as material_name, b.code, a.created_at, d.asset_no,
-                                   a.qty, c.unit, c.name as product_name, d.name as asset_name, d.id as asset_id
+                    $sql = "select o.order_no, b.name as product_name, b.code, a.created_at, d.asset_no,
+                                   a.qty, c.unit, c.name as material_name, d.name as asset_name, d.id as asset_id
                             from qr_code a
                                 inner join product_master b
                                 on a.product_id = b.id

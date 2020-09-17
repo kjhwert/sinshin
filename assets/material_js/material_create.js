@@ -103,19 +103,19 @@ $("#material_qty").on("keyup", function(){
     alert("분류를 먼저 선택해주세요");
     $(this).val("");
     return;
+  }else if($("#search_type").val() == "IN"){
+    $("#total_qty").val(Number($(this).val() * 25));
   }
   if($("#material_code").val() == null){
     alert("자재코드를 먼저 선택해주세요");
     $(this).val("");
     return;
   }
-  if($("#search_type").val() == "M"){
-    $("#total_qty").val(Number($(this).val() * 25));
-  }
+
 });
 
 $("#search_type").on("change", function(){
-  if($(this).val() == "M"){
+  if($(this).val() == "IN"){
     $("#material_unit").val("Kg");
   }else if($(this).val() == "P"){
     $("#material_unit").val("L");
@@ -153,4 +153,10 @@ $("#stock_insert").on("click", function(){
   }).fail(function(data, textStatus, errorThrown){
       console.log("전송 실패");
   });
+});
+
+$("#material_qty").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#stock_insert").click();
+  }
 });

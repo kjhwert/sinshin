@@ -20,7 +20,7 @@ class MaterialStock extends Model
 
         $material_type = $params['params']['material_type'];
 
-        $sql = "select a.code, a.name, b.qty, (a.qty * b.qty) as total, a.unit, b.stock_date,
+        $sql = "select a.code, a.name, truncate((b.qty / a.qty),0) as qty, b.qty as total, a.unit, b.stock_date,
                        c.name as manager, @rownum:= @rownum+1 AS RNUM
                     from material_master a
                     inner join material_stock b
@@ -47,8 +47,8 @@ class MaterialStock extends Model
         $material_type = $params['params']['material_type'];
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* from (
-                       select a.id, a.code, a.name, a.type, a.model, c.remain_qty, a.unit,
-                              (c.remain_qty * a.qty) as total, c.created_at,
+                       select a.id, a.code, a.name, a.type, a.model, truncate((c.remain_qty / a.qty),0) as remain_qty, a.unit,
+                              remain_qty as total, c.created_at,
                               b.stock_date, e.name as manager
                        from material_master a
                         inner join (select * from (
@@ -135,19 +135,20 @@ class MaterialStock extends Model
                 order by created_at desc limit 1";
         $remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
 
-        $remain = $data['qty'] + $remain_qty;
+        $qty = $data['qty'] * 25;
+        $remain = $qty + $remain_qty;
 
         $sqls = [
             "insert into {$this->table} set
                 material_id = {$data['material_id']},
                 stock_date = '{$data['stock_date']}',
-                qty = {$data['qty']},
+                qty = {$qty},
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
             ",
             "insert into material_stock_log set
                 material_id = {$data['material_id']},
-                change_qty = {$data['qty']},
+                change_qty = {$qty},
                 remain_qty = {$remain},
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()

@@ -1,6 +1,29 @@
-injection_start_detail();
+$("#order_no").on("click", function(){
+    $("#search_modal").fadeIn(300);
+    $("#modal_back").fadeIn(300);
+    $("#search_text").val("");
+    $("#search_table").empty();
+    $(".search_result_box").css("display","none");
+});
+$("#search_btn").on("click", function(){
+  var search_text = $("#search_text").val();
+  if(search_text == ""){
+    alert("수주번호를 입력해주세요");
+    return;
+  }else{
+    order_search(search_text);
+  }
+});
+$("#modal_back").on("click", function(){
+  modal_off();
+});
 
-function injection_start_detail(){
+function modal_off(){
+  $("#search_modal").fadeOut(300);
+  $("#modal_back").fadeOut(300);
+}
+
+function order_search(search){
   $.ajax({
       type    : "GET",
       url        : "../api/cosmetics/master/order/index.php",
@@ -10,31 +33,39 @@ function injection_start_detail(){
       },
       dataType:"json",
       data:{
-        material_id: getParam("material_id")
+        search: search
       }
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
+      console.log(result);
       var jsonResult = result.data;
-      console.log(jsonResult);
-      var text = '';
-      for(var i in jsonResult){
-        text +='<option selected hidden disabled>수주번호를 선택하세요</option>';
-        text +='<option value='+jsonResult[i].id+'>'+jsonResult[i].order_no+'</option>'
-      }
-      $("#order_no").empty();
-      $("#order_no").append(text);
+      $(".search_result_box").css("display","block");
+      var text = "<tr>";
+          text += "<th>수주번호</th>";
+          text += "</tr>";
 
-      $("#order_no").on("change", function(){
-        var order_no = $(this).val();
-        balju_select(order_no);
-      });
+      for(var i in jsonResult){
+        text +='<tr data-code='+jsonResult[i].id+' data-order_no='+jsonResult[i].order_no+'>';
+        text +="  <td>"+jsonResult[i].order_no+"</td>";
+        text +="</tr>";
+      }
+
+      $("#search_table").empty();
+      $("#search_table").append(text);
+      $("#search_table tr").on("click", function(){
+        var code = $(this).data("code");
+        var order_no = $(this).data("order_no");
+        $("#order_no").val(order_no);
+        balju_select(code);
+        modal_off();
+      })
     }else{
       alert(result.message);
     }
   }).fail(function(data, textStatus, errorThrown){
     console.log("전송 실패");
   });
-}
+};
 
 function balju_select(order_no){
   $.ajax({

@@ -133,3 +133,9 @@ function paging(end, start, total){
 $("#search_btn").on("click", function(){
   location.href="../product_history/material_status.html?search_text="+$("#search_text").val()+"&start_date="+$("#start_date").val()+'&end_date='+$("#end_date").val()+'&material_type='+$("#material_type").val();
 });
+
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});

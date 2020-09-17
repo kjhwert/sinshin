@@ -19,7 +19,7 @@ class QrStock extends Model
 
     protected function getDeptId ()
     {
-        return Dept::$PAINTING;
+        return Dept::$INJECTION;
     }
 
     public function index(array $params = [])
@@ -45,6 +45,7 @@ class QrStock extends Model
                             on aa.asset_id = cc.id
                             where bb.process_status = {$process_stock} 
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b
@@ -80,6 +81,7 @@ class QrStock extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
+                            and bb.dept_id = {$dept_id}
                             where bb.process_status = {$process_stock} and aa.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'

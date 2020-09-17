@@ -12,11 +12,13 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            $model->index($params);
+            return $model->index($params);
         } else {
-            $model->show($id);
+            if ($params['type'] === 'defect') {
+                return $model->showDefect($id);
+            }
+            return $model->show($id);
         }
-        break;
     case 'POST' : $model->create($params);
         break;
     case 'PUT' : $model->update($id, $params);

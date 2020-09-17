@@ -3,6 +3,12 @@
 class Order extends Model
 {
     protected $table = 'order';
+    protected $searchableText = 'o.order_no';
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getDatabase();
+    }
 
     public function index(array $params = [])
     {
@@ -12,9 +18,10 @@ class Order extends Model
         $sql = "select o.id, o.order_no from `order` o
                     inner join process_order po
                     on o.id = po.order_id 
-                    where o.order_date > '{$date}'
-                    and po.code is not null
+                    where
+                    po.code is not null
                     and po.asset_id is not null
+                    {$this->searchText($params)}
                     group by o.id";
 
         return new Response(200, $this->fetch($sql, $this->db));
@@ -51,7 +58,7 @@ class Order extends Model
                         request_date = '{$result['requestDeliveryDate']}',
                         supply_id = {$result['sujuCompanyId']},
                         order_type = '{$result['sujuType']}',
-                        created_id = {$this->token['id']},
+                        created_id = 1,
                         created_at = SYSDATE()
                     ";
 

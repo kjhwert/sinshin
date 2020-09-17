@@ -31,7 +31,8 @@ class QrStockP extends QrStock
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
-                            where bb.process_status = {$process_stock} 
+                            where bb.process_status = {$process_stock}
+                            and bb.dept_id = {$dept_id}
                             and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b
@@ -63,7 +64,9 @@ class QrStockP extends QrStock
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
-                            where bb.process_status = {$process_stock} and aa.dept_id = {$dept_id}
+                            where bb.process_status = {$process_stock} 
+                            and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b

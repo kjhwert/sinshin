@@ -160,3 +160,11 @@ git status
 git commit -m '20200911'
 git push origin master
 exit
+git status
+git add .
+git push origin master
+git pull
+git commit -m 'pull'
+git push origin master
+git push -f origin master
+exit

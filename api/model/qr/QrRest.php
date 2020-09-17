@@ -9,7 +9,7 @@ class QrRest extends Model
     public function show($id = null)
     {
         $sql = "select o.order_no, pm.name as product_name, mm.name as material_name, mm.id as material_id,
-                        a.name as asset_name, qr.id, qr.process_stts, qr.qty, mm.unit, 1 as box_qty
+                        a.asset_no as asset_name, qr.id, qr.process_stts, qr.qty, mm.unit, 1 as box_qty
                 from qr_code qr
                 inner join `order` o
                 on qr.order_id = o.id

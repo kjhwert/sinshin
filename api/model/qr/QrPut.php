@@ -27,6 +27,11 @@ class QrPut extends Model
         'product' => 'product_name'
     ];
 
+    protected function getDeptId ()
+    {
+        return Dept::$PAINTING;
+    }
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -38,11 +43,11 @@ class QrPut extends Model
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, b.product_qty, c.order_no, b.box_qty,
+                from (select a.id, b.product_qty, c.order_no, b.box_qty, b.manager,
                    d.name as product_name, b.process_date, b.customer_name, ifnull(e.name,'') as type
                 from process_order a
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
-                                bb.process_date, cm.name as customer_name
+                                bb.process_date, cm.name as customer_name, u.name as manager
                             from qr_code aa
                             inner join warehouse w
                             on aa.id = w.qr_id
@@ -50,8 +55,11 @@ class QrPut extends Model
                             on w.from_id = cm.id
                             inner join change_stts bb
                             on aa.id = bb.qr_id
+                            inner join `user` u
+                            on bb.created_id = u.id
                             where bb.process_status = {$process_warehousing}
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id
                             ) b
@@ -80,7 +88,7 @@ class QrPut extends Model
 
         return "select count(a.id) as cnt
                 from process_order a 
-                inner join (select aa.process_order_id
+                inner join (select aa.process_order_id, bb.process_date
                             from qr_code aa
                             inner join warehouse w
                             on aa.id = w.qr_id
@@ -90,8 +98,11 @@ class QrPut extends Model
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
+                            inner join `user` u
+                            on bb.created_id = u.id
                             where bb.process_status = {$process_warehousing}
                             and aa.dept_id = {$dept_id}
+                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params)}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id) b
@@ -109,22 +120,46 @@ class QrPut extends Model
     public function show($id = null)
     {
         $process_warehousing = Code::$PROCESS_WAREHOUSING;
+        $dept_id = $this->getDeptId();
+
+        $injection = Dept::$INJECTION;
+        $process_complete = Code::$PROCESS_COMPLETE;
 
         $sql = "select
-                    cs.process_date, o.order_no, po.id,
-                       MIN(cs.process_date) as start_date, MAX(cs.process_date) as end_date,
-                    pm.name as product_name, o.jaje_code, sum(qc.qty) as qty,
-                    po.code as process_code
+                    cs.process_date as put_date, o.order_no,
+                    pm.name as product_name, qc.qty, wh.from_name, u.name as manager, cc.process_date,
+                    po.code as process_code, @rownum:= @rownum+1 AS RNUM, ifnull(a.asset_no,'') as asset_no
                 from qr_code qc
                      inner join process_order po
-                        on qc.process_order_id = po.id
+                     on qc.process_order_id = po.id
                      inner join `order` o
-                        on qc.order_id = o.id
+                     on qc.order_id = o.id
                      inner join change_stts cs
-                        on qc.id = cs.qr_id
+                     on qc.id = cs.qr_id
+                     left join (
+                        select * from change_stts
+                        where dept_id = {$injection} and process_status = {$process_complete}
+                     ) cc
+                     on qc.id = cc.qr_id
                      inner join product_master pm
-                        on qc.product_id = pm.id
-                where po.id = {$id} and cs.process_status = {$process_warehousing}
+                     on qc.product_id = pm.id
+                     inner join `user` u
+                     on cs.created_id = u.id
+                     left join asset a
+                     on qc.asset_id = a.id
+                     inner join (
+                        select wh.qr_id, cm.name as from_name 
+                        from warehouse wh
+                        inner join customer_master cm
+                        on wh.from_id = cm.id
+                     ) wh
+                     on qc.id = wh.qr_id,
+                     (SELECT @rownum:= 0) AS R
+                where po.id = {$id}
+                and cs.process_status = {$process_warehousing}
+                and qc.dept_id = {$dept_id}
+                and cs.dept_id = {$dept_id}
+                order by RNUM desc
                 ";
 
         return new Response(200, $this->fetch($sql));
@@ -298,7 +333,6 @@ class QrPut extends Model
 
         $box_id = $this->isBoxQrCode($id);
         if ($box_id) {
-            $this->isDeptProcess($id);
             return $this->printBox($box_id);
         }
 
@@ -370,10 +404,5 @@ class QrPut extends Model
             $this->db->rollBack();
             return new Response(403, [],'데이터 입력 중 오류가 발생하였습니다.');
         }
-    }
-
-    protected function getDeptId ()
-    {
-        return Dept::$PAINTING;
     }
 }

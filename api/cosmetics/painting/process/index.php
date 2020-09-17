@@ -6,26 +6,20 @@ $req = new Request();
 $params = $req->getParams();
 $method = $req->getMethod();
 
-$model = new QrDefect();
+$model = new PaintingProcessSetting();
 $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            if($params['type'] === 'tablet') {
-                return $model->tabletIndex($params);
-            }
             return $model->index($params);
         } else {
-            if ($params['type'] === 'defect') {
-                return $model->showDefect($id);
-            }
             return $model->show($id);
         }
     case 'POST' : $model->create($params);
         break;
     case 'PUT' : $model->update($id, $params);
         break;
-    case 'DELETE' : $model->destroy($id);
-        break;
+//    case 'DELETE' : $model->destroy($id);
+//        break;
 }

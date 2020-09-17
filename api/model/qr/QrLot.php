@@ -47,14 +47,23 @@ class QrLot extends Model
      */
     public function update($id = null, array $data = [])
     {
-        $sql = "update lot set
-                    dept_id = {$this->token['dept_id']},
-                    updated_id = {$this->token['id']},
-                    updated_at = SYSDATE()
-                    where id = {$id}
-               ";
+        $sqls = [
+            "update qr_code set
+                dept_id = {$this->token['dept_id']},
+                updated_id = {$this->token['id']},
+                updated_at = SYSDATE()
+                where id = {$id}
+            ",
+            "update lot set
+                dept_id = {$this->token['dept_id']},
+                updated_id = {$this->token['id']},
+                updated_at = SYSDATE()
+                where qr_id = {$id}
+            "
+        ];
 
-        return new Response(200, $this->fetch($sql), '변경 되었습니다.');
+        $this->setTransaction($sqls);
+        return new Response(200, [], '변경 되었습니다.');
     }
 
     protected function createQrCode ()
