@@ -86,9 +86,9 @@ class QrStartP extends QrStart
         $dept_id = $this->getDeptId();
 
         $sql = "select
-                    cs.process_date, o.order_no,
+                    cs.process_date, o.order_no, o.id as order_id, po.id as process_order_id,
                     pm.name as product_name, qc.qty, u.name as manager, pc.name as type,
-                    po.code as process_code, @rownum:= @rownum+1 AS RNUM
+                    po.code as process_code, @rownum:= @rownum+1 AS RNUM, pm.id as product_id
                 from qr_code qc
                      inner join process_order po
                      on qc.process_order_id = po.id

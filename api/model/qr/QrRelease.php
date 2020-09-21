@@ -135,6 +135,7 @@ class QrRelease extends Model
                      created_at = SYSDATE()
                     ",
                     "update qr_code set
+                     from_id = {$data['from_id']},
                      process_stts = {$process_release},
                      updated_id = {$this->token['id']},
                      updated_at = SYSDATE()

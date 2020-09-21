@@ -24,7 +24,7 @@ class QrStockP extends QrStock
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, b.box_qty, b.product_qty, c.order_no,
-                   d.name as product_name, b.process_date
+                   d.name as product_name, b.process_date, e.name as type
                 from process_order a
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                 bb.process_date
@@ -41,6 +41,8 @@ class QrStockP extends QrStock
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
+                left join process_code e
+                on a.process_type = e.code
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,

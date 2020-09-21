@@ -18,7 +18,7 @@ function injection_defect_detail(){
     if(result.status == 200){
       var jsonResult = result.data;
       console.log(jsonResult);
-      $("#created_at").text(jsonResult[0].created_at);
+      $("#created_at").text(jsonResult[0].start_date.substr(0,10));
       $("#asset_name").text(jsonResult[0].display_name);
       $("#order_no").text(jsonResult[0].order_no);
       $("#barju_id").text(jsonResult[0].process_code);

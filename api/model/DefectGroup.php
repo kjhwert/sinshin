@@ -6,6 +6,8 @@ class DefectGroup extends Model
     protected $table = 'defect_group';
     protected $paging = false;
 
+    public static $INJECTION = 4;
+
     public function index(array $params = [])
     {
         $sql = "select {$this->getFields()}, b.name as dept_name, @rownum:= @rownum+1 AS RNUM 

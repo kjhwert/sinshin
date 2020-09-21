@@ -31,7 +31,7 @@ class ProcessOrder extends Model
      */
     public function show($id = null, array $data = [])
     {
-        $sql = "select po.id, mm.code as jaje_code, a.asset_no, a.id as asset_id,
+        $sql = "select po.id, mm.code as jaje_code, a.asset_no, a.id as asset_id, pm.id as product_id,
                         pm.name as product_name, mm.name as material_name 
                 from process_order po
                 inner join product_master pm

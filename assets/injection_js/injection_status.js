@@ -129,12 +129,16 @@ function injection_stock(){
     if(result.status == 200){
       var jsonResult = result.data;
       console.log(jsonResult);
-      for(var i in jsonResult){
-        text +='<li>';
-        text +='  <img src="../assets/images/pallet.png">';
-        text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
-        text +='  <p class="stock_cnt">'+comma(jsonResult[i].box_qty)+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
-        text +='</li>';
+      if(jsonResult.length == 0){
+        text +="<li>현재 등록된 재고가 없습니다</li>";
+      }else{
+        for(var i in jsonResult){
+          text +='<li>';
+          text +='  <img src="../assets/images/pallet.png">';
+          text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
+          text +='  <p class="stock_cnt">'+comma(jsonResult[i].box_qty)+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
+          text +='</li>';
+        }
       }
       $("#stock_ul").empty();
       $("#stock_ul").append(text);

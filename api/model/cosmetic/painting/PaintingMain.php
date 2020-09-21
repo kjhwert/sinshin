@@ -29,7 +29,9 @@ class PaintingMain extends InjectionMain
                     select c.order_no, c.ord, c.jaje_code, d.name as product_name, a.id,
                 a.order_date, a.request_date, a.qty as process_qty, ifnull(sum(b.qty),0) as product_qty,
                 ifnull(ROUND((sum(b.qty)/a.qty)*100, 1),0) as process_percent, e.name as type,
-                p.work_qty, p.humidity_max, p.humidity_min, p.humidity_average, p.conveyor_speed
+                ifnull(p.work_qty,'') as work_qty, ifnull(p.humidity_max,'') as humidity_max, 
+                ifnull(p.humidity_min,'') as humidity_min, ifnull(p.humidity_average,'') as humidity_average, 
+                ifnull(p.conveyor_speed, '') as conveyor_speed
                 from process_order a
                   inner join (select process_order_id, process_stts, qty
                                 from qr_code
@@ -77,6 +79,37 @@ class PaintingMain extends InjectionMain
                      inner join product_master d
                         on a.product_code = d.code
                 where a.stts = 'ACT'";
+    }
+
+    public function show($id = null)
+    {
+        $dept_id = $this->getDeptId();
+        $process_complete = Code::$PROCESS_COMPLETE;
+
+        $sql = "select o.order_no, pc.name as type, pm.name as product_name, po.code as process_code,
+                       po.request_date, po.order_date, po.qty as process_qty, ifnull(sum(b.qty),0) as product_qty,
+                       ifnull(ROUND((sum(b.qty)/po.qty)*100, 1),0) as process_percent,
+                       p.work_qty, p.humidity_min, p.humidity_max, p.humidity_average, p.conveyor_speed
+                    from process_order po
+                    inner join (
+                        select process_order_id, process_stts, qty
+                        from qr_code
+                        where process_stts >= {$process_complete}
+                        and stts = 'ACT'
+                        and dept_id = {$dept_id}) b
+                    on po.id = b.process_order_id
+                    inner join `order` o
+                    on po.order_id = o.id
+                    inner join product_master pm
+                    on po.product_code = pm.code
+                    left join process_code pc
+                    on po.process_type = pc.code
+                    left join painting_process_setting p
+                    on po.id = p.process_order_id
+                where po.id = {$id}
+                ";
+
+        return new Response(200, $this->fetch($sql)[0]);
     }
 
     public function stockIndex (array $params = [])

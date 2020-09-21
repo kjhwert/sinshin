@@ -5,6 +5,10 @@ class CustomerMaster extends Model
     protected $table = 'customer_master';
     protected $searchableText = 'name';
 
+    public static $PAINTING = 32; // 도장
+    public static $INJECTION = 30; // 사출
+    public static $ASSEMBLE = 184; // 조립
+
     public function index(array $params = [])
     {
         $sql = "select id, name from customer_master 

@@ -112,7 +112,8 @@ class QrComplete extends Model
                     from qr_code qc
                     inner join process_order po
                     on qc.process_order_id = po.id
-                    inner join `order` o on qc.order_id = o.id
+                    inner join `order` o 
+                    on qc.order_id = o.id
                     inner join change_stts cs
                     on qc.id = cs.qr_id
                     inner join `user` u

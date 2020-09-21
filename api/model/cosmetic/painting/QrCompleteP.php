@@ -82,12 +82,38 @@ class QrCompleteP extends QrComplete
                 {$this->searchText($params)} {$this->searchDate($params)}";
     }
 
+    public function qrShow ($id = null)
+    {
+        $sql = "select o.order_no, pm.name as product_name, qr.id, qr.process_stts, qr.qty
+                from qr_code qr
+                inner join `order` o
+                on qr.order_id = o.id
+                inner join product_master pm
+                on qr.product_id = pm.id
+                where qr.id = {$id}
+                ";
+
+        $result = $this->fetch($sql)[0];
+        $process_start = Code::$PROCESS_START;
+        $process_complete = Code::$PROCESS_COMPLETE;
+
+        if ($result['process_stts'] === $process_complete) {
+            return new Response(403, [], '이미 처리 되었습니다.');
+        }
+
+        if ($result['process_stts'] !== $process_start) {
+            return new Response(403, [], 'QR코드를 확인해주세요.');
+        }
+
+        return new Response(200, $result);
+    }
+
     public function show($id = null)
     {
         $process_complete = Code::$PROCESS_COMPLETE;
 
         $sql = "select
-                   cs.process_date, o.order_no, po.id, u.name as manager,
+                   cs.process_date, o.order_no, po.id, u.name as manager, e.name as type,
                    pm.name as product_name, po.code as process_code, qc.qty, @rownum:= @rownum+1 AS RNUM
                     from qr_code qc
                     inner join process_order po
@@ -98,7 +124,9 @@ class QrCompleteP extends QrComplete
                     inner join `user` u
                     on cs.created_id = u.id
                     inner join product_master pm
-                    on qc.product_id = pm.id,
+                    on qc.product_id = pm.id
+                    left join process_code e
+                    on po.process_type = e.code,
                     (SELECT @rownum:= 0) AS R
                 where po.id = {$id} and cs.process_status = {$process_complete}
                 order by RNUM desc

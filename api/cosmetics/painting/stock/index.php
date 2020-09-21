@@ -12,6 +12,9 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
+            if($params['qr_id']) {
+                return $model->qrShow($params['qr_id']);
+            }
             $model->index($params);
         } else {
             $model->show($id);

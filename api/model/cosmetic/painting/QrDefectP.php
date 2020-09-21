@@ -21,13 +21,14 @@ class QrDefectP extends QrDefect
                 from (select a.id, ifnull(d.defect_qty, 0) as defect_qty,
                    round((ifnull(d.defect_qty,0)/p.product_qty)*100,1) as defect_percent,
                    ifnull(p.product_qty,0) as product_qty, o.order_no, p.product_name,
-                   ifnull(d.created_at,'') as process_date, ifnull(d.user_name,'') as manager,
+                   d.start_date, d.end_date, ifnull(d.user_name,'') as manager,
                    pc.name as type
                 from process_order a
                 inner join `order` o
                 on a.order_id = o.id
                 left join (
-                    select sum(a.qty) as defect_qty, a.process_order_id, a.created_at, c.name as user_name
+                    select sum(a.qty) as defect_qty, a.process_order_id, a.created_at, c.name as user_name, 
+                            min(a.created_at) as start_date, max(a.created_at) as end_date
                     from cosmetics_defect_log a
                          inner join defect b
                          on a.defect_id = b.id
@@ -104,14 +105,17 @@ class QrDefectP extends QrDefect
         $process_complete = Code::$PROCESS_COMPLETE;
         $dept_id = $this->getDeptId();
 
-        $sql = "select po.id, a.created_at, o.order_no, b.product_name,
+        $sql = "select po.id, a.start_date, a.end_date, o.order_no, b.product_name, e.name as type,
                    b.product_qty, a.defect_qty, round((a.defect_qty/b.product_qty)*100,1) as defect_percent,
                    a.manager, po.code as process_code
                 from process_order po
+                left join process_code e
+                on po.process_type = e.code
                 inner join `order` o
                 on po.order_id = o.id
                 inner join (
-                    select sum(a.qty) as defect_qty, a.process_order_id, c.name as manager, a.created_at
+                    select sum(a.qty) as defect_qty, a.process_order_id, c.name as manager,
+                            min(a.created_at) as start_date, max(a.created_at) as end_date
                     from cosmetics_defect_log a
                          inner join defect b
                          on a.defect_id = b.id

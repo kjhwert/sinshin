@@ -55,36 +55,44 @@
             </div>
             <div class="card-content collapse show">
               <div class="card-body">
-                <p>수주번호: 987654321</p>
+                <p>수주번호: <span id="total_order_no"></span></p>
+                <p>발주번호: <span id="total_process_code"></span></p>
+                <p>유형: <span id="total_type"></span></p>
+                <p>제품명: <span id="total_product_name"></span></p>
+                <p>발주일자: <span id="total_request_date"></span></p>
+                <p>납기일자: <span id="total_order_date"></span></p>
+                <p>발주량: <span id="total_process_qty"></span></p>
+                <p>총생산량: <span id="total_product_qty"></span></p>
+                <p>진척률: <span id="total_process_percent"></span></p>
                 <div class="table-responsive">
                   <table class="table table-striped table-bordered multi-ordering dataTable no-footer">
                     <thead>
                       <tr>
                         <th>작업인원</th>
-                        <td><input class="form-control" id="search" type="text" placeholder="내용을 입력해주세요"></td>
+                        <td><input class="form-control" id="work_qty" type="text" placeholder="내용을 입력해주세요"></td>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <th>온습도(최대)</th>
-                        <td><input class="form-control" id="search" type="text" placeholder="내용을 입력해주세요"></td>
+                        <td><input class="form-control" id="humidity_max" type="text" placeholder="내용을 입력해주세요"></td>
                       </tr>
                       <tr>
                         <th>온습도(최소)</th>
-                        <td><input class="form-control" id="search" type="text" placeholder="내용을 입력해주세요"></td>
+                        <td><input class="form-control" id="humidity_min" type="text" placeholder="내용을 입력해주세요"></td>
                       </tr>
                       <tr>
                         <th>온습도(평균)</th>
-                        <td><input class="form-control" id="search" type="text" placeholder="내용을 입력해주세요"></td>
+                        <td><input class="form-control" id="humidity_average" type="text" placeholder="내용을 입력해주세요"></td>
                       </tr>
                       <tr>
                         <th>컨베이어속도</th>
-                        <td><input class="form-control" id="search" type="text" placeholder="내용을 입력해주세요"></td>
+                        <td><input class="form-control" id="conveyor_speed" type="text" placeholder="내용을 입력해주세요"></td>
                       </tr>
                     </tbody>
                   </table>
                   <div class="text-center">
-                    <button type="button" class="btn btn-primary btn-min-width custom_btn">확인</button>
+                    <button type="button" class="btn btn-primary btn-min-width custom_btn" onclick="confirm();">확인</button>
                     <button type="button" class="btn btn-secondary btn-min-width custom_btn" onclick="cancel();">취소</button>
                   </div>
                 </div>
@@ -115,6 +123,7 @@
     <!-- BEGIN CHAMELEON  JS-->
     <script src="../theme-assets/js/core/app-menu-lite.js" type="text/javascript"></script>
     <script src="../theme-assets/js/core/app-lite.js" type="text/javascript"></script>
+    <script src="../assets/painting_js/painting_update.js" type="text/javascript"></script>
     <!-- END CHAMELEON  JS-->
     <!-- BEGIN PAGE LEVEL JS-->
     <!-- <script src="../theme-assets/js/scripts/pages/dashboard-lite.js" type="text/javascript"></script> -->

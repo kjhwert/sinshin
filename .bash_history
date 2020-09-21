@@ -168,3 +168,8 @@ git commit -m 'pull'
 git push origin master
 git push -f origin master
 exit
+git add .
+git status
+git commit -m '20200917'
+git push origin master
+exit

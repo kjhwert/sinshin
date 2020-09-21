@@ -20,7 +20,7 @@ class MaterialStock extends Model
 
         $material_type = $params['params']['material_type'];
 
-        $sql = "select a.code, a.name, truncate((b.qty / a.qty),0) as qty, b.qty as total, a.unit, b.stock_date,
+        $sql = "select a.code, a.name, round((b.qty / a.qty),0) as qty, b.qty as total, a.unit, b.stock_date,
                        c.name as manager, @rownum:= @rownum+1 AS RNUM
                     from material_master a
                     inner join material_stock b
@@ -47,7 +47,7 @@ class MaterialStock extends Model
         $material_type = $params['params']['material_type'];
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* from (
-                       select a.id, a.code, a.name, a.type, a.model, truncate((c.remain_qty / a.qty),0) as remain_qty, a.unit,
+                       select a.id, a.code, a.name, a.type, a.model, round((c.remain_qty / a.qty),0) as remain_qty, a.unit,
                               remain_qty as total, c.created_at,
                               b.stock_date, e.name as manager
                        from material_master a

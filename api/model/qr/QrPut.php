@@ -2,12 +2,6 @@
 
 class QrPut extends Model
 {
-    protected $createRequired = [
-        'to_id' => 'integer',
-        'from_id' => 'integer',
-        'is_outsourcing' => 'string'
-    ];
-
     protected $createOutSourcingRequired = [
         'order_id' => 'integer',
         'process_order_id' => 'integer',
@@ -43,11 +37,11 @@ class QrPut extends Model
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, b.product_qty, c.order_no, b.box_qty, b.manager,
+                from (select a.id, b.product_qty, c.order_no, b.box_qty, b.manager, ifnull(b.asset_no,'외주') as asset_no,
                    d.name as product_name, b.process_date, b.customer_name, ifnull(e.name,'') as type
                 from process_order a
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
-                                bb.process_date, cm.name as customer_name, u.name as manager
+                                bb.process_date, cm.name as customer_name, u.name as manager, a.asset_no
                             from qr_code aa
                             inner join warehouse w
                             on aa.id = w.qr_id
@@ -57,6 +51,8 @@ class QrPut extends Model
                             on aa.id = bb.qr_id
                             inner join `user` u
                             on bb.created_id = u.id
+                            left join asset a
+                            on aa.asset_id = a.id
                             where bb.process_status = {$process_warehousing}
                             and aa.dept_id = {$dept_id}
                             and bb.dept_id = {$dept_id}
@@ -127,7 +123,8 @@ class QrPut extends Model
 
         $sql = "select
                     cs.process_date as put_date, o.order_no,
-                    pm.name as product_name, qc.qty, wh.from_name, u.name as manager, cc.process_date,
+                    pm.name as product_name, qc.qty, wh.from_name, u.name as manager, 
+                    ifnull(cc.process_date, '외주') as process_date,
                     po.code as process_code, @rownum:= @rownum+1 AS RNUM, ifnull(a.asset_no,'') as asset_no
                 from qr_code qc
                      inner join process_order po
@@ -174,7 +171,7 @@ class QrPut extends Model
         $this->validate($data, $this->createOutSourcingRequired);
         $this->isAvailableUser();
 
-        $process_warehousing = Code::$PROCESS_WAREHOUSING;
+        $process_release = Code::$PROCESS_RELEASE;
 
         $print_result = [];
         try {
@@ -189,7 +186,7 @@ class QrPut extends Model
                             dept_id = {$this->token['dept_id']},
                             qty = {$data['qty']},
                             from_id = {$data['from_id']},
-                            process_stts = {$process_warehousing},
+                            process_stts = {$process_release},
                             created_id = {$this->token['id']},
                             created_at = '{$data['process_date']}'
                             ";
@@ -200,7 +197,7 @@ class QrPut extends Model
 
                     $sql = "insert into box set
                             qr_id = {$qr_id},
-                            process_status = {$process_warehousing},
+                            process_status = {$process_release},
                             created_id = {$this->token['id']},
                             created_at = SYSDATE()
                             ";
@@ -245,7 +242,6 @@ class QrPut extends Model
      */
     public function create(array $data = [])
     {
-        $this->validate($data, $this->createRequired);
         $this->isAvailableUser();
         $process_warehousing = Code::$PROCESS_WAREHOUSING;
         $group_id = $this->generateRandomString();
@@ -255,8 +251,24 @@ class QrPut extends Model
 
             foreach ($data['qr_ids'] as $qr_id) {
 
-                $sql = "select id from box where qr_id = {$qr_id}";
-                $box_id = $this->fetch($sql)[0]['id'];
+                $sql = "select qc.from_id, b.id
+                        from qr_code as qc
+                        inner join box as b
+                        on qc.id = b.qr_id
+                        where qc.id = {$qr_id}";
+
+                $result = $this->fetch($sql)[0];
+
+                $box_id = $result['id'];
+                $from_id = $result['from_id'];
+
+                $injection = CustomerMaster::$INJECTION;
+                $painting = CustomerMaster::$PAINTING;
+
+                $is_outsourcing = 'N';
+                if ($from_id !== $injection) {
+                    $is_outsourcing = 'Y';
+                }
 
                 /** Lot일 경우 pass */
                 if (!$box_id) {
@@ -268,9 +280,9 @@ class QrPut extends Model
                      box_id = {$box_id},
                      qr_id = {$qr_id},
                      group_id = '{$group_id}',
-                     to_id = {$data['to_id']},
-                     from_id = {$data['from_id']},
-                     is_outsourcing = '{$data['is_outsourcing']}',
+                     to_id = {$painting},
+                     from_id = {$from_id},
+                     is_outsourcing = '{$is_outsourcing}',
                      in_date = SYSDATE(),
                      created_id = {$this->token['id']},
                      created_at = SYSDATE()
@@ -353,25 +365,37 @@ class QrPut extends Model
 
     protected function printBox($box_id = null)
     {
-        $sql = "update box set lot_id = null where id = {$box_id}";
-        $this->fetch($sql);
+        $process_release = Code::$PROCESS_RELEASE;
 
         $sql = "select 1 as box_qty, qc.qty, qc.id as qr_id, pm.name as product_name, 
-                        pm.id as product_id, qc.process_stts
+                        pm.id as product_id, qc.process_stts, lot_id, cm.name as from_name
                     from box a
                     inner join qr_code qc
                     on a.qr_id = qc.id
                     inner join product_master pm
                     on qc.product_id = pm.id
-                where a.id = {$box_id}";
+                    inner join customer_master cm
+                    on qc.from_id = cm.id
+                where a.id = {$box_id} and qc.process_stts = {$process_release}";
 
-        $result = $this->fetch($sql)[0];
+        $result = $this->fetch($sql);
+
+        if (count($result) === 0) {
+            return new Response(403, [],'이미 처리되었습니다.');
+        }
+
+        if ($result[0]['lot_id']) {
+            $sql = "update box set lot_id = null where id = {$box_id}";
+            $this->fetch($sql);
+        }
 
         return new Response(200, $result, '');
     }
 
     protected function printLotList($lot_id = null)
     {
+        $process_release = Code::$PROCESS_RELEASE;
+
         $sql = "select 1 as box_qty, qc.qty, qc.id as qr_id, pm.name as product_name, 
                         pm.id as product_id, qc.process_stts
                     from box a
@@ -379,7 +403,7 @@ class QrPut extends Model
                     on a.qr_id = qc.id
                     inner join product_master pm
                     on qc.product_id = pm.id
-                where a.lot_id = {$lot_id}";
+                where a.lot_id = {$lot_id} and qc.process_stts = {$process_release}";
 
         return new Response(200, $this->fetch($sql), '');
     }

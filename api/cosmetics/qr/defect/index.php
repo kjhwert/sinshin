@@ -17,10 +17,14 @@ switch ($method) {
             }
             return $model->index($params);
         } else {
-            if ($params['type'] === 'defect') {
-                return $model->showDefect($id);
+            switch ($params['type']) {
+                case 'defect' :
+                    return $model->showDefect($id);
+                case 'tablet' :
+                    return $model->tabletShow($id);
+
+                default:$model->show($id);
             }
-            return $model->show($id);
         }
     case 'POST' : $model->create($params);
         break;
