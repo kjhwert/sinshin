@@ -5,8 +5,19 @@ if(getParam("page_no") == ""){
 }else{
   page_no = getParam("page_no");
 }
-
-log_list(page_no, per_page);
+$(function(){
+  $("#system_management").addClass("open");
+  $("#user_log").addClass("active");
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#user_log").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  log_list(page_no, per_page);
+})
 
 function log_list(page_no, per_page){
   $.ajax({
@@ -85,3 +96,9 @@ function paging(end, start, total){
   $("#pagination").empty();
   $("#pagination").append(text);
 }
+
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});

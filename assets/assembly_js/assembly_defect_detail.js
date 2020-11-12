@@ -1,10 +1,23 @@
-painting_defect_detail();
-painting_defect_list();
+$(function(){
+  $("#product_history").addClass("open");
+  $("#assembly").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#assembly").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  painting_defect_detail();
+  painting_defect_list();
+});
 
 function painting_defect_detail(){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/defect/index.php",
+      url        : "../api/cosmetics/assemble/defect/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -20,6 +33,7 @@ function painting_defect_detail(){
 
       $("#total_start_date").text(jsonResult[0].start_date.substr(0,10));
       $("#total_order_no").text(jsonResult[0].order_no);
+      $("#process_code").text(jsonResult[0].process_code);
       $("#total_type").text(jsonResult[0].type);
       $("#total_product_name").text(jsonResult[0].product_name);
       $("#defect_qty").text(comma(jsonResult[0].defect_qty));
@@ -39,7 +53,7 @@ function painting_defect_detail(){
 function painting_defect_list(){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/defect/index.php",
+      url        : "../api/cosmetics/assemble/defect/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,

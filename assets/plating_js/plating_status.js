@@ -1,7 +1,18 @@
 $(function(){
   $("#automotive_management").addClass("open");
   $("#plating").addClass("active");
+
+  if($("#automotive_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#plating").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
+
+
 var page_no = getParam("page_no");
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
@@ -83,18 +94,18 @@ function plating_status(page_no, per_page, sort, order){
         }else{
           text +='<tr class="inmutable">';
         }
-        text +='  <th>'+jsonResult[i].RNUM+'</th>';
-        text +='  <td>'+jsonResult[i].lot_no+'</td>';
+        text +='  <th align="center">'+jsonResult[i].RNUM+'</th>';
+        text +='  <td align="center">'+jsonResult[i].lot_no+'</td>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+jsonResult[i].car_code+'</td>';
+        text +='  <td align="center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].input)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].output)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].defect)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].loss)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].drop_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].charger+'</td>';
-        text +='  <td>'+jsonResult[i].created_at+'</td>';
+        text +='  <td align="center">'+jsonResult[i].charger+'</td>';
+        text +='  <td align="center">'+jsonResult[i].created_at+'</td>';
         text +='  <td>';
         text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='      <a href="../automotive_management/plating_read.html?id='+jsonResult[i].id+'">';

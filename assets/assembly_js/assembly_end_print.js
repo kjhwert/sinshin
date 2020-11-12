@@ -1,3 +1,24 @@
+var process_order_id = "";
+
+if(JSON.parse(getCookie("user_data")).dept_id != 5){
+  alert("페이지 접근 권한이 없습니다");
+  history.back();
+}
+$(function(){
+  $("#product_history").addClass("open");
+  $("#assembly").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#assembly").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  painting_end_detail();
+});
+
 var date = new Date();
 var year = date.getFullYear();
 var month = new String(date.getMonth()+1);
@@ -12,13 +33,10 @@ if(day.length == 1){
 }
 
 $("#create_at").val(year + "-" + month + "-" + day);
-
-painting_end_detail();
-
 function painting_end_detail(){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/start/index.php",
+      url        : "../api/cosmetics/assemble/start/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -33,10 +51,7 @@ function painting_end_detail(){
       console.log(jsonResult);
       $("#order_no").val(jsonResult[0].order_no);
       $("#order_id").val(jsonResult[0].order_id);
-      $("#barju_no").val(jsonResult[0].process_code);
-      $("#process_order_id").val(jsonResult[0].process_order_id);
-      $("#product_name").val(jsonResult[0].product_name);
-      $("#product_id").val(jsonResult[0].product_id);
+      product_balju(jsonResult[0].order_id);
     }else{
       alert(result.message);
     }
@@ -44,6 +59,69 @@ function painting_end_detail(){
     console.log("전송 실패");
   });
 }
+
+function product_balju(order_id){
+  console.log(order_id);
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/master/process-order/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        order_id: order_id
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      var jsonResult = result.data;
+      console.log(jsonResult);
+      var text = '<option disabled selected hidden>제품명(발주번호)를 선택하세요</option>';
+      for(var i in jsonResult){
+        text += '<option value="'+jsonResult[i].id+'" data-process_order_id="'+jsonResult[i].id+'" data-product_id="'+jsonResult[i].product_id+'" data-product_code="'+jsonResult[i].product_code+'">'+jsonResult[i].product_name+' ('+jsonResult[i].code+')</option>';
+      }
+      $("#product_balju").empty();
+      $("#product_balju").append(text);
+
+      //product_cnt(jsonResult.product_code);
+    }else{
+      alert(result.message);
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+}
+
+$("#product_balju").on("change", function(){
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/master/package/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        id: $(this).find("option:selected").data("product_code")
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      var jsonResult = result.data;
+      console.log(jsonResult);
+      $("#product_cnt").empty();
+      $("#product_cnt").val(jsonResult.boxspec5);
+      $("#product_id").val($("#product_balju").find("option:selected").data("product_id"));
+      //console.log($("#product_balju").find("option:selected").data("process_order_id"));
+      process_order_id = $("#product_balju").find("option:selected").data("process_order_id")
+    }else{
+      alert(result.message);
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+});
+
 
 // var qrcode = new QRCode(document.getElementById("qrcode"+i), {
 //     text: "abc123"+i,
@@ -57,15 +135,10 @@ function painting_end_detail(){
 function print(){
     var order_no = $("#order_no").val();
     var order_id = $("#order_id").val();
-    var barju_no = $("#process_order_id").val();
     var print_cnt = $("#print_cnt").val();
     var product_cnt = $("#product_cnt").val();
     if(order_no == ""){
       alert("수주번호를 선택해주세요");
-      return;
-    }
-    if(barju_no == ""){
-      alert("발주번호를 선택해주세요");
       return;
     }
     if(print_cnt == ""){
@@ -84,9 +157,10 @@ function print(){
     for (const node of $("style")) {
         cssText += node.innerHTML
     }
+    console.log(process_order_id);
     $.ajax({
         type    : "POST",
-        url        : "../api/cosmetics/painting/complete/index.php",
+        url        : "../api/cosmetics/assemble/complete/index.php",
         headers : {
           "content-type": "application/json",
           Authorization : user_data.token,
@@ -94,11 +168,11 @@ function print(){
         dataType:"json",
         data:JSON.stringify({
           order_id : order_id,
-          process_order_id : barju_no,
           qty : product_cnt,
           product_id: $("#product_id").val(),
           print_qty : print_cnt,
-          created_at : $("#create_at").val()
+          created_at : $("#create_at").val(),
+          process_order_id: process_order_id
         })
     }).done(function (result, textStatus, xhr) {
       if(result.status == 200){

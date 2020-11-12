@@ -98,6 +98,28 @@ function user_log(){
 	})
 }
 
+function erp_upload(){
+	var msg = confirm("ERP 수주번호, 발주번호를 갱신 하시겠습니까?\n[주의] 10초이상 소요될 수 있습니다");
+	if(msg){
+		$("#total_bg").fadeIn(300);
+		$.ajax({
+				type    : "POST",
+				url        : "../api/CronJob.php",
+				headers : {
+					"content-type": "application/json",
+					Authorization : user_data.token,
+				},
+				dataType:"json"
+		}).done(function (result, textStatus, xhr) {
+			alert(result.message);
+			$("#total_bg").fadeOut(300);
+		}).fail(function (result, textStatus, errorThrown) {
+			alert(result.message);
+			$("#total_bg").fadeOut(300);
+		})
+	}
+}
+
 function lot_print(){
 	var msg = confirm("Lot QR코드 라벨지를 발행 하시겠습니까?");
 	if(msg){
@@ -166,7 +188,7 @@ function lot_print(){
 				alert(result.message);
 				location.href="/login.html";
 			}else{
-				console.log(result.message);
+				alert(result.message);
 			}
 		}).fail(function (result, textStatus, errorThrown) {
 			alert(result.message);

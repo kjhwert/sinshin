@@ -5,6 +5,14 @@ $(document).ready(function(){
     $("#plating").addClass("active");
     get_product();
     getReleasable();
+    if($("#automotive_management").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
+    if($("#plating").find("a").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
 
     $("#release_btn").on("click", function () {
         var release_qty = parseInt($("#release_qty").val());

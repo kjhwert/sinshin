@@ -27,6 +27,11 @@ html body{
 .menu-content .menu-item{
   display:none;
 }
+.btn-download{
+  width:100%;
+  margin-bottom:6px;
+  height:36px;
+}
 .login-container{
   max-width:500px;
   margin:100px auto 0;
@@ -94,10 +99,11 @@ a .btn{
   width:182px;
   position:relative;
   margin:0 20px 20px 0;
+  cursor:pointer;
 }
 .stock_ul li p.stock_name{
   position:absolute;
-  top:35px;
+  top:15px;
   left:7px;
   width:160px;
   padding:0 10px;
@@ -113,7 +119,7 @@ a .btn{
 }
 .stock_ul li p.stock_cnt{
   position:absolute;
-  top:65px;
+  top:45px;
   left:7px;
   width:160px;
   padding:0 10px;
@@ -123,6 +129,47 @@ a .btn{
   text-align:center;
   border-radius:15px;
   margin-bottom:5px;
+}
+.stock_ul li p.order_no{
+  position:absolute;
+  top:75px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+}
+.stock_ul li p.asset_name{
+  position:absolute;
+  top:105px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+}
+.stock_tool_tip{
+  position:absolute;
+  top:15px;
+  left:7px;
+  width:160px;
+  padding:0 10px;
+  margin:0 auto;
+  background-color:#fff;
+  border:1px solid #aaa;
+  text-align:center;
+  border-radius:15px;
+  margin-bottom:5px;
+  z-index:1;
+  display:none;
 }
 .stock_ul li p.stock_area{
   position:absolute;
@@ -162,26 +209,28 @@ table{
   text-align:center;
   border-radius:50%;
   position:absolute;
-  top:10px;
-  left:10px;
+  top:0;
+  left:0;
 }
 .machine_active{
   background-color:#63d457;
 }
 .injection_table tr td{
   position:relative;
+  cursor:pointer;
+  box-sizing:border-box;
 }
 .machine_product_name{
   position:absolute;
   top:65px;
   left:0;
-  backgrond-color:#fff;
   width:100%;
   font-size:12px;
+  color:#000;
 }
 .machine_detail_num{
   display:inline-block;
-  background-color:#63d457;
+  background-color:#666;/*#63d457*/
   color:#fff;
   width:30px;
   height:30px;
@@ -195,6 +244,9 @@ table{
 }
 .pd-20px{
   padding-bottom:20px;
+}
+.process_tag_table{
+  margin-bottom:4rem;
 }
 .process_tag_table p{
   margin:0;
@@ -364,4 +416,109 @@ table{
 }
 .chartdiv{
   height:300px;
+}
+.total_bg{
+  width:100%;
+  height:100%;
+  position:fixed;
+  top:0;
+  left:0;
+  background-color:rgba(0,0,0,0.5);
+  z-index:9998;
+  display:none;
+}
+.total_loader{
+  position:fixed;
+  top:50%;
+  left:50%;
+  z-index:9999;
+  width:70px;
+  height:70px;
+  margin-left:-35px;
+  margin-top:-35px;
+}
+.process_tag_table p.font14{
+  font-size:14px;
+}
+.produce_chart{
+  width:100%;
+  height:500px;
+}
+.color-red{
+  color:#ff0000;
+}
+.material_create_table th{
+  line-height:2.75rem;
+}
+.injection_live_ul{
+  width:100%;
+  border:1px solid #aaa;
+  display:table;
+  clear:both;
+  margin:0;
+  padding:2%;
+}
+.injection_live_ul li{
+  width:33%;
+  float:left;
+  list-style:none;
+}
+.injection_box{
+  position:relative;
+  display:block;
+}
+.live_percent{
+  position:absolute;
+  top:45px;
+  left:0;
+}
+.sub_table{
+  width:100%;
+  background-color:#eee;
+  display:none;
+}
+.open_tr{
+  cursor:pointer;
+}
+.color-white{
+  color:#fff;
+}
+.now_date{
+  color:#fff;
+  position:absolute;
+  top:25px;
+  left:30px;
+  display:none;
+}
+.weekly_div1{
+  height:400px;
+}
+.height300{
+  height:300px;
+  overflow:auto;
+}
+.dashboard_pie{
+  height:300px;
+}
+.head-color-eee{
+  background-color:#efefef;
+  text-align:center;
+}
+.fs-12{
+  font-size:12px;
+}
+.top_chart{
+  height:450px;
+}
+.overflow-auto{
+  overflow:auto;
+}
+.timeline-icon{
+  width:24px;
+  height:24px;
+  display:inline-block;
+  line-height:24px;
+  color:#fff;
+  font-size:24px;
+  border-radius:50%;
 }

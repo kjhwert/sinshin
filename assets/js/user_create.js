@@ -1,6 +1,20 @@
-dept_group();
-rank();
-user_auth();
+$(function(){
+  $("#system_management").addClass("open");
+  $("#user_management").addClass("active");
+
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#user_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  dept_group();
+  rank();
+  user_auth();
+});
+
 
 $("#deptgroup").on("change", function(){
   var group_id = $(this).val();

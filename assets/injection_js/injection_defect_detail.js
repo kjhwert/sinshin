@@ -1,5 +1,19 @@
-injection_defect_detail();
-injection_defect_detail2();
+$(function(){
+  $("#product_history").addClass("open");
+  $("#injection").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#injection").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  injection_defect_detail();
+  injection_defect_detail2();
+});
+
 
 function injection_defect_detail(){
   $.ajax({

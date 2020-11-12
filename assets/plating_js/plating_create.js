@@ -2,6 +2,14 @@ $(document).ready(function(){
   $(".time_element").timepicki();
   $("#automotive_management").addClass("open");
   $("#plating").addClass("active");
+  if($("#automotive_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#plating").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 
 $("#product_num").on("click", function(){
@@ -91,7 +99,7 @@ function auto_search(search){
           text += "</tr>";
 
       for(var i in jsonResult){
-        text +='<tr data-customer='+jsonResult[i].customer+' data-supplier='+jsonResult[i].supplier+' data-product_name='+jsonResult[i].name.replace(/\s/gi, "_")+' data-product_id='+jsonResult[i].id+' data-customer_code='+jsonResult[i].supply_code+'>';
+        text +='<tr data-customer='+jsonResult[i].customer+' data-supplier='+jsonResult[i].supplier+' data-product_name='+jsonResult[i].name.replace(/\s/gi, "_")+' data-product_id='+jsonResult[i].id+' data-customer_code='+jsonResult[i].customer_code+'>';
         text +="<td>"+jsonResult[i].customer_code+"</td>";
         text +="<td>"+jsonResult[i].car_code+"</td>";
         text +="</tr>";

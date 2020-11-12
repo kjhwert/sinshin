@@ -12,14 +12,16 @@ $id = $req->getParamsValue($model->primaryKey);
 switch ($method) {
     case 'GET' :
         if (!$req->hasId($model->primaryKey)) {
-            $model->index($params);
+            if ($params['page'] && $params['perPage']) {
+                return $model->pagingIndex($params);
+            }
+            return $model->index($params);
         } else {
-            $model->show($id);
+            return $model->show($id);
         }
+    case 'POST' :
+        $model->create($params);
         break;
-//    case 'POST' :
-//        $model->create($params);
-//        break;
     case 'PUT' : $model->dataSync();
         break;
 //    case 'DELETE' : $model->destroy($id);

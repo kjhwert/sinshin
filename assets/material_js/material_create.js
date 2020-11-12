@@ -16,6 +16,15 @@ $("#stock_date").val(year + "-" + month + "-" + day);
 $(document).ready(function(){
   $("#product_history").addClass("open");
   $("#material").addClass("active");
+
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#material").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 
 $("#material_code").on("click", function(){
@@ -38,6 +47,18 @@ function modal_off(){
   $("#search_modal").fadeOut(300);
   $("#modal_back").fadeOut(300);
 }
+
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    var search_text = $("#search_text").val();
+    if(search_text == ""){
+      alert("자재코드를 입력해주세요");
+      return;
+    }else{
+      auto_search(search_text);
+    }
+  }
+});
 
 $("#search_btn").on("click", function(){
   var search_text = $("#search_text").val();
@@ -104,19 +125,24 @@ $("#material_qty").on("keyup", function(){
     $(this).val("");
     return;
   }else if($("#search_type").val() == "IN"){
-    $("#total_qty").val(Number($(this).val() * 25));
+    $("#total_qty").val(comma(Number(uncomma($(this).val()) * 25)));
   }
   if($("#material_code").val() == null){
     alert("자재코드를 먼저 선택해주세요");
     $(this).val("");
     return;
   }
-
+  var keyup_comma = comma(uncomma($(this).val()));
+  $(this).val(keyup_comma);
 });
 
 $("#search_type").on("change", function(){
+  $("#material_code").val("");
+  $("#material_name").val("");
+  $("#total_qty").val("");
+
   if($(this).val() == "IN"){
-    $("#material_unit").val("Kg");
+    $("#material_unit").val("kg");
   }else if($(this).val() == "P"){
     $("#material_unit").val("L");
   }else{
@@ -129,6 +155,7 @@ $("#stock_insert").on("click", function(){
   if($("#material_code").val() == ""){alert("자재코드를 선택해주세요");return;};
   if($("#material_qty").val() == ""){alert("수량을 선택해주세요");return;};
   if($("#stock_date").val() == ""){alert("날짜를 선택해주세요");return;};
+  if($("#lot_no").val() == ""){alert("LOT번호를 입력해주세요");return;};
 
   $.ajax({
       type    : "POST",
@@ -140,8 +167,9 @@ $("#stock_insert").on("click", function(){
       dataType:"json",
       data     : JSON.stringify({
         material_id: $("#material_id").val(),
-        qty: $("#material_qty").val(),
-        stock_date: $("#stock_date").val()
+        qty: uncomma($("#material_qty").val()),
+        stock_date: $("#stock_date").val(),
+        lot_no: $("#lot_no").val()
       })
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){

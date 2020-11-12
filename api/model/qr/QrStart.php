@@ -9,7 +9,8 @@ class QrStart extends Model
         'qty' => 'integer',
         'print_qty' => 'integer',
         'asset_id' => 'integer',
-        'material_id' => 'integer'
+        'material_id' => 'integer',
+        'lot_no' => 'string'
     ];
     protected $searchableText = 'd.name';
     protected $searchableDate = 'b.process_date';
@@ -21,6 +22,7 @@ class QrStart extends Model
     ];
 
     protected $dept = null;
+    protected $qrMasterId = 1;
 
     protected $updateRequired = [];
 
@@ -36,20 +38,21 @@ class QrStart extends Model
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, b.product_qty, c.order_no, c.jaje_code, b.display_name,
-                   d.name as product_name, ifnull(e.name,'') as material_name, b.asset_name, b.process_date
+                   d.name as product_name, b.material_name, b.asset_name, b.process_date
                 from process_order a
                 inner join (select aa.process_order_id, aa.id, sum(aa.qty) as product_qty, 
-                                bb.process_date, cc.name as asset_name, cc.display_name
+                                bb.process_date, cc.name as asset_name, cc.display_name, mm.name as material_name
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
+                            inner join material_master mm
+                            on aa.material_id = mm.id
                             where bb.process_status = {$process_start}
-                            and aa.dept_id = {$dept_id}
                             and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            and aa.stts = 'ACT' and bb.stts = 'ACT' and mm.stts = 'ACT'
                             group by aa.process_order_id
                             ) b
                 on a.id = b.process_order_id
@@ -57,9 +60,7 @@ class QrStart extends Model
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,
                (SELECT @rownum:= 0) AS R
@@ -94,15 +95,15 @@ class QrStart extends Model
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
     }
 
     public function show($id = null)
     {
         $process_start = Code::$PROCESS_START;
+
+        $dept_id = $this->getDeptId();
 
         $sql = "select
                     cs.process_date, a.name as asset_name, o.order_no, po.id, a.id as asset_id, o.id as order_id,
@@ -121,8 +122,11 @@ class QrStart extends Model
                      inner join product_master pm
                         on qc.product_id = pm.id
                      inner join material_master mm
-                        on pm.material_id = mm.id
-                where po.id = {$id} and qc.process_stts = {$process_start} and cs.process_status = {$process_start}
+                        on qc.material_id = mm.id
+                where po.id = {$id} 
+                and qc.process_stts = {$process_start} 
+                and cs.process_status = {$process_start}
+                and cs.dept_id = {$dept_id}
                 ";
 
         return new Response(200, $this->fetch($sql));
@@ -297,25 +301,26 @@ class QrStart extends Model
             return new Response(403, [], '해당 부서 직원이 아닙니다.');
         }
 
+        if ($data['print_qty'] > 50) {
+            return new Response(403, [], '출력 수량이 50장을 초과할 수 없습니다.');
+        }
+
         $print_qty = $data['print_qty'];
         unset($data['print_qty']);
 
-        $sql = "select pm.id, mm.id as material_id, mm.qty
+        $sql = "select pm.id 
                     from process_order po
                     inner join product_master pm
                     on po.product_code = pm.code
-                    inner join material_master mm   
-                    on pm.material_id = mm.id
                     where po.id = {$data['process_order_id']}";
+
+        $product_id = $this->fetch($sql)[0]['id'];
+
+        $sql = "select qty, id from material_master where id = {$data['material_id']}";
         $result = $this->fetch($sql)[0];
 
         $qty = $result['qty'];
-        $product_id = $result['id'];
-        $material_id = $result['material_id'];
-
-        if(!$material_id) {
-            return new Response(403, [], '원자재 정보가 없습니다.');
-        }
+        $material_id = $result['id'];
 
         $sql = "select remain_qty 
                 from material_stock_log 
@@ -331,22 +336,33 @@ class QrStart extends Model
             return new Response(403, [], "원자재 재고량이 부족합니다. 출력 수량 : {$necessary_qty} 재고량 : {$remain_qty}");
         }
 
+        /** @var  $sql
+         *  Lot_no를 등록한다.
+         */
+        $sql = "update {$this->table} set lot_no = '{$data['lot_no']}' 
+                where id = {$data['process_order_id']}";
+
+        $this->fetch($sql);
+        unset($data['lot_no']);
+
         $print_result = [];
-        try {
-            $this->db->beginTransaction();
+//        try {
+//            $this->db->beginTransaction();
 
             for ($i = 0; $i < $print_qty; $i++) {
-                try {
+//                try {
                     $sql = "insert into qr_code set
                             {$this->dataToString($data)},
                             product_id = {$product_id},
                             dept_id = {$this->token['dept_id']},
+                            qr_master_id = {$this->qrMasterId},
                             created_id = {$this->token['id']},
                             created_at = SYSDATE()
                             ";
 
-                    $stmt = $this->db->prepare($sql);
-                    $stmt->execute();
+//                    $stmt = $this->db->prepare($sql);
+//                    $stmt->execute();
+                    $this->fetch($sql);
                     $qr_id = $this->db->lastInsertId();
 
                     $sql = "select o.order_no, b.name as material_name, b.code as jaje_code, d.id as asset_id,
@@ -357,7 +373,7 @@ class QrStart extends Model
                                 inner join product_master c
                                 on a.product_id = c.id
                                 inner join material_master b
-                                on c.material_id = b.id
+                                on a.material_id = b.id
                                 inner join asset d
                                 on a.asset_id = d.id
                             where a.id = {$qr_id}";
@@ -367,17 +383,17 @@ class QrStart extends Model
 
                     array_push($print_result, $result);
 
-                } catch (Exception $e) {
-                    throw $e;
-                }
+//                } catch (Exception $e) {
+//                    throw $e;
+//                }
             }
 
-            $this->db->commit();
+//            $this->db->commit();
 
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            return new Response(403, [],'데이터 입력 중 오류가 발생하였습니다.');
-        }
+//        } catch (Exception $e) {
+//            $this->db->rollBack();
+//            return new Response(403, [],'데이터 입력 중 오류가 발생하였습니다.');
+//        }
 
         return new Response(200, $print_result, '');
     }

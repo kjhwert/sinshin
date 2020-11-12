@@ -15,22 +15,25 @@ class AutoMReleaseLog extends Model
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
-        $sql = "select a.id, a.customer_code, a.supply_code, a.name as product_name,
-                       concat(a.brand_code,'/',a.car_code) as car_code,
-                       a.customer, a.supplier, b.remain_qty, c.name, @rownum:= @rownum+1 AS RNUM
-                from automobile_master a
-                inner join (
-                    select * from (
-                          select * from automobile_release_log
-                          where stts = 'ACT'
-                          order by created_at desc LIMIT 18446744073709551615) a
-                    group by a.product_id
-                ) b
-                on a.id = b.product_id
-                inner join user c
-                on b.created_id = c.id,
+        $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
+                from (
+                    select a.id, a.customer_code, a.supply_code, a.name as product_name,
+                           concat(a.brand_code,'/',a.car_code) as car_code,
+                           a.customer, a.supplier, b.remain_qty, c.name
+                    from automobile_master a
+                    inner join (
+                        select * from (
+                              select * from automobile_release_log
+                              where stts = 'ACT'
+                              order by created_at desc LIMIT 18446744073709551615) a
+                        group by a.product_id
+                    ) b
+                    on a.id = b.product_id
+                    inner join user c
+                    on b.created_id = c.id 
+                    where a.stts = 'ACT' and c.stts = 'ACT'
+                    order by b.created_at asc) tot,
                 (SELECT @rownum:= 0) AS R
-                where a.stts = 'ACT' and c.stts = 'ACT'
                 order by RNUM desc
                 limit {$page},{$perPage}";
 
@@ -54,9 +57,9 @@ class AutoMReleaseLog extends Model
         $sql = "select count(b.id) as cnt
                 from automobile_master a
                          inner join automobile_release_log b
-                                    on a.id = b.product_id
+                            on a.id = b.product_id
                          inner join user c
-                                    on b.created_id = c.id
+                            on b.created_id = c.id
                 where a.id = {$params['id']} and a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT'";
         $totalCount = $this->fetch($sql)[0]['cnt'];
 
@@ -173,17 +176,22 @@ class AutoMReleaseLog extends Model
         $perPage = $params["perPage"];
         $page = ((int)$params["page"] * (int)$perPage);
 
-        $sql = "select concat(b.brand_code,'/', b.car_code) as car_code,
-                       b.customer_code, b.supply_code, b.name as product_name,
-                       b.customer, b.supplier, abs(a.change_qty) as release_qty, a.created_at, c.name,
-                       @rownum:= @rownum+1 AS RNUM
-                    from automobile_release_log a
-                    inner join automobile_master b
-                    on a.product_id = b.id
-                    inner join user c
-                    on a.created_id = c.id,
-                    (SELECT @rownum:= 0) AS R
-                where change_qty < 0 order by RNUM desc limit {$page}, {$perPage}";
+        $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
+                    from (
+                        select concat(b.brand_code,'/', b.car_code) as car_code,
+                           b.customer_code, b.supply_code, b.name as product_name,
+                           b.customer, b.supplier, abs(a.change_qty) as release_qty, a.created_at, c.name
+                        from automobile_release_log a
+                        inner join automobile_master b
+                        on a.product_id = b.id
+                        inner join user c
+                        on a.created_id = c.id
+                    where a.stts = 'ACT' 
+                    and b.stts = 'ACT' 
+                    and change_qty < 0 
+                    order by a.created_at asc) tot,
+                (SELECT @rownum:= 0) AS R 
+                order by RNUM desc limit {$page}, {$perPage}";
 
         return new Response(200, $this->fetch($sql), '', $params['paging']);
     }

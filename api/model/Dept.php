@@ -10,6 +10,7 @@ class Dept extends Model
     public static $PAINTING = 4;
     public static $ASSEMBLE = 5;
     public static $INJECTION = 6;
+    public static $AUTOMOBILE = 12;
 
     public function index (array $params = [])
     {

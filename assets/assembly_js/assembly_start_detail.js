@@ -1,9 +1,22 @@
-painting_start_detail();
+$(function(){
+  $("#product_history").addClass("open");
+  $("#assembly").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#assembly").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  painting_start_detail();
+});
 
 function painting_start_detail(){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/start/index.php",
+      url        : "../api/cosmetics/assemble/start/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -32,6 +45,7 @@ function painting_start_detail(){
 
       $("#total_process_date").text(jsonResult[0].process_date);
       $("#total_order_no").text(jsonResult[0].order_no);
+      $("#process_code").text(jsonResult[0].process_code);
       $("#total_type").text(jsonResult[0].type);
       $("#total_product_name").text(jsonResult[0].product_name);
       $("#total_box").text(comma(jsonResult.length));

@@ -1,4 +1,18 @@
-painting_warehousing_detail();
+$(function(){
+  $("#product_history").addClass("open");
+  $("#painting").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#painting").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  painting_warehousing_detail();
+});
+
 
 function painting_warehousing_detail(){
   $.ajax({
@@ -34,6 +48,7 @@ function painting_warehousing_detail(){
       $("#total_put_date").text(jsonResult[0].put_date);
       $("#total_asset_no").text(jsonResult[0].asset_no);
       $("#total_order_no").text(jsonResult[0].order_no);
+      $("#process_code").text(jsonResult[0].process_code);
       $("#total_product_name").text(jsonResult[0].product_name);
       $("#total_box").text(comma(jsonResult.length)+"box");
       $("#total_qty").text(total_box+"ea");

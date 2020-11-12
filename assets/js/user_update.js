@@ -1,6 +1,21 @@
+$(function(){
+  $("#system_management").addClass("open");
+  $("#user_management").addClass("active");
+
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#user_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  user_select();
+  user_auth();
+});
 //getParam("user_no");
-user_select();
-user_auth();
+
 
 $("#deptgroup").on("change", function(){
   var group_id = $(this).val();
@@ -283,7 +298,7 @@ function auth_update(){
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
       alert("수정되었습니다");
-      location.href="../system_management/user_list.html";
+      history.back();
     }else{
       alert(result.message);
       return;

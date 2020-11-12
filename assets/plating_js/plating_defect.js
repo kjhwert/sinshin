@@ -1,3 +1,17 @@
+$(document).ready(function(){
+    $("#automotive_management").addClass("open");
+    $("#plating").addClass("active");
+    if($("#automotive_management").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
+    if($("#plating").find("a").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
+    defect_list(page_no, per_page);
+});
+
 var page_no = getParam("page_no");
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
@@ -17,12 +31,7 @@ if(getParam("page_no") == ""){
   page_no = 1;
 }
 
-$(document).ready(function(){
-    defect_list(page_no, per_page);
-    $("#automotive_management").addClass("open");
-    $("#plating").addClass("active");
 
-});
 
 function defect_list (page_no, per_page) {
     $.ajax({
@@ -52,14 +61,14 @@ function defect_list (page_no, per_page) {
 
         for (i in results) {
             text += '<tr>';
-            text += '    <th>'+results[i].RNUM+'</th>';
-            text += '    <th>'+results[i].lot_no+'</th>';
+            text += '    <th class="text-center">'+results[i].RNUM+'</th>';
+            text += '    <th class="text-center">'+results[i].lot_no+'</th>';
             text += '    <td>'+results[i].customer_code+'</td>';
             text += '    <td>'+results[i].product_name+'</td>';
-            text += '    <td>'+results[i].car_code+'</td>';
-            text += '    <td>'+results[i].customer+'</td>';
-            text += '    <td>'+results[i].supplier+'</td>';
-            text += '    <td>'+results[i].mfr_date+'</td>';
+            text += '    <td class="text-center">'+results[i].car_code+'</td>';
+            text += '    <td class="text-center">'+results[i].customer+'</td>';
+            text += '    <td class="text-center">'+results[i].supplier+'</td>';
+            text += '    <td class="text-center">'+results[i].mfr_date+'</td>';
             text += '    <td align="right">'+comma(results[i].input)+'</td>';
             text += '    <td align="right">'+comma(results[i].output)+'</td>';
             text += '    <td align="right">'+comma(results[i].loss)+'</td>';

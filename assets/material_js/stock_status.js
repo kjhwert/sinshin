@@ -1,6 +1,14 @@
 $(document).ready(function(){
   $("#product_history").addClass("open");
   $("#material").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#material").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 
 var page_no = "";
@@ -56,14 +64,14 @@ function stock_list(page_no, per_page, search_text){
       var text = '';
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <th scope="row">'+jsonResult[i].RNUM+'</th>';
-        text +='  <td>'+jsonResult[i].code+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].code+'</td>';
         text +='  <td>'+jsonResult[i].name+'</td>';
-        text +='  <td>'+comma(jsonResult[i].remain_qty)+'</td>';
-        text +='  <td>'+comma(jsonResult[i].total)+'</td>';
-        text +='  <td>'+jsonResult[i].unit+'</td>';
-        text +='  <td>'+jsonResult[i].stock_date+'</td>';
-        text +='  <td>'+jsonResult[i].manager+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].remain_qty)+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].total)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].unit.toLowerCase();+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
         text +='   <td>';
         text +='      <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='        <a href="../product_history/injection_start_print.html?material_id='+jsonResult[i].id+'">';

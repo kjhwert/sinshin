@@ -24,7 +24,11 @@ class QrReleaseP extends QrRelease
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                     bb.process_date, dd.name as to_name, ee.name as manager
                             from qr_code aa
-                            inner join change_stts bb
+                            inner join (select * 
+                                        from change_stts
+                                        where process_status = {$process_release} 
+                                        and dept_id = {$dept_id}
+                                        order by created_at desc limit 18446744073709551615 ) bb
                             on aa.id = bb.qr_id
                             inner join `release` cc
                             on aa.id = cc.qr_id
@@ -32,9 +36,6 @@ class QrReleaseP extends QrRelease
                             on cc.to_id = dd.id
                             inner join `user` ee
                             on aa.created_id = ee.id
-                            where aa.process_stts = {$process_release} and bb.process_status = {$process_release} 
-                            and aa.dept_id = {$dept_id}
-                            and bb.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id) b
                 on a.id = b.process_order_id
@@ -42,9 +43,7 @@ class QrReleaseP extends QrRelease
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,
                (SELECT @rownum:= 0) AS R

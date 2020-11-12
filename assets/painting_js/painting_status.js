@@ -1,6 +1,14 @@
 $(function(){
   $("#product_history").addClass("open");
   $("#painting").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#painting").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   painting_status(page_no, per_page, sort, order);
   painting_status_cnt();
@@ -80,7 +88,7 @@ function painting_status_cnt(){
     console.log(result);
     var jsonResult = result.data;
     if(result.status == 200){
-      $("#stock_qty").text(comma(jsonResult.stock_qty));
+      $("#stock_qty").text(comma(jsonResult.put_qty));
       $("#start_qty").text(comma(jsonResult.start_qty));
       $("#complete_qty").text(comma(jsonResult.complete_qty));
       $("#defect_qty").text(comma(jsonResult.defect_qty));
@@ -138,11 +146,19 @@ function painting_stock(){
           text +='  <img src="../assets/images/pallet.png">';
           text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
           text +='  <p class="stock_cnt">'+jsonResult[i].box_qty+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
+          text +='  <p id="tool_tip" class="stock_tool_tip">'+jsonResult[i].product_name+'</p>';
+          text +='  <p class="order_no">'+jsonResult[i].order_no+'</p>';
           text +='</li>';
         }
       }
       $("#stock_ul").empty();
       $("#stock_ul").append(text);
+      $("#stock_ul li").mouseover(function(){
+        $(this).find("#tool_tip").css("display","block");
+      });
+      $("#stock_ul li").mouseout(function(){
+        $(this).find("#tool_tip").css("display","none");
+      });
     }else{
       alert(result.message);
       return;
@@ -173,7 +189,7 @@ function painting_status(page_no, per_page, sort, order){
       console.log(jsonResult);
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <th>3</th>';
+        text+='  <th>'+jsonResult[i].RNUM+'</th>';
         text+='  <td>'+jsonResult[i].order_no+'</td>';
         text+='  <td>'+jsonResult[i].jaje_code+'</td>';
         text+='  <td>'+jsonResult[i].type+'</td>';

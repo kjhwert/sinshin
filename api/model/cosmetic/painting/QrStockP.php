@@ -29,11 +29,14 @@ class QrStockP extends QrStock
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                 bb.process_date
                             from qr_code aa
-                            inner join change_stts bb
+                            inner join (
+                                select * 
+                                from change_stts
+                                where process_status = {$process_stock} 
+                                and dept_id = {$dept_id}
+                                order by created_at desc limit 18446744073709551615
+                            ) bb
                             on aa.id = bb.qr_id
-                            where bb.process_status = {$process_stock}
-                            and bb.dept_id = {$dept_id}
-                            and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b
                 on a.id = b.process_order_id

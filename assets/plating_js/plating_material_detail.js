@@ -1,6 +1,14 @@
 $(function(){
   $("#automotive_management").addClass("open");
   $("#plating").addClass("active");
+  if($("#automotive_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#plating").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 var page_no = "";
 var per_page = 15;
@@ -35,21 +43,21 @@ function material_detail_list(page_no, per_page){
 
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <th>'+jsonResult[i].RNUM+'</th>';
-        text+='  <td>'+jsonResult[i].car_code+'</td>';
+        text+='  <th class="text-center">'+jsonResult[i].RNUM+'</th>';
+        text+='  <td class="text-center">'+jsonResult[i].car_code+'</td>';
         text+='  <td>'+jsonResult[i].customer_code+'</td>';
         text+='  <td>'+jsonResult[i].product_name+'</td>';
-        text+='  <td>'+jsonResult[i].customer+'</td>';
-        text+='  <td>'+jsonResult[i].supplier+'</td>';
-        text+='  <td>'+jsonResult[i].type+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].customer+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].supplier+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].type+'</td>';
         if(jsonResult[i].type == "입고"){
-          text+='  <td class="info">'+comma(jsonResult[i].change_qty)+'</td>';
+          text+='  <td class="info" align="right">'+comma(jsonResult[i].change_qty)+'</td>';
         }else{
-          text+='  <td class="danger">'+comma(jsonResult[i].change_qty)+'</td>';
+          text+='  <td class="danger" align="right">'+comma(jsonResult[i].change_qty)+'</td>';
         }
-        text+='  <td>'+comma(jsonResult[i].remain_qty)+'</td>';
-        text+='  <td>'+jsonResult[i].created_at+'</td>';
-        text+='  <td>'+jsonResult[i].name+'</td>';
+        text+='  <td align="right">'+comma(jsonResult[i].remain_qty)+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].created_at+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].name+'</td>';
         text+='</tr>';
       }
 

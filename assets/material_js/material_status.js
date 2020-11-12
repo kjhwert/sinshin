@@ -1,6 +1,14 @@
 $(document).ready(function(){
   $("#product_history").addClass("open");
   $("#material").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#material").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 var page_no = "";
 var per_page = 15;
@@ -8,6 +16,9 @@ var search_text = decodeURIComponent(getParam("search_text"));
 var start_date = getParam("start_date");
 var end_date = getParam("end_date");
 var material_type = getParam("material_type");
+let today = new Date();
+
+
 if(getParam("page_no") == ""){
   page_no = 1;
 }else{
@@ -22,7 +33,7 @@ if(start_date != ""){
 if(end_date != ""){
   $("#end_date").val(end_date);
 }
-if(end_date != ""){
+if(material_type != ""){
   $("#material_type").val(material_type);
 }
 
@@ -69,14 +80,14 @@ function stock_list(page_no, per_page, search_text){
       var text = '';
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <th scope="row">'+jsonResult[i].RNUM+'</th>';
-        text+='  <td>'+jsonResult[i].code+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].code+'</td>';
         text+='  <td>'+jsonResult[i].name+'</td>';
-        text+='  <td>'+comma(jsonResult[i].qty)+'</td>';
-        text+='  <td>'+comma(jsonResult[i].total)+'</td>';
-        text+='  <td>'+jsonResult[i].unit+'</td>';
-        text+='  <td>'+jsonResult[i].stock_date+'</td>';
-        text+='  <td>'+jsonResult[i].manager+'</td>';
+        text+='  <td class="text-right">'+comma(jsonResult[i].qty)+'</td>';
+        text+='  <td class="text-right">'+comma(jsonResult[i].total)+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].unit+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
+        text+='  <td class="text-center">'+jsonResult[i].manager+'</td>';
         text+='</tr>';
       }
       $("#search_list").empty();

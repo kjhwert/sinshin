@@ -116,6 +116,7 @@ class AutoMProcess extends Model
                 from automobile_process a
                 inner join automobile_master b
                 on a.product_id = b.id
+                where a.stts = 'ACT' and b.stts = 'ACT'
                ";
     }
 

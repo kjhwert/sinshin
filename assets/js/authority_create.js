@@ -1,3 +1,16 @@
+$(function(){
+  $("#system_management").addClass("open");
+  $("#authority_management").addClass("active");
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#authority_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+});
+
 $("#auth_create").on("click", function(){
   var group_name = $("#group_name").val();
 

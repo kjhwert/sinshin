@@ -23,28 +23,27 @@ class QrStartA extends QrStartP
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
-                from (select a.id, b.product_qty, c.order_no, c.jaje_code,
-                   d.name as product_name, b.process_date, b.box_qty, pc.name as type
-                from process_order a
-                inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
+                from (select a.id, b.product_qty, a.order_no,
+                   d.name as product_name, b.box_qty, a.id order_id
+                from `order` a
+                inner join (
+                    select aa.order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                 bb.process_date
                             from qr_code aa
-                            inner join change_stts bb
+                            inner join (
+                                select * 
+                                from change_stts
+                                where dept_id = {$dept_id}
+                                and process_status = {$process_start}
+                            ) bb
                             on aa.id = bb.qr_id
-                            where bb.process_status = {$process_start}
-                            and aa.dept_id = {$dept_id}
-                            and bb.dept_id = {$dept_id}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT'
-                            group by aa.process_order_id
+                            where aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.order_id
                             ) b
-                on a.id = b.process_order_id
-                inner join `order` c
-                on a.order_id = c.id
+                on a.id = b.order_id
                 inner join product_master d
                 on a.product_code = d.code
-                left join process_code pc
-                on a.process_type = pc.code
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
+                where a.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,
                (SELECT @rownum:= 0) AS R
@@ -52,7 +51,41 @@ class QrStartA extends QrStartP
                 limit {$page},{$perPage}
                 ";
 
-        return new Response(200, $this->fetch($sql), '', $params['paging']);
+        $results = $this->fetch($sql);
+        foreach ($results as $key=>$value) {
+            $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM
+                    from (select pc.name as type, pm.name as product_name,
+                           count(aa.id) as box_qty, sum(aa.qty) as product_qty, po.code,
+                           bb.process_date, u.name as manager
+                        from qr_code aa
+                        inner join (
+                            select *
+                                from change_stts
+                                where process_status = {$process_start}
+                                and dept_id = {$dept_id}
+                            order by created_at desc limit 18446744073709551615
+                        ) bb
+                        on aa.id = bb.qr_id
+                        inner join `user` u
+                        on bb.created_id = u.id
+                        inner join product_master pm
+                        on aa.product_id = pm.id
+                        inner join process_order po
+                        on aa.process_order_id = po.id
+                        left join process_code pc
+                        on po.process_type = pc.code
+                        where aa.stts = 'ACT'
+                          and bb.stts = 'ACT'
+                          and aa.order_id = {$value['id']}
+                        group by aa.process_order_id ) tot,
+                        (SELECT @rownum:= 0) AS R
+                        order by RNUM desc
+                        ";
+
+            $results[$key]['process_order'] = $this->fetch($sql);
+        }
+
+        return new Response(200, $results, '', $params['paging']);
     }
 
     protected function paginationQuery (array $params = [])
@@ -60,24 +93,28 @@ class QrStartA extends QrStartP
         $process_start = Code::$PROCESS_START;
         $dept_id = $this->getDeptId();
 
-        return "select count(a.id) as cnt
-                from process_order a 
-                inner join (select aa.process_order_id, aa.id, aa.qty, bb.process_date
+        return "select count(a.id) cnt
+                from `order` a
+                inner join (
+                    select aa.order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
+                                bb.process_date
                             from qr_code aa
-                            inner join change_stts bb
+                            inner join (
+                                select * 
+                                from change_stts
+                                where dept_id = {$dept_id}
+                                and process_status = {$process_start}
+                            ) bb
                             on aa.id = bb.qr_id
-                            where bb.process_status = {$process_start}
-                            and aa.dept_id = {$dept_id}
-                            and bb.dept_id = {$dept_id}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT'
-                            group by aa.process_order_id) b
-                on a.id = b.process_order_id
-                inner join `order` c
-                on a.order_id = c.id
+                            where aa.stts = 'ACT' and bb.stts = 'ACT'
+                            group by aa.order_id
+                            ) b
+                on a.id = b.order_id
                 inner join product_master d
                 on a.product_code = d.code
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
-                {$this->searchText($params)} {$this->searchDate($params)}";
+                where a.stts = 'ACT' and d.stts = 'ACT'
+                {$this->searchText($params)} {$this->searchDate($params)}
+                group by a.id";
     }
 
     public function show($id = null)
@@ -86,27 +123,27 @@ class QrStartA extends QrStartP
         $dept_id = $this->getDeptId();
 
         $sql = "select
-                    cs.process_date, o.order_no, o.id as order_id, po.id as process_order_id,
-                    pm.name as product_name, qc.qty, u.name as manager, pc.name as type,
-                    po.code as process_code, @rownum:= @rownum+1 AS RNUM, pm.id as product_id
+                    o.order_no, pm.name as product_name, qc.qty, u.name as manager, o.id order_id,
+                    ifnull(cs.process_date, '외주') as process_date, pc.name as type,
+                    po.code as process_code, @rownum:= @rownum+1 AS RNUM
                 from qr_code qc
-                     inner join process_order po
-                     on qc.process_order_id = po.id
-                     inner join `order` o
-                     on qc.order_id = o.id
-                     inner join change_stts cs
-                     on qc.id = cs.qr_id
-                     inner join product_master pm
-                     on qc.product_id = pm.id
-                     left join process_code pc
-                     on po.process_type = pc.code
-                     inner join `user` u
-                     on cs.created_id = u.id,
-                     (SELECT @rownum:= 0) AS R
-                where po.id = {$id}
-                and cs.process_status = {$process_start}
-                and qc.dept_id = {$dept_id}
-                and cs.dept_id = {$dept_id}
+                inner join process_order po
+                on qc.process_order_id = po.id
+                left join process_code pc
+                on po.process_type = pc.code
+                inner join `order` o
+                on qc.order_id = o.id
+                inner join (
+                    select * from change_stts
+                    where dept_id = {$dept_id} and process_status = {$process_start}
+                ) cs
+                on qc.id = cs.qr_id
+                inner join product_master pm
+                on qc.product_id = pm.id
+                inner join `user` u
+                on cs.created_id = u.id,
+                (SELECT @rownum:= 0) AS R
+                where qc.order_id = {$id}
                 order by RNUM desc
                 ";
 
@@ -119,6 +156,7 @@ class QrStartA extends QrStartP
         (new QrBox)->isBox($id);
 
         $process_start = Code::$PROCESS_START;
+        $process_release = Code::$PROCESS_RELEASE;
 
         $sql = "select process_stts from qr_code where id = {$id}";
         $result = $this->fetch($sql)[0];
@@ -127,24 +165,28 @@ class QrStartA extends QrStartP
             return new Response(403, [], '이미 처리되었습니다.');
         }
 
-        $sqls = [
-            "update qr_code set
-                process_stts = {$process_start},
-                updated_id = {$this->token['id']},
-                updated_at = SYSDATE()
-                where id = {$id}
-                ",
-            "insert into change_stts set
-                qr_id = {$id},
-                dept_id = {$this->token['dept_id']},
-                process_status = {$process_start},
-                process_date = SYSDATE(),
-                created_id = {$this->token['id']},
-                created_at = SYSDATE()
-            ",
-        ];
+        if ($result['process_stts'] === $process_release) {
+            return new Response(403, [], '먼저 입고등록을 해주세요.');
+        }
 
-        $this->setTransaction($sqls);
+//        $sqls = [
+//            "update qr_code set
+//                process_stts = {$process_start},
+//                updated_id = {$this->token['id']},
+//                updated_at = SYSDATE()
+//                where id = {$id}
+//                ",
+//            "insert into change_stts set
+//                qr_id = {$id},
+//                dept_id = {$this->token['dept_id']},
+//                process_status = {$process_start},
+//                process_date = SYSDATE(),
+//                created_id = {$this->token['id']},
+//                created_at = SYSDATE()
+//            ",
+//        ];
+//
+//        $this->setTransaction($sqls);
         return $this->qrShow($id);
     }
 

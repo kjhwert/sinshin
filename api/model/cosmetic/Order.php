@@ -18,13 +18,24 @@ class Order extends Model
         $sql = "select o.id, o.order_no from `order` o
                     inner join process_order po
                     on o.id = po.order_id 
-                    where
-                    po.code is not null
-                    and po.asset_id is not null
+                    where po.code is not null
                     {$this->searchText($params)}
                     group by o.id";
 
         return new Response(200, $this->fetch($sql, $this->db));
+    }
+
+    public function show($id = null)
+    {
+        $sql = "select o.id as order_id, o.order_no, pm.name as product_name, 
+                    pm.id as product_id, pm.code as product_code
+                    from `order` o 
+                    inner join product_master pm
+                    on o.product_code = pm.code
+                    where o.id = {$id}
+                ";
+
+        return new Response(200, $this->fetch($sql, $this->db)[0]);
     }
 
     public function create(array $data = [])

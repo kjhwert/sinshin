@@ -114,7 +114,7 @@
 
 .content-wrapper-before
 {
-    height: 300px !important;
+    height: 100% !important;
 }
 
 .content .content-wrapper

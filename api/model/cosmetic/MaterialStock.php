@@ -6,6 +6,7 @@ class MaterialStock extends Model
     protected $createRequired = [
         'material_id' => 'integer',
         'qty' => 'integer',
+        'lot_no' => 'string',
         'stock_date' => 'string'
     ];
     protected $searchableText = 'a.code';
@@ -29,12 +30,27 @@ class MaterialStock extends Model
                     on b.created_id = c.id,
                     (SELECT @rownum:= 0) AS R
                     where a.stts = 'ACT' and b.stts = 'ACT' {$this->getMaterialType($material_type)}
-                    {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
+                    {$this->searchName($params['params'])} {$this->searchDate($params['params'])}
                 order by RNUM desc
                 limit {$page},{$perPage}
                 ";
 
         return new Response(200, $this->fetch($sql),'', $params['paging']);
+    }
+
+    protected function warehousePaginationQuery (array $params = [])
+    {
+        $material_type = $params['material_type'];
+
+        return "select count(*) as cnt 
+                from material_master a
+                inner join material_stock b
+                on a.id = b.material_id
+                where a.stts = 'ACT' and b.stts = 'ACT' 
+                {$this->searchName($params)}
+                {$this->searchDate($params)}
+                {$this->getMaterialType($material_type)}
+                ";
     }
 
     public function stockIndex(array $params = [])
@@ -64,11 +80,11 @@ class MaterialStock extends Model
                                     group by aa.material_id) c
                         on a.id = c.material_id
                         inner join customer_master d
-                                   on a.supplier = d.id
+                           on a.supplier = d.id
                         inner join user e
-                                   on b.created_id = e.id
+                           on b.created_id = e.id 
                        where a.stts = 'ACT' and d.stts = 'ACT'
-                       and e.stts = 'ACT' {$this->getMaterialType($material_type)} {$this->searchText($params['params'])}
+                       and e.stts = 'ACT' {$this->getMaterialType($material_type)} {$this->searchName($params['params'])}
                        order by c.created_at asc
                     ) as tot,
                 (SELECT @rownum:= 0) AS R
@@ -76,6 +92,17 @@ class MaterialStock extends Model
                 limit {$page},{$perPage}";
 
         return new Response(200, $this->fetch($sql),'', $params['paging']);
+    }
+
+    protected function searchName (array $params = [])
+    {
+        $search = $params['search'];
+
+        if ($search) {
+            return "and (a.name like '%{$search}%' or a.code like '%{$search}%')";
+        } else {
+            return "";
+        }
     }
 
     protected function paginationQuery (array $params = [])
@@ -152,19 +179,16 @@ class MaterialStock extends Model
                 remain_qty = {$remain},
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
+            ",
+            "insert into material_lot set
+                material_id = {$data['material_id']},
+                lot_no = '{$data['lot_no']}',
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
             "
         ];
 
         return $this->setTransaction($sqls);
-    }
-
-    protected function warehousePaginationQuery (array $params = [])
-    {
-        return "select count(b.id) as cnt 
-                from material_master a
-                inner join material_stock b
-                on a.id = b.material_id
-                where a.stts = 'ACT' and b.stts = 'ACT' {$this->searchText($params)}";
     }
 
     protected function warehousePagination(array $params = [])

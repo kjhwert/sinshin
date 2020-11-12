@@ -2,6 +2,14 @@
 $(function(){
   $("#product_history").addClass("open");
   $("#painting").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#painting").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   painting_stock(page_no, per_page, sort, order);
 });
@@ -89,13 +97,13 @@ function painting_stock(page_no, per_page, sort, order){
 
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+jsonResult[i].order_no+'</td>';
-        text +='  <td>'+jsonResult[i].type+'</td>'
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].type+'</td>'
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+comma(jsonResult[i].box_qty)+'</td>';
-        text +='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].process_date+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].process_date+'</td>';
         text +='</tr>';
       }
       $("#painting_stock_list").empty();

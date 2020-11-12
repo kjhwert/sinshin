@@ -32,7 +32,6 @@ class QrStartP extends QrStart
                             inner join change_stts bb
                             on aa.id = bb.qr_id
                             where bb.process_status = {$process_start}
-                            and aa.dept_id = {$dept_id}
                             and bb.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id
@@ -113,19 +112,14 @@ class QrStartP extends QrStart
         return new Response(200, $this->fetch($sql));
     }
 
-    public function update($id = null, array $data = [])
+    public function create(array $data = [])
     {
-        $this->isAvailableUser();
-        (new QrBox)->isBox($id);
-
-        $process_start = Code::$PROCESS_START;
-
-        $sql = "select process_stts from qr_code where id = {$id}";
-        $result = $this->fetch($sql)[0];
-
-        if ($result['process_stts'] === $process_start) {
-            return new Response(403, [], '이미 처리되었습니다.');
+        if (!$data['id']) {
+            return new Response(403, [], 'id 데이터가 존재하지 않습니다.');
         }
+
+        $id = $data['id'];
+        $process_start = Code::$PROCESS_START;
 
         $sqls = [
             "update qr_code set
@@ -142,21 +136,97 @@ class QrStartP extends QrStart
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
             ",
+            "update box set
+                lot_id = null
+                where qr_id = {$id}
+            "
         ];
 
         $this->setTransaction($sqls);
         return $this->qrShow($id);
     }
 
-    public function qrShow ($id = null)
+    public function update($id = null, array $data = [])
     {
-        $sql = "select o.order_no, pm.name as product_name,
+        $this->isAvailableUser();
+        (new QrBox)->isBox($id);
+
+        $process_start = Code::$PROCESS_START;
+        $dept_id = $this->getDeptId();
+
+        $sql = "select process_stts from qr_code where id = {$id}";
+        $result = $this->fetch($sql)[0];
+
+        if ($result['process_stts'] === $process_start) {
+            return new Response(403, [], '이미 처리되었습니다.');
+        }
+
+        $process_warehousing = Code::$PROCESS_WAREHOUSING;
+        $process_release = Code::$PROCESS_RELEASE;
+
+        $sql = "select o.order_no, pm.name as product_name, ifnull(a.asset_no, '') as asset_no,
                         qr.id, qr.process_stts, qr.qty, 1 as box_qty
                 from qr_code qr
                 inner join `order` o
                 on qr.order_id = o.id
                 inner join product_master pm
                 on qr.product_id = pm.id
+                left join asset a
+                on qr.asset_id = a.id
+                where qr.id = {$id}
+                ";
+
+        $result = $this->fetch($sql)[0];
+        $result['pre_item'] = false;
+
+        /** @var  $sql
+         *  선입선출을 체크한다.
+         */
+        $sql = "select w.in_date
+                    from qr_code qc
+                    inner join warehouse w
+                    on qc.id = w.qr_id 
+                where qc.id = {$id} 
+                and qc.dept_id = {$dept_id}
+                and qc.process_stts = {$process_warehousing}";
+
+        $pre_item = $this->fetch($sql)[0];
+
+        if (!$pre_item) {
+            return new Response(403, [], '입고등록이 되지 않았습니다.');
+        }
+
+        $sql = "select count(*) as cnt
+                    from qr_code qc
+                    inner join warehouse w
+                    on qc.id = w.qr_id
+                    inner join box b
+                    on qc.id = b.qr_id
+                where qc.dept_id = {$dept_id}
+                and qc.process_stts = {$process_warehousing}
+                and w.in_date < '{$pre_item['in_date']}'
+                ";
+
+        $count = $this->fetch($sql)[0]['cnt'];
+
+        if ($count > 0) {
+            $result['pre_item'] = true;
+        }
+
+        return new Response(200, $result, '');
+    }
+
+    public function qrShow ($id = null)
+    {
+        $sql = "select o.order_no, pm.name as product_name, a.asset_no,
+                        qr.id, qr.process_stts, qr.qty, 1 as box_qty
+                from qr_code qr
+                inner join `order` o
+                on qr.order_id = o.id
+                inner join product_master pm
+                on qr.product_id = pm.id
+                left join asset a
+                on qr.asset_id = a.id
                 where qr.id = {$id}
                 ";
 

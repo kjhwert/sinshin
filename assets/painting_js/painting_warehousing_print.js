@@ -1,3 +1,20 @@
+if(JSON.parse(getCookie("user_data")).dept_id != 4){
+  alert("페이지 접근 권한이 없습니다");
+  history.back();
+}
+$(function(){
+  $("#product_history").addClass("open");
+  $("#painting").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#painting").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+});
+
 var search_type = 0; //0=수주번호 검색 1=입고처 검색
 
 $("#order_no").on("click", function(){
@@ -15,6 +32,27 @@ $("#from_id").on("click", function(){
   $("#search_text").val("");
   $("#search_table").empty();
   $(".search_result_box").css("display","none");
+});
+
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    var search_text = $("#search_text").val();
+    if(search_type == 0){
+      if(search_text == ""){
+        alert("수주번호를 입력해주세요");
+        return;
+      }else{
+        order_search(search_text);
+      }
+    }else{
+      if(search_text == ""){
+        alert("거래처명을 입력해주세요");
+        return;
+      }else{
+        customer_search(search_text);
+      }
+    }
+  }
 });
 
 $("#search_btn").on("click", function(){
@@ -65,10 +103,14 @@ function order_search(search){
           text += "<th>수주번호</th>";
           text += "</tr>";
 
-      for(var i in jsonResult){
-        text +='<tr data-code='+jsonResult[i].id+' data-order_no='+jsonResult[i].order_no+'>';
-        text +="  <td>"+jsonResult[i].order_no+"</td>";
-        text +="</tr>";
+      if(jsonResult.length == 0){
+        text += '<tr><td>검색결과가 없습니다</td></tr>';
+      }else{
+        for(var i in jsonResult){
+          text +='<tr data-code='+jsonResult[i].id+' data-order_no='+jsonResult[i].order_no+'>';
+          text +="  <td>"+jsonResult[i].order_no+"</td>";
+          text +="</tr>";
+        }
       }
 
       $("#search_table").empty();
@@ -112,10 +154,14 @@ function customer_search(search){
           text += "<th>거래처명</th>";
           text += "</tr>";
 
-      for(var i in jsonResult){
-        text +='<tr data-code='+jsonResult[i].id+' data-name='+jsonResult[i].name+'>';
-        text +="  <td>"+jsonResult[i].name+"</td>";
-        text +="</tr>";
+      if(jsonResult.length == 0){
+        text += '<tr><td>검색결과가 없습니다</td></tr>';
+      }else{
+        for(var i in jsonResult){
+          text +='<tr data-code='+jsonResult[i].id+' data-name='+jsonResult[i].name+'>';
+          text +="  <td>"+jsonResult[i].name+"</td>";
+          text +="</tr>";
+        }
       }
 
       $("#search_table").empty();
@@ -156,7 +202,7 @@ function balju_select(order_no){
       var text = '';
       for(var i in jsonResult){
         text +='<option selected hidden disabled>발주번호를 선택하세요</option>';
-        text +='<option value='+jsonResult[i].id+'>'+jsonResult[i].code+'</option>'
+        text +='<option value='+jsonResult[i].id+' data-pakage='+jsonResult[i].product_code+'>'+jsonResult[i].code+'</option>'
       }
       $("#barju_no").empty();
       $("#barju_no").append(text);
@@ -164,6 +210,7 @@ function balju_select(order_no){
       $("#barju_no").on("change", function(){
         var barju_no = $(this).val();
         balju_data(barju_no);
+        pakage_data($("#barju_no").find("option:selected").data("pakage"));
       });
     }else{
       alert(result.message);
@@ -202,7 +249,31 @@ function balju_data(barju_no){
   });
 }
 
-
+function pakage_data(code){
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/master/package/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        id:code
+      }
+  }).done(function (result, textStatus, xhr) {
+    if(result.status == 200){
+      var jsonResult = result.data;
+      console.log(jsonResult);
+      $("#product_cnt").empty();
+      $("#product_cnt").val(jsonResult.boxspec5);
+    }else{
+      alert(result.message);
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+}
 // var qrcode = new QRCode(document.getElementById("qrcode"+i), {
 //     text: "abc123"+i,
 //     width: 113,
@@ -296,7 +367,7 @@ function print(){
           innerHtml +='        </tr>';
           innerHtml +='        <tr>';
           innerHtml +='        <th>입고지</th>';
-          innerHtml +='          <td>도장실</td>';
+          innerHtml +='          <td>'+jsonResult[i].dept_name+'</td>';
           innerHtml +='        </tr>';
           innerHtml +='      </table>';
           innerHtml +='    </div>';

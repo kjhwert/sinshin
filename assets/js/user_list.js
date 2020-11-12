@@ -7,7 +7,21 @@ if(getParam("page_no") == ""){
   page_no = getParam("page_no");
 }
 
-user_list(page_no, per_page);
+$(function(){
+  $("#system_management").addClass("open");
+  $("#user_management").addClass("active");
+  user_list(page_no, per_page);
+
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#user_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+});
+
 function user_list(page_no, per_page){
   $.ajax({
       type    : "GET",
@@ -27,11 +41,11 @@ function user_list(page_no, per_page){
     if(data.status == 200){
       for(var i in data.data){
         text +='<tr>';
-        text +='<th scope="row">3</th>';
-        text +='<td>'+data.data[i].user_id+'</td>';
-        text +='<td>'+data.data[i].email+'</td>';
-        text +='<td>'+data.data[i].name+'</td>';
-        text +='<td>'+data.data[i].dept+'</td>';
+        text +='<th scope="row">'+data.data[i].RNUM+'</th>';
+        text +='  <td>'+data.data[i].user_id+'</td>';
+        text +='  <td>'+data.data[i].email+'</td>';
+        text +='  <td>'+data.data[i].name+'</td>';
+        text +='  <td>'+data.data[i].dept+'</td>';
         text +='  <td>'+data.data[i].position+'</td>';
         text +='  <td>'+data.data[i].duty+'</td>';
         text +='  <td>'+data.data[i].tel+'</td>';
@@ -121,3 +135,8 @@ $("#search_btn").on("click", function(){
     })
   }
 })
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});

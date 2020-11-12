@@ -63,6 +63,7 @@
                         <th>수주번호</th>
                         <td>
                           <input type="text" id="order_no" class="form-control" placeholder="수주번호를 검색하세요" readonly>
+                          <input type="hidden" id="order_id" class="form-control" placeholder="수주번호를 검색하세요" readonly>
                         </td>
                       </tr>
                       <tr>
@@ -93,7 +94,13 @@
                         </td>
                       </tr>
                       <tr>
-                        <th>용량 (KG)</th>
+                        <th>LOT NO</th>
+                        <td>
+                          <input class="form-control" id="lot_no" type="text" placeholder="LOT번호를 검색하세요" readonly>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>용량 (kg)</th>
                         <td><input class="form-control" id="product_cnt" type="text" placeholder="용량을 입력해주세요" value="25"></td>
                       </tr>
                       <tr>
@@ -121,7 +128,7 @@
     <div class="modal_back" id="modal_back"></div>
     <div class="search_modal" id="search_modal">
       <div>
-        <input type="text" placeholder="수주번호를 입력해주세요" class="input_type1" id="search_text"> <button class="btn btn-success custom_btn1" id="search_btn">검색</button>
+        <input type="text" placeholder="검색어를 입력해주세요" class="input_type1" id="search_text"> <button class="btn btn-success custom_btn1" id="search_btn">검색</button>
       </div>
       <div class="search_result_box mt-1">
         <table cellspacing="0" cellpadding="0" class="table table-striped table-bordered multi-ordering dataTable no-footer process_tag_table" id="search_table">

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="description" content="Chameleon Admin is a modern Bootstrap 4 webapp &amp; admin dashboard html template with a large number of components, elegant design, clean and organized code.">
+    <meta name="keywords" content="admin template, Chameleon admin template, dashboard template, gradient admin template, responsive admin template, webapp, eCommerce dashboard, analytic dashboard">
+    <meta name="author" content="ThemeSelect">
+    <title>신신화학공업 MES</title>
+    <link rel="apple-touch-icon" href="../theme-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/images/logo.ico">
+    <link href="https://fonts.googleapis.com/css?family=Muli:300,300i,400,400i,600,600i,700,700i%7CComfortaa:300,400,700" rel="stylesheet">
+    <link href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome.min.css" rel="stylesheet">
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="../theme-assets/css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="../theme-assets/vendors/css/charts/chartist.css">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN CHAMELEON  CSS-->
+    <link rel="stylesheet" type="text/css" href="../theme-assets/css/app-lite.css">
+    <!-- END CHAMELEON  CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="../theme-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="../theme-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="../theme-assets/css/pages/dashboard-ecommerce.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+    <!-- END Page Level CSS-->
+    <!-- BEGIN Custom CSS-->
+    <!-- END Custom CSS-->
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/common.js" type="text/javascript"></script>
+
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+  </head>
+  <body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-color="bg-chartbg" data-col="2-columns">
+
+    <script>getHeader();</script>
+
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <!-- Chart -->
+      <br>
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">생산현황 모니터링</h4>
+            </div>
+            <div class="card-content collapse show">
+              <div class="card-body">
+                <p class="card-text search_box">
+                  <select class="form-control" id="years_select"></select>
+                  <select class="form-control" id="monthly_select"></select>
+                  <button type="button" class="btn btn-primary btn-min-width custom_btn" id="search_btn">조회</button>
+                </p>
+                <br>
+                <div id="chartdiv" class="produce_chart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-8 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">사출</h4>
+              <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
+              <div class="heading-elements">
+                <ul class="list-inline mb-0">
+                  <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
+                  <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
+                  <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
+                  <li><a data-action="close"><i class="ft-x"></i></a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-content collapse show">
+              <div class="card-body">
+                <div class="card-footer text-center p-1">
+                  <div class="row">
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">입고</p>
+                      <a href="../product_history/material_status.html">
+                        <p class="font-medium-5 text-bold-400" id="stock_qty1"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정시작</p>
+                      <a href="../product_history/injection_start.html">
+                        <p class="font-medium-5 text-bold-400" id="start_qty1"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정완료</p>
+                      <a href="../product_history/injection_end.html">
+                        <p class="font-medium-5 text-bold-400" id="complete_qty1"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">불량현황</p>
+                      <a href="../product_history/injection_defect.html">
+                        <p class="font-medium-5 text-bold-400" id="defect_qty1"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                        <p class="blue-grey lighten-2 mb-0">출고현황</p>
+                      <a href="../product_history/injection_release.html">
+                        <p class="font-medium-5 text-bold-400" id="release_qty1"></p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-header">
+              <h4 class="card-title">도장</h4>
+            </div>
+            <div class="card-content collapse show">
+              <div class="card-body">
+                <div class="card-footer text-center p-1">
+                  <div class="row">
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">입고</p>
+                      <a href="../product_history/painting_warehousing.html">
+                        <p class="font-medium-5 text-bold-400" id="stock_qty2"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정시작</p>
+                      <a href="../product_history/painting_start.html">
+                        <p class="font-medium-5 text-bold-400" id="start_qty2"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정완료</p>
+                      <a href="../product_history/painting_end.html">
+                        <p class="font-medium-5 text-bold-400" id="complete_qty2"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">불량현황</p>
+                      <a href="../product_history/painting_defect.html">
+                        <p class="font-medium-5 text-bold-400" id="defect_qty2"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                        <p class="blue-grey lighten-2 mb-0">출고현황</p>
+                      <a href="../product_history/painting_release.html">
+                        <p class="font-medium-5 text-bold-400" id="release_qty2"></p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-header">
+              <h4 class="card-title">조립</h4>
+            </div>
+            <div class="card-content collapse show">
+              <div class="card-body">
+                <div class="card-footer text-center p-1">
+                  <div class="row">
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">입고</p>
+                      <a href="../product_history/assembly_warehousing.html">
+                        <p class="font-medium-5 text-bold-400" id="stock_qty3"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정시작</p>
+                      <a href="../product_history/assembly_start.html">
+                        <p class="font-medium-5 text-bold-400" id="start_qty3"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">공정완료</p>
+                      <a href="../product_history/assembly_end.html">
+                        <p class="font-medium-5 text-bold-400" id="complete_qty3"></p>
+                      </a>
+                    </div>
+                    <div class="col border-right-blue-grey border-right-lighten-5 text-center">
+                        <p class="blue-grey lighten-2 mb-0">불량현황</p>
+                      <a href="../product_history/assembly_defect.html">
+                        <p class="font-medium-5 text-bold-400" id="defect_qty3"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                        <p class="blue-grey lighten-2 mb-0">출고현황</p>
+                      <a href="../product_history/assembly_release.html">
+                        <p class="font-medium-5 text-bold-400" id="release_qty3"></p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+<!--/ chart -->
+        </div>
+      </div>
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////-->
+
+
+    <footer class="footer footer-static footer-light navbar-border navbar-shadow">
+      <div class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
+        <span class="float-md-left d-block d-md-inline-block">2020 Copyright &copy; sinshin</span>
+      </div>
+    </footer>
+
+    <!-- BEGIN VENDOR JS-->
+    <script src="../theme-assets/vendors/js/vendors.min.js" type="text/javascript"></script>
+    <!-- BEGIN VENDOR JS-->
+    <!-- BEGIN PAGE VENDOR JS-->
+    <!-- <script src="../theme-assets/vendors/js/charts/chartist.min.js" type="text/javascript"></script> -->
+    <!-- END PAGE VENDOR JS-->
+    <!-- BEGIN CHAMELEON  JS-->
+    <script src="../theme-assets/js/core/app-menu-lite.js" type="text/javascript"></script>
+    <script src="../theme-assets/js/core/app-lite.js" type="text/javascript"></script>
+    <script src="../assets/monitoring_js/production_state.js"></script>
+    <!-- END CHAMELEON  JS-->
+    <!-- BEGIN PAGE LEVEL JS-->
+    <!-- <script src="../theme-assets/js/scripts/pages/dashboard-lite.js" type="text/javascript"></script> -->
+    <!-- END PAGE LEVEL JS-->
+  </body>
+</html>

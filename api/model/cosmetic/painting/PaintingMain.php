@@ -22,23 +22,24 @@ class PaintingMain extends InjectionMain
         $page = ((int)$params["page"] * (int)$perPage);
 
         $process_complete = Code::$PROCESS_COMPLETE;
+        $process_stock = Code::$PROCESS_STOCK;
         $dept_id = $this->getDeptId();
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (
                     select c.order_no, c.ord, c.jaje_code, d.name as product_name, a.id,
                 a.order_date, a.request_date, a.qty as process_qty, ifnull(sum(b.qty),0) as product_qty,
-                ifnull(ROUND((sum(b.qty)/a.qty)*100, 1),0) as process_percent, e.name as type,
+                ifnull(ROUND((b.qty/a.qty)*100, 1),0) as process_percent, e.name as type,
                 ifnull(p.work_qty,'') as work_qty, ifnull(p.humidity_max,'') as humidity_max, 
                 ifnull(p.humidity_min,'') as humidity_min, ifnull(p.humidity_average,'') as humidity_average, 
                 ifnull(p.conveyor_speed, '') as conveyor_speed
                 from process_order a
-                  inner join (select process_order_id, process_stts, qty
+                inner join (select process_order_id, process_stts, sum(qty) qty
                                 from qr_code
-                            where process_stts >= {$process_complete} 
+                            where process_stts in ({$process_complete}, {$process_stock}) 
                             and stts = 'ACT'
-                            and dept_id = {$dept_id}) b
-                            on a.id = b.process_order_id
+                            and dept_id = {$dept_id} group by process_order_id) b
+                on a.id = b.process_order_id
                 inner join `order` c
                 on a.order_id = c.id
                 inner join product_master d

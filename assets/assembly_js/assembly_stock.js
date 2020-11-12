@@ -1,7 +1,15 @@
 
 $(function(){
   $("#product_history").addClass("open");
-  $("#painting").addClass("active");
+  $("#assembly").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#assembly").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   painting_stock(page_no, per_page, sort, order);
 });
@@ -66,7 +74,7 @@ $("#basicSelect").on("change", function(){
 function painting_stock(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/stock/index.php",
+      url        : "../api/cosmetics/assemble/stock/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -89,13 +97,12 @@ function painting_stock(page_no, per_page, sort, order){
 
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+jsonResult[i].order_no+'</td>';
-        text +='  <td>'+jsonResult[i].type+'</td>'
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+comma(jsonResult[i].box_qty)+'</td>';
-        text +='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].process_date+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].process_date+'</td>';
         text +='</tr>';
       }
       $("#painting_stock_list").empty();
@@ -123,7 +130,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./painting_stock.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./assembly_stock.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -132,16 +139,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./painting_stock.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./assembly_stock.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./painting_stock.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./assembly_stock.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./painting_stock.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./assembly_stock.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';

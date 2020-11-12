@@ -39,13 +39,16 @@ class QrStock extends Model
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                 bb.process_date, cc.name as asset_name, cc.display_name
                             from qr_code aa
-                            inner join change_stts bb
+                            inner join (
+                                select * 
+                                from change_stts
+                                where process_status = {$process_stock} 
+                                and dept_id = {$dept_id}
+                                order by created_at desc limit 18446744073709551615
+                            ) bb
                             on aa.id = bb.qr_id
                             inner join asset cc
                             on aa.asset_id = cc.id
-                            where bb.process_status = {$process_stock} 
-                            and aa.dept_id = {$dept_id}
-                            and bb.dept_id = {$dept_id}
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id ) b
@@ -54,9 +57,7 @@ class QrStock extends Model
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,
                (SELECT @rownum:= 0) AS R

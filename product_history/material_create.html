@@ -56,7 +56,7 @@
             <div class="card-content collapse show">
               <div class="card-body">
                 <div class="table-responsive">
-                  <table class="table table-striped table-bordered multi-ordering dataTable no-footer">
+                  <table class="table table-striped table-bordered multi-ordering dataTable no-footer material_create_table">
                     <tbody>
                       <tr>
                         <th>분류</th>
@@ -64,7 +64,7 @@
                           <select class="form-control" id="search_type">
                             <option selected disabled hidden>분류를 선택해주세요</option>
                             <option value="IN">원자재</option>
-                            <option value="P">도료</option>
+                            <option value="CO">도료</option>
                           </select>
                         </td>
                       </tr>
@@ -80,8 +80,8 @@
                         <td><input class="form-control" id="material_name" type="text" placeholder="자재코드를 먼저 선택해주세요" readonly></td>
                       </tr>
                       <tr>
-                        <th>수량</th>
-                        <td><input class="form-control" id="material_qty" type="number" placeholder="수량을 입력해주세요"></td>
+                        <th>포대수량</th>
+                        <td><input class="form-control" id="material_qty" type="text" placeholder="포대수량을 입력해주세요"></td>
                       </tr>
                       <tr>
                         <th>총량</th>
@@ -91,6 +91,12 @@
                         <th>단위</th>
                         <td>
                           <input class="form-control" id="material_unit" type="text" placeholder="분류를 먼저 입력해주세요" readonly>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>LOT NO</th>
+                        <td>
+                          <input class="form-control" id="lot_no" type="text" placeholder="LOT번호를 입력해주세요">
                         </td>
                       </tr>
                       <tr>

@@ -16,9 +16,13 @@ class QrDefect extends Model
     ];
 
     protected $searchableText = 'product_name';
-    protected $searchableDate = 'd.start_date';
+    protected $searchableDate = 'a.created_at';
     protected $searchableAsset = 'c.asset_id';
     protected $reversedSort = true;
+
+    protected $injectionProcessCode = "'M'";
+    protected $paintingProcessCode = "'D', 'D2', 'C', 'R', 'Q', 'C1', 'E'";
+    protected $assembleProcessCode = "'F', 'F1', 'J', 'SS', 'G', 'H'";
 
     public function index(array $params = [])
     {
@@ -34,7 +38,7 @@ class QrDefect extends Model
                 from (select a.id, ifnull(d.defect_qty, 0) as defect_qty,
                    round((ifnull(d.defect_qty,0)/p.product_qty)*100,1) as defect_percent,
                    ifnull(p.product_qty,0) as product_qty, p.asset_name, o.order_no, p.product_name,
-                   d.start_date, d.end_date, ifnull(d.user_name,'') as manager,
+                   ifnull(d.start_date,'') as start_date, ifnull(d.end_date,'') as end_date, ifnull(d.user_name,'') as manager,
                    p.display_name
                 from process_order a
                 inner join `order` o
@@ -48,6 +52,7 @@ class QrDefect extends Model
                          inner join user c
                          on a.created_id = c.id
                     where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and a.dept_id = {$dept_id}
+                    {$this->searchDate($params['params'])}
                     group by a.process_order_id) as d
                 on a.id = d.process_order_id
                 inner join (
@@ -67,7 +72,7 @@ class QrDefect extends Model
                     group by a.process_order_id) as p
                 on a.id = p.process_order_id
                 where a.stts = 'ACT' and o.stts = 'ACT'
-                {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
+                {$this->searchText($params['params'])}
                 order by {$this->sorting($params['params'])}) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
@@ -86,7 +91,8 @@ class QrDefect extends Model
                     select d.created_at, p.product_name, a.id
                     from process_order a
                     left join (
-                        select sum(a.qty) as defect_qty, a.process_order_id, 
+                        select sum(a.qty) as defect_qty, a.process_order_id, min(a.created_at) as start_date, 
+                                max(a.created_at) as end_date,
                         a.created_at, c.name as user_name
                         from cosmetics_defect_log a
                              inner join defect b
@@ -123,15 +129,11 @@ class QrDefect extends Model
             return (new ErrorHandler())->typeNull('order_no');
         }
 
-        if (!$params['process_type']) {
-            return (new ErrorHandler())->typeNull('process_type');
-        }
-
         $dept_id = $this->getDeptId();
         $process_start = Code::$PROCESS_START;
 
         $sql = "select a.asset_no, pm.name as product_name, o.order_no, po.id,
-                    o.id as order_id, pm.id as product_id, mm.name as material_name, mm.qty, mm.unit
+                    o.id as order_id, pm.id as product_id, aa.name as material_name, aa.qty, aa.unit
                     from process_order po
                     inner join `order` o
                     on po.order_id = o.id
@@ -139,23 +141,41 @@ class QrDefect extends Model
                     on po.product_code = pm.code
                     inner join asset a
                     on po.asset_id = a.id
-                    inner join material_master mm
-                    on pm.material_id = mm.id
                     inner join (
-                        select qc.process_order_id from qr_code qc
+                        select qc.process_order_id, mm.name, mm.qty, mm.unit 
+                        from qr_code qc
                         inner join change_stts cs
                         on qc.id = cs.qr_id
+                        inner join material_master mm
+                        on qc.material_id = mm.id
                         and cs.process_status = {$process_start}
                         and cs.dept_id = {$dept_id}
                         group by qc.process_order_id
                     ) aa
                     on po.id = aa.process_order_id
                 where pm.name like '%{$params['product_name']}%'
-                and po.process_type = '{$params['process_type']}'
+                and po.process_type in ({$this->getDeptProcessType()})
                 and o.order_no like '%{$params['order_no']}%'
                 order by o.created_at desc";
 
         return new Response(200, $this->fetch($sql), '');
+    }
+
+    protected function getDeptProcessType () {
+        $injection = Dept::$INJECTION;
+        $painting = Dept::$PAINTING;
+        $assemble = Dept::$ASSEMBLE;
+
+        switch ($this->token['dept_id']) {
+            case $injection:
+                return $this->injectionProcessCode;
+            case $painting:
+                return $this->paintingProcessCode;
+            case $assemble:
+                return $this->assembleProcessCode;
+            default:
+                return new Response(403, [], '출력 권한이 없습니다.');
+        }
     }
 
     public function show($id = null)

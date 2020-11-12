@@ -1,6 +1,14 @@
 $(function(){
   $("#automotive_management").addClass("open");
   $("#plating").addClass("active");
+  if($("#automotive_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#plating").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 
 var page_no = getParam("page_no");
@@ -79,22 +87,22 @@ function warehousing(page_no, per_page, sort, order){
       var jsonResult = result.data;
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <th>'+jsonResult[i].RNUM+'</th>';
+        text +='  <th class="text-center">'+jsonResult[i].RNUM+'</th>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+jsonResult[i].car_code+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].store_qty)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].loss)+'</td>';
-        text +='  <td>'+jsonResult[i].customer+'</td>';
-        text +='  <td>'+jsonResult[i].supplier+'</td>';
-        text +='  <td>'+jsonResult[i].charger+'</td>';
-        text +='  <td>'+jsonResult[i].type+'</td>';
-        text +='  <td>'+jsonResult[i].created_at+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].customer+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].supplier+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].charger+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].type+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].created_at+'</td>';
         text +='  <td>';
         if(jsonResult[i].type == "미처리"){
           text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
           text +='      <a href="../automotive_management/plating_warehousing_update.html?id='+jsonResult[i].id+'">';
-          text +='        <button type="button" class="btn btn-warning">수정</button>';
+          text +='        <button type="button" class="btn btn-warning">검사 및 수정</button>';
           text +='      </a>';
           text +='    </div>';
         }

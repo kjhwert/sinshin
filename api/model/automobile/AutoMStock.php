@@ -73,7 +73,7 @@ class AutoMStock extends Model
                 from automobile_stock a
                 inner join automobile_master b
                 on a.product_id = b.id
-                where a.id = {$id}";
+                where a.id = {$id} and a.stts = 'ACT' and b.stts = 'ACT'";
 
         return new Response(200, $this->fetch($sql));
     }

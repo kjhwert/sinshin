@@ -1,6 +1,14 @@
 $(function(){
   $("#automotive_management").addClass("open");
   $("#plating").addClass("active");
+  if($("#automotive_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#plating").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 });
 
 var page_no = "";
@@ -35,14 +43,14 @@ function material_list(page_no, per_page){
 
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <th>'+jsonResult[i].RNUM+'</th>';
+        text +='  <th class="text-center">'+jsonResult[i].RNUM+'</th>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+jsonResult[i].car_code+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].remain_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].customer+'</td>';
-        text +='  <td>'+jsonResult[i].supplier+'</td>';
-        text +='  <td>'+jsonResult[i].name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].customer+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].supplier+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].name+'</td>';
         text +='  <td>';
         text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='      <a href="../automotive_management/plating_material_detail.html?id='+jsonResult[i].id +'">';

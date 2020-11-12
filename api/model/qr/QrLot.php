@@ -7,6 +7,8 @@ class QrLot extends Model
       'print_qty' => 'integer'
     ];
 
+    protected $qrMasterId = 5;
+
     public function isLot (array $data = [])
     {
         $sql = "select id from lot where qr_id = {$data['qr_id']}";
@@ -15,6 +17,9 @@ class QrLot extends Model
         if (!$id) {
             return new Response(403, [], 'Lot QR코드를 스캔해주세요.');
         }
+
+        $sql = "update lot set dept_id = {$this->token['dept_id']} where id = {$id}";
+        $this->fetch($sql);
 
         $sql = "select o.order_no, pm.name as product_name, qc.id as qr_id,
                        qc.qty, 1 as box_qty, pm.id as product_id
@@ -25,14 +30,21 @@ class QrLot extends Model
                     on qc.order_id = o.id
                     inner join product_master pm
                     on qc.product_id = pm.id
-                where lot_id = {$id}";
+                where b.lot_id = {$id}";
 
         return new Response(200, ['id'=>$id, 'products' => $this->fetch($sql)],'');
     }
 
     public function create(array $data = [])
     {
-        $print_result = [];
+        $dept_id = $this->token['dept_id'];
+        $injection = Dept::$INJECTION;
+        $painting = Dept::$PAINTING;
+        $assemble = Dept::$ASSEMBLE;
+
+        if ($dept_id !== $injection && $dept_id !== $painting && $dept_id !== $assemble) {
+            return new Response(403, [], '작업 권한이 없습니다.');
+        }
 
         $qr_id = $this->createQrCode();
         $lot_id = $this->createLot($qr_id);
@@ -69,7 +81,8 @@ class QrLot extends Model
     protected function createQrCode ()
     {
         $sql = "insert into {$this->table} set
-                dept_id = {$this->token['dept_id']}, 
+                dept_id = {$this->token['dept_id']},
+                qr_master_id = {$this->qrMasterId},
                 created_id = {$this->token['id']},
                 created_at = SYSDATE()
                 ";

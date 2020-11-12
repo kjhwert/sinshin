@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia2pod2VydCIsImEiOiJja2g0M2s5Mm8wYXU4MnNvYWh0Nzc1ZXhyIn0.plvnGOmcjL1bMP2P7vuSTg';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v8',
+        center: [127.069143, 37.54013],
+        zoom: 11
+    });
+
+    var iPath = turf.linestring([
+        [126.949941, 37.546474],
+        [126.987991, 37.551118],
+        [126.993789, 37.574447],
+        [127.069143, 37.54013],
+        [127.027477, 37.497379],
+        [126.952626, 37.480682]
+    ]);
+
+    var geojson = {
+        'type': 'FeatureCollection',
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[126.949941, 37.546474]]
+                }
+            }
+        ]
+    };
+
+    var iPathLength = turf.lineDistance(iPath, 'miles');
+    var iPoint = turf.along(iPath, 0, 'miles');
+
+    map.on('load', function () {
+        map.addSource("path", {
+            "type": "geojson",
+            "data": iPath,
+            "maxzoom": 20
+        });
+
+        map.addSource('line', {
+            'type': 'geojson',
+            'data': geojson
+        });
+
+        // add the line which will be modified in the animation
+        map.addLayer({
+            'id': 'line-animation',
+            'type': 'line',
+            'source': 'line',
+            'layout': {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            'paint': {
+                'line-color': '#ed6498',
+                'line-width': 5,
+                'line-opacity': 0.8
+            }
+        });
+        // map.addLayer({
+        //     "id": "path",
+        //     "type": "line",
+        //     "source": "path",
+        //     "layout": {
+        //         "line-join": "round",
+        //         "line-cap": "round"
+        //     },
+        //     "paint": {
+        //         "line-color": "#888",
+        //         "line-width": 2
+        //     }
+        // });
+
+        map.loadImage(
+            'http://sinshin.hlabpartner.com/bike.png',
+            function (error, image) {
+                if (error) throw error;
+                map.addImage('cat', image);
+            }
+        );
+
+        map.addSource('point', {
+            'type': 'geojson',
+            'data': iPoint
+        });
+        map.addLayer({
+            'id': 'point',
+            'type': 'symbol',
+            'source': 'point',
+            'layout': {
+                'icon-image': 'cat',
+                'icon-size': 0.75
+            }
+        });
+        // map.addSource('point', {
+        //     'type': 'geojson',
+        //     'data': iPoint
+        // });
+        //
+        // map.addLayer({
+        //     'id': 'point',
+        //     'source': 'point',
+        //     'type': 'symbol',
+        //     'layout': {
+        //         'icon-image': 'airport-15',
+        //         'icon-rotate': ['get', 'bearing'],
+        //         'icon-rotation-alignment': 'map',
+        //         'icon-allow-overlap': true,
+        //         'icon-ignore-placement': true
+        //     }
+        // });
+
+        var step = 0;
+        var numSteps = 500; //Change this to set animation resolution
+        var timePerStep = 20; //Change this to alter animation speed
+        var pSource = map.getSource('point');
+        var interval = setInterval(function() {
+            step += 1;
+
+            if (step > numSteps) {
+                clearInterval(interval);
+            } else {
+                var curDistance = step / numSteps * iPathLength;
+                var iPoint = turf.along(iPath, curDistance, 'miles');
+                geojson.features[0].geometry.coordinates.push(iPoint.geometry.coordinates);
+                map.getSource('line').setData(geojson);
+                pSource.setData(iPoint);
+            }
+        }, timePerStep);
+
+    });
+</script>
+
+</body>
+</html>

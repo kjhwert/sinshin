@@ -12,6 +12,8 @@ class QrCompleteP extends QrComplete
         return Dept::$PAINTING;
     }
 
+    protected $qrMasterId = 3;
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -35,8 +37,7 @@ class QrCompleteP extends QrComplete
                                         order by created_at desc LIMIT 18446744073709551615
                                         ) bb
                             on aa.id = bb.qr_id 
-                            and aa.dept_id = {$dept_id}
-                            and aa.stts = 'ACT' and bb.stts = 'ACT'
+                            where aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id
                             ) b
                 on a.id = b.process_order_id
@@ -59,7 +60,7 @@ class QrCompleteP extends QrComplete
 
     protected function paginationQuery (array $params = [])
     {
-        $process_complete = Code::$PROCESS_COMPLETE;
+        $process_start = Code::$PROCESS_START;
         $dept_id = $this->getDeptId();
 
         return "select count(a.id) as cnt
@@ -68,7 +69,7 @@ class QrCompleteP extends QrComplete
                             from qr_code aa
                             inner join change_stts bb
                             on aa.id = bb.qr_id
-                            where aa.process_stts = {$process_complete} and bb.process_status = {$process_complete}
+                            where aa.process_stts = {$process_start} and bb.process_status = {$process_start}
                             and bb.dept_id = {$dept_id} 
                             and aa.dept_id = {$dept_id}
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
@@ -94,8 +95,8 @@ class QrCompleteP extends QrComplete
                 ";
 
         $result = $this->fetch($sql)[0];
-        $process_start = Code::$PROCESS_START;
         $process_complete = Code::$PROCESS_COMPLETE;
+        $process_start = Code::$PROCESS_START;
 
         if ($result['process_stts'] === $process_complete) {
             return new Response(403, [], '이미 처리 되었습니다.');
@@ -111,6 +112,7 @@ class QrCompleteP extends QrComplete
     public function show($id = null)
     {
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         $sql = "select
                    cs.process_date, o.order_no, po.id, u.name as manager, e.name as type,
@@ -128,7 +130,9 @@ class QrCompleteP extends QrComplete
                     left join process_code e
                     on po.process_type = e.code,
                     (SELECT @rownum:= 0) AS R
-                where po.id = {$id} and cs.process_status = {$process_complete}
+                where po.id = {$id} 
+                and cs.process_status = {$process_complete} 
+                and cs.dept_id = {$dept_id}
                 order by RNUM desc
                 ";
 
@@ -139,6 +143,10 @@ class QrCompleteP extends QrComplete
     {
         $this->isAvailableUser();
         $data = $this->validate($data, $this->createRequired);
+
+        if ($data['print_qty'] > 50) {
+            return new Response(403, [], '출력 수량이 50장을 초과할 수 없습니다.');
+        }
 
         $print_qty = $data['print_qty'];
         $created_at = $data['created_at'];
@@ -162,6 +170,7 @@ class QrCompleteP extends QrComplete
                                 {$this->dataToString($data)},
                                 process_stts = {$process_start},
                                 dept_id = {$dept_id},
+                                qr_master_id = {$this->qrMasterId},
                                 created_id = {$this->token['id']},
                                 created_at = '{$created_at}'
                             ";

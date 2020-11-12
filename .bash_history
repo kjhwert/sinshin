@@ -173,3 +173,13 @@ git status
 git commit -m '20200917'
 git push origin master
 exit
+git add .
+git status
+git commit -m '20200921'
+git push origin master
+exit
+ls
+ls -al
+touch .gitignore
+vi .gitignore
+exit

@@ -5,8 +5,20 @@ if(getParam("page_no") == "" || getParam("page_no") == "0"){
 }else{
   page_no = getParam("page_no");
 }
+$(function () {
+  $("#system_management").addClass("open");
+  $("#data_management").addClass("active");
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#data_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  automotive_list(page_no, per_page);
+});
 
-automotive_list(page_no, per_page);
 
 function automotive_list(page, perPage){
   $.ajax({
@@ -26,7 +38,7 @@ function automotive_list(page, perPage){
     if(data.status == 200){
       for(var i in data.data){
         text +='<tr>';
-        text +='  <td>'+data.data[i].id+'</td>';
+        text +='  <td>'+data.data[i].RNUM+'</td>';
         text +='  <td>'+data.data[i].customer+'</td>';
         text +='  <td>'+data.data[i].supplier+'</td>';
         text +='  <td>'+data.data[i].customer_code+'</td>';
@@ -34,11 +46,12 @@ function automotive_list(page, perPage){
         text +='  <td>'+data.data[i].car_code+'</td>';
         text +='  <td>'+data.data[i].name+'</td>';
         text +='  <td>'+data.data[i].brand_code+'</td>';
-        text +='  <td>'+data.data[i].product_price+'</td>';
-        text +='  <td>'+data.data[i].plating_price+'</td>';
-        text +='  <td>'+data.data[i].supply_price+'</td>';
+        text +='  <td>'+comma(data.data[i].product_price)+'</td>';
+        text +='  <td>'+comma(data.data[i].plating_price)+'</td>';
+        text +='  <td>'+comma(data.data[i].supply_price)+'</td>';
         text +='  <td>'+data.data[i].note1+'</td>';
         text +='  <td>'+data.data[i].note2+'</td>';
+        text +='  <td><a onclick="automotive_delete('+data.data[i].id+');"><button type="button" class="btn btn-danger">삭제</button></a></td>';
         text +='</tr>';
       }
 
@@ -93,4 +106,34 @@ function paging(end, start, total){
 
   $("#pagination").empty();
   $("#pagination").append(text);
+}
+
+function automotive_delete(id){
+  var result = confirm('삭제 하시겠습니까?');
+
+  if(result) {
+    $.ajax({
+        type    : "DELETE",
+        url        : "../api/automobile/master/index.php",
+        headers : {
+          "content-type": "application/json",
+          Authorization : user_data.token,
+        },
+        dataType:"json",
+        data:JSON.stringify({
+          id: id
+        })
+    }).done(function (data, textStatus, xhr) {
+      var text = '';
+      if(data.status == 200){
+        alert(data.message);
+        location.reload();
+      }else{
+        alert(data.message);
+        return;
+      }
+    }).fail(function(data, textStatus, errorThrown){
+      console.log("전송 실패");
+    });
+  }
 }

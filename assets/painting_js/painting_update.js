@@ -1,4 +1,18 @@
-painting_data();
+$(function(){
+  $("#product_history").addClass("open");
+  $("#painting").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#painting").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+
+  painting_data();
+});
+
 
 function painting_data(){
   $.ajax({

@@ -23,6 +23,8 @@ class QrComplete extends Model
     protected $searchableAsset = 'aa.asset_id';
     protected $reversedSort = true;
 
+    protected $qrMasterId = 2;
+
     public function index(array $params = [])
     {
         $params = $this->pagination($params);
@@ -35,7 +37,7 @@ class QrComplete extends Model
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (select a.id, b.box_qty, b.product_qty, c.order_no, c.jaje_code, b.display_name,
-                   d.name as product_name, ifnull(e.name,'') as material_name, b.asset_name, b.process_date
+                   d.name as product_name, b.asset_name, b.process_date
                 from process_order a
                 inner join (select aa.process_order_id, count(aa.id) as box_qty, sum(aa.qty) as product_qty, 
                                 bb.process_date, cc.name as asset_name, cc.display_name
@@ -47,8 +49,7 @@ class QrComplete extends Model
                                         ) bb
                             on aa.id = bb.qr_id
                             inner join asset cc
-                            on aa.asset_id = cc.id 
-                            and aa.dept_id = {$dept_id}
+                            on aa.asset_id = cc.id
                             {$this->searchAsset($params['params'])} 
                             and aa.stts = 'ACT' and bb.stts = 'ACT'
                             group by aa.process_order_id
@@ -58,9 +59,7 @@ class QrComplete extends Model
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id order by {$this->sorting($params['params'])}) as tot,
                (SELECT @rownum:= 0) AS R
@@ -95,37 +94,35 @@ class QrComplete extends Model
                 on a.order_id = c.id
                 inner join product_master d
                 on a.product_code = d.code
-                left join material_master e
-                on d.material_id = e.id
-                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT' and e.stts = 'ACT'
+                where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params)} {$this->searchDate($params)}";
     }
 
     public function show($id = null)
     {
         $process_complete = Code::$PROCESS_COMPLETE;
+        $dept_id = $this->getDeptId();
 
         $sql = "select
                    cs.process_date, a.name as asset_name, o.order_no, po.id, o.id as order_id, u.name as manager,
-                   pm.name as product_name, mm.name as material_name, a.asset_no, po.code as process_code,
+                   pm.name as product_name, a.asset_no, po.code as process_code,
                    o.jaje_code, qc.qty, a.display_name, @rownum:= @rownum+1 AS RNUM
                     from qr_code qc
                     inner join process_order po
                     on qc.process_order_id = po.id
                     inner join `order` o 
                     on qc.order_id = o.id
-                    inner join change_stts cs
+                    inner join (select * from change_stts 
+                                where dept_id = {$dept_id} and process_status = {$process_complete}) cs
                     on qc.id = cs.qr_id
                     inner join `user` u
                     on cs.created_id = u.id
                     inner join asset a
                     on qc.asset_id = a.id
                     inner join product_master pm
-                    on qc.product_id = pm.id
-                    inner join material_master mm
-                    on pm.material_id = mm.id,
+                    on qc.product_id = pm.id,
                     (SELECT @rownum:= 0) AS R
-                where po.id = {$id} and cs.process_status = {$process_complete}
+                where po.id = {$id}
                 order by RNUM desc
                 ";
 
@@ -141,8 +138,6 @@ class QrComplete extends Model
                 on qr.order_id = o.id
                 inner join product_master pm
                 on qr.product_id = pm.id
-                inner join material_master mm
-                on qr.material_id = mm.id
                 inner join asset a
                 on qr.asset_id = a.id
                 where qr.id = {$id}
@@ -168,6 +163,10 @@ class QrComplete extends Model
         $this->isAvailableUser();
         $data = $this->validate($data, $this->createRequired);
 
+        if ($data['print_qty'] > 50) {
+            return new Response(403, [], '출력 수량이 50장을 초과할 수 없습니다.');
+        }
+
         $print_qty = $data['print_qty'];
         $created_at = $data['created_at'];
         unset($data['print_qty']);
@@ -183,17 +182,14 @@ class QrComplete extends Model
             $sql = "select name from dept where id = {$this->token['dept_id']}";
             $dept_name = $this->fetch($sql)[0]['name'];
 
-            $sql = "select material_id from product_master where id = {$data['product_id']}";
-            $material_id = $this->fetch($sql)[0]['material_id'];
-
             for ($i = 0; $i < $print_qty; $i++) {
                 try {
 
                     $sql = "insert into qr_code set    
                                 {$this->dataToString($data)},
                                 process_stts = {$process_start},
-                                material_id = {$material_id},
                                 dept_id = {$dept_id},
+                                qr_master_id = {$this->qrMasterId},
                                 created_id = {$this->token['id']},
                                 created_at = '{$created_at}'
                             ";
@@ -203,12 +199,10 @@ class QrComplete extends Model
                     $qr_id = $this->db->lastInsertId();
 
                     $sql = "select o.order_no, b.name as product_name, b.code, a.created_at, d.asset_no,
-                                   a.qty, c.unit, c.name as material_name, d.name as asset_name, d.id as asset_id
+                                   a.qty, d.name as asset_name, d.id as asset_id
                             from qr_code a
                                 inner join product_master b
                                 on a.product_id = b.id
-                                inner join material_master c
-                                on b.material_id = c.id
                                 inner join asset d
                                 on a.asset_id = d.id
                                 inner join `order` o

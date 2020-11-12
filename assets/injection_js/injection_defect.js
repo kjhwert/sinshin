@@ -2,6 +2,14 @@
 $(function(){
   $("#product_history").addClass("open");
   $("#injection").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#injection").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   injection_stock(page_no, per_page, sort, order);
 });
@@ -16,14 +24,34 @@ var order = getParam("order");//desc
 var sort_select = getParam("sort_select");
 var asset_id = getParam("asset_id");
 
+let today = new Date();
+
+let year = today.getFullYear(); // 년도
+let month = today.getMonth() + 1;  // 월
+let y_month = today.getMonth();
+
+
+let date = today.getDate();  // 날짜
+let day = today.getDay();  // 요일
+
+var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + date); //한달전
+var range_date2 = (year + '-' + month + '-' + date); //오늘
+
+
 if(asset_id != ""){
   $("#asset_id").val(asset_id);
 }
 if(start_date != ""){
   $("#start_date").val(start_date);
+}else{
+  $("#start_date").val(range_date1);
+  start_date = range_date1;
 }
 if(end_date != ""){
   $("#end_date").val(end_date);
+}else{
+  $("#end_date").val(range_date2);
+  end_date = range_date2;
 }
 if(search_text != ""){
   $("#search_text").val(search_text);
@@ -89,24 +117,21 @@ function injection_stock(page_no, per_page, sort, order){
       console.log(jsonResult);
       for(var i in jsonResult){
         text +='<tr>';
-        text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+jsonResult[i].start_date.substr(0,10)+'</td>';
-        text +='  <td>'+jsonResult[i].display_name+'</td>';
-        text +='  <td>'+jsonResult[i].order_no+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].start_date.substr(0,10)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].display_name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
-        text +='  <td>'+comma(jsonResult[i].product_qty)+'</td>';
-        text +='  <td>'+comma(jsonResult[i].defect_qty)+'</td>';
-        text +='  <td>'+jsonResult[i].defect_percent+'%</td>';
-        text +='  <td>'+jsonResult[i].manager+'</td>';
-        text +='  <td>';
-
-        if (jsonResult[i].defect_qty > 0) {
-          text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
-          text +='      <a href="../product_history/injection_defect_detail.html?id='+jsonResult[i].id+'">';
-          text +='        <button type="button" class="btn btn-warning">상세보기</button>';
-          text +='      </a>';
-          text +='    </div>';
-        }
+        text +='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].defect_qty)+'</td>';
+        text +='  <td class="text-right">'+jsonResult[i].defect_percent+'%</td>';
+        text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
+        text +='  <td class="text-center">';
+        text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+        text +='      <a href="../product_history/injection_defect_detail.html?id='+jsonResult[i].id+'">';
+        text +='        <button type="button" class="btn btn-warning">상세보기</button>';
+        text +='      </a>';
+        text +='    </div>';
         text +='  </td>';
         text +='</tr>';
       }

@@ -10,6 +10,15 @@ $(document).ready(function(){
     stock_detail_list(page_no, per_page);
     $("#automotive_management").addClass("open");
     $("#plating").addClass("active");
+
+    if($("#automotive_management").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
+    if($("#plating").find("a").css("display") == "none"){
+      alert("페이지 접근 권한이 없습니다");
+      history.back();
+    }
 });
 
 function stock_detail_list (page_no, per_page) {
@@ -37,21 +46,21 @@ function stock_detail_list (page_no, per_page) {
 
         for (i in results) {
             text += '<tr>';
-            text += '    <th>'+results[i].RNUM+'</th>';
-            text += '    <td>'+results[i].car_code+'</td>';
+            text += '    <th class="text-center">'+results[i].RNUM+'</th>';
+            text += '    <td class="text-center">'+results[i].car_code+'</td>';
             text += '    <td>'+results[i].customer_code+'</td>';
             text += '    <td>'+results[i].product_name+'</td>';
-            text += '    <td>'+results[i].customer+'</td>';
-            text += '    <td>'+results[i].supplier+'</td>';
-            text += '    <td>'+results[i].type+'</td>';
+            text += '    <td class="text-center">'+results[i].customer+'</td>';
+            text += '    <td class="text-center">'+results[i].supplier+'</td>';
+            text += '    <td class="text-center">'+results[i].type+'</td>';
             if (results[i].change_qty < 0) {
-                text += '<td class="danger">'+comma(results[i].change_qty)+'</td>';
+                text += '<td class="danger" align="right">'+comma(results[i].change_qty)+'</td>';
             } else {
-                text += '<td class="info">'+comma(results[i].change_qty)+'</td>';
+                text += '<td class="info" align="right">'+comma(results[i].change_qty)+'</td>';
             }
-            text += '    <td>'+comma(results[i].remain_qty)+'</td>';
-            text += '    <td>'+results[i].created_at+'</td>';
-            text += '    <td>'+results[i].name+'</td>';
+            text += '    <td align="right">'+comma(results[i].remain_qty)+'</td>';
+            text += '    <td class="text-center">'+results[i].created_at+'</td>';
+            text += '    <td class="text-center">'+results[i].name+'</td>';
             if(results[i].memo == ""){
               text +='      <td><a onclick="memo_modal('+results[i].id+');">';
               text +='        <button type="button" class="btn btn-light">메모</button>';

@@ -2,6 +2,14 @@
 $(function(){
   $("#product_history").addClass("open");
   $("#injection").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#injection").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   injection_start(page_no, per_page, sort, order);
 });
@@ -16,14 +24,33 @@ var order = getParam("order");//desc
 var sort_select = getParam("sort_select");
 var asset_id = getParam("asset_id");
 
+let today = new Date();
+
+let year = today.getFullYear(); // 년도
+let month = today.getMonth() + 1;  // 월
+let y_month = today.getMonth();
+
+
+let date = today.getDate();  // 날짜
+let day = today.getDay();  // 요일
+
+var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + date); //한달전
+var range_date2 = (year + '-' + month + '-' + date); //오늘
+
 if(asset_id != ""){
   $("#asset_id").val(asset_id);
 }
 if(start_date != ""){
   $("#start_date").val(start_date);
+}else{
+  $("#start_date").val(range_date1);
+  start_date = range_date1;
 }
 if(end_date != ""){
   $("#end_date").val(end_date);
+}else{
+  $("#end_date").val(range_date2);
+  end_date = range_date2;
 }
 if(search_text != ""){
   $("#search_text").val(search_text);
@@ -105,7 +132,7 @@ function injection_start(page_no, per_page, sort, order){
         text+='  <td class="text-left">'+jsonResult[i].product_name+'</td>';
         text+='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
         text+='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
-        text+='  <td>';
+        text+='  <td class="text-center">';
         text+='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text+='      <a href="../product_history/injection_end_detail.html?id='+jsonResult[i].id+'"><button type="button" class="btn btn-warning">상세보기</button></a>';
         text+='    </div>';

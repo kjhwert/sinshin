@@ -27,7 +27,7 @@ class User extends Model
         $page = ((int)$params["page"] * $perPage);
 
         $sql = "select 
-                    a.id, user_id, a.name, a.dept_id, tel, email, position, duty,
+                    a.id, user_id, a.name, a.dept_id, tel, email, position, ifnull(duty,'') as duty,
                     a.created_at, b.name as dept, c.name as position, @rownum := @rownum+1 AS RNUM, 
                     d.path, ifnull(d.created_at,'') as last_access
                          from user as a

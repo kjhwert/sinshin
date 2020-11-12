@@ -1,9 +1,17 @@
 $(function(){
   $("#product_history").addClass("open");
-  $("#painting").addClass("active");
+  $("#assembly").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#assembly").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   painting_status(page_no, per_page, sort, order);
-  painting_status_cnt();
+  assemble_status_cnt();
   painting_stock();
 });
 setDateBox();
@@ -57,15 +65,15 @@ function setDateBox(){
 }
 
 $("#search_btn_cnt").on("click", function(){
-  painting_status_cnt();
+  assemble_status_cnt();
 });
-function painting_status_cnt(){
+function assemble_status_cnt(){
   var years_select = $("#years_select").val();
   var monthly_select = $("#monthly_select").val();
 
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/main/index.php",
+      url        : "../api/cosmetics/assemble/main/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -80,7 +88,7 @@ function painting_status_cnt(){
     console.log(result);
     var jsonResult = result.data;
     if(result.status == 200){
-      $("#stock_qty").text(comma(jsonResult.stock_qty));
+      $("#stock_qty").text(comma(jsonResult.put_qty));
       $("#start_qty").text(comma(jsonResult.start_qty));
       $("#complete_qty").text(comma(jsonResult.complete_qty));
       $("#defect_qty").text(comma(jsonResult.defect_qty));
@@ -116,7 +124,7 @@ $("#basicSelect").on("change", function(){
 function painting_stock(){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/main/index.php",
+      url        : "../api/cosmetics/assemble/main/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -138,11 +146,19 @@ function painting_stock(){
           text +='  <img src="../assets/images/pallet.png">';
           text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
           text +='  <p class="stock_cnt">'+jsonResult[i].box_qty+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
+          text +='  <p id="tool_tip" class="stock_tool_tip">'+jsonResult[i].product_name+'</p>';
+          text +='  <p class="order_no">'+jsonResult[i].order_no+'</p>';
           text +='</li>';
         }
       }
       $("#stock_ul").empty();
       $("#stock_ul").append(text);
+      $("#stock_ul li").mouseover(function(){
+        $(this).find("#tool_tip").css("display","block");
+      });
+      $("#stock_ul li").mouseout(function(){
+        $(this).find("#tool_tip").css("display","none");
+      });
     }else{
       alert(result.message);
       return;
@@ -154,7 +170,7 @@ function painting_stock(){
 function painting_status(page_no, per_page, sort, order){
   $.ajax({
       type    : "GET",
-      url        : "../api/cosmetics/painting/main/index.php",
+      url        : "../api/cosmetics/assemble/main/index.php",
       headers : {
         "content-type": "application/json",
         Authorization : user_data.token,
@@ -173,10 +189,8 @@ function painting_status(page_no, per_page, sort, order){
       console.log(jsonResult);
       for(var i in jsonResult){
         text+='<tr>';
-        text+='  <th>3</th>';
+        text+='  <th>'+jsonResult[i].RNUM+'</th>';
         text+='  <td>'+jsonResult[i].order_no+'</td>';
-        text+='  <td>'+jsonResult[i].jaje_code+'</td>';
-        text+='  <td>'+jsonResult[i].type+'</td>';
         text+='  <td>'+jsonResult[i].product_name+'</td>';
         text+='  <td>'+jsonResult[i].order_date+'</td>';
         text+='  <td>'+jsonResult[i].request_date+'</td>';
@@ -187,22 +201,10 @@ function painting_status(page_no, per_page, sort, order){
         text+='        <div class="progress-bar bg-gradient-x-success" role="progressbar" style="width: '+jsonResult[i].process_percent+'%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>';
         text+='    </div>'+jsonResult[i].process_percent+'%';
         text+='  </td>';
-        text+='  <td>'+jsonResult[i].work_qty+'</td>';
-        text+='  <td>'+jsonResult[i].humidity_max+'</td>';
-        text+='  <td>'+jsonResult[i].humidity_min+'</td>';
-        text+='  <td>'+jsonResult[i].humidity_average+'</td>';
-        text+='  <td>'+jsonResult[i].conveyor_speed+'</td>';
-        text+='  <td>';
-        text+='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
-        text+='      <a href="../product_history/painting_update.html?id='+jsonResult[i].id+'">';
-        text+='        <button type="button" class="btn btn-warning">관리</button>';
-        text+='      </a>';
-        text+='    </div>';
-        text+='  </td>';
         text+='</tr>';
       }
-      $("#painting_status_list").empty();
-      $("#painting_status_list").append(text);
+      $("#assembly_status_list").empty();
+      $("#assembly_status_list").append(text);
 
       paging(result.paging.end_page, result.paging.start_page, result.paging.total_page);
     }else{
@@ -226,7 +228,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./painting_status.html?page_no='+pre_no+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./assembly_status.html?page_no='+pre_no+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -235,16 +237,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./painting_status.html?page_no='+k+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./assembly_status.html?page_no='+k+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./painting_status.html?page_no='+k+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./assembly_status.html?page_no='+k+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./painting_status.html?page_no='+next_no+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./assembly_status.html?page_no='+next_no+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -255,5 +257,5 @@ function paging(end, start, total){
 }
 
  $("#search_btn").on("click", function(){
-   location.href="./painting_status.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val();
+   location.href="./assembly_status.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val();
  });

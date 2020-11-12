@@ -98,10 +98,10 @@
             </div>
           </div>
         </div>
-        <div class="col-12">
+        <div class="col-xl-8 col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header">
-              <h4 class="card-title">생산현황</h4>
+              <h4 class="card-title">생산이력</h4>
               <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
               <div class="heading-elements">
                 <ul class="list-inline mb-0">
@@ -119,27 +119,40 @@
                   <select class="form-control" id="monthly_select"></select>
                   <button type="button" class="btn btn-primary btn-min-width custom_btn" id="search_btn_cnt">조회</button>
                 </p>
-                <div class="table-responsive">
-                  <table class="table table-striped table-bordered multi-ordering dataTable no-footer">
-                    <thead>
-                      <tr>
-                        <th>입고</th>
-                        <th>공정시작</th>
-                        <th>공정완료</th>
-                        <th>불량현황</th>
-                        <th>출하현황</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td id="stock_qty"></td>
-                        <td id="start_qty"></td>
-                        <td id="complete_qty"></td>
-                        <td id="defect_qty"></td>
-                        <td id="release_qty"></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <br>
+                <div class="card-footer text-center p-1">
+                  <div class="row">
+                    <div class="col text-center">
+                      <p class="blue-grey lighten-2 mb-0">입고</p>
+                      <a href="../product_history/painting_warehousing.html">
+                        <p class="font-medium-5 text-bold-400" id="stock_qty"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                      <p class="blue-grey lighten-2 mb-0">공정시작</p>
+                      <a href="../product_history/painting_start.html">
+                        <p class="font-medium-5 text-bold-400" id="start_qty"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                      <p class="blue-grey lighten-2 mb-0">공정완료</p>
+                      <a href="../product_history/painting_end.html">
+                        <p class="font-medium-5 text-bold-400" id="complete_qty"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                      <p class="blue-grey lighten-2 mb-0">불량현황</p>
+                      <a href="../product_history/painting_defect.html">
+                        <p class="font-medium-5 text-bold-400" id="defect_qty"></p>
+                      </a>
+                    </div>
+                    <div class="col text-center">
+                      <p class="blue-grey lighten-2 mb-0">출고현황</p>
+                      <a href="../product_history/painting_release.html">
+                        <p class="font-medium-5 text-bold-400" id="release_qty"></p>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -148,7 +161,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h4 class="card-title">생산작업계획</h4>
+              <h4 class="card-title">생산현황</h4>
               <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
               <div class="heading-elements">
                 <ul class="list-inline mb-0">
@@ -173,22 +186,22 @@
                   <table class="table table-striped table-bordered multi-ordering dataTable no-footer">
                     <thead>
                       <tr>
-                        <th>No</th>
-                        <th>수주번호</th>
-                        <th>자재코드</th>
-                        <th>유형</th>
-                        <th>제품명</th>
-                        <th>발주일자</th>
-                        <th>생산납기일자</th>
-                        <th>발주량</th>
-                        <th>총 생산량</th>
-                        <th>진척률</th>
-                        <th>작업인원</th>
-                        <th>온습도(최대)</th>
-                        <th>온습도(최소)</th>
-                        <th>온습도(평균)</th>
-                        <th>컨베이어속도</th>
-                        <th></th>
+                        <th class="text-center">No</th>
+                        <th class="text-center">수주번호</th>
+                        <th class="text-center">자재코드</th>
+                        <th class="text-center">유형</th>
+                        <th class="text-center">제품명</th>
+                        <th class="text-center">발주일자</th>
+                        <th class="text-center">생산납기일자</th>
+                        <th class="text-center">발주량</th>
+                        <th class="text-center">총 생산량</th>
+                        <th class="text-center">진척률</th>
+                        <th class="text-center">작업인원</th>
+                        <th class="text-center">온습도(최대)</th>
+                        <th class="text-center">온습도(최소)</th>
+                        <th class="text-center">온습도(평균)</th>
+                        <th class="text-center">컨베이어속도</th>
+                        <th class="text-center">바로가기</th>
                       </tr>
                     </thead>
                     <tbody id="painting_status_list">

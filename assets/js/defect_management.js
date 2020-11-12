@@ -1,6 +1,17 @@
 var group_id = getParam("defect_group");
 
 $(function () {
+  $("#system_management").addClass("open");
+  $("#data_management").addClass("active");
+  if($("#system_management").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#data_management").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  get_defect_list();
 
     $('#add_btn').on("click",function () {
 
@@ -36,7 +47,6 @@ $(function () {
 
 })
 
-get_defect_list();
 function get_defect_list() {
 
     $.ajax({

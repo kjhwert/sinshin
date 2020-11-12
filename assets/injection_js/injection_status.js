@@ -1,6 +1,14 @@
 $(function(){
   $("#product_history").addClass("open");
   $("#injection").addClass("active");
+  if($("#product_history").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
+  if($("#injection").find("a").css("display") == "none"){
+    alert("페이지 접근 권한이 없습니다");
+    history.back();
+  }
 
   injection_status(page_no, per_page, sort, order);
   injection_status_cnt();
@@ -137,11 +145,20 @@ function injection_stock(){
           text +='  <img src="../assets/images/pallet.png">';
           text +='  <p class="stock_name">'+jsonResult[i].product_name+'</p>';
           text +='  <p class="stock_cnt">'+comma(jsonResult[i].box_qty)+'box '+comma(jsonResult[i].product_qty)+'ea</p>';
+          text +='  <p class="order_no">'+jsonResult[i].order_no+'</p>';
+          text +='  <p class="asset_name">'+jsonResult[i].asset_name+'</p>';
+          text +='  <p id="tool_tip" class="stock_tool_tip">'+jsonResult[i].product_name+'</p>';
           text +='</li>';
         }
       }
       $("#stock_ul").empty();
       $("#stock_ul").append(text);
+      $("#stock_ul li").mouseover(function(){
+        $(this).find("#tool_tip").css("display","block");
+      });
+      $("#stock_ul li").mouseout(function(){
+        $(this).find("#tool_tip").css("display","none");
+      });
     }else{
       alert(result.message);
       return;
