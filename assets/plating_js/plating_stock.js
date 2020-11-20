@@ -20,8 +20,11 @@ if(getParam("page_no") == ""){
 }else{
     page_no = getParam("page_no");
 }
+if(getParam("search_text") != ""){
+  $("#search_text").val(getParam("search_text"));
+}
 
-function stock_list (page_no, per_page) {
+function stock_list(page_no, per_page) {
     $.ajax({
         type    : "GET",
         url        : "../api/automobile/release/log/index.php",
@@ -32,7 +35,8 @@ function stock_list (page_no, per_page) {
         dataType:"json",
         data:{
             page: page_no,
-            perPage: per_page
+            perPage: per_page,
+            search: $("#search_text").val()
         }
     }).done(function (data, textStatus, xhr) {
         if (data.status != 200) {
@@ -45,25 +49,26 @@ function stock_list (page_no, per_page) {
 
         for (i in results) {
             text += '<tr>'
-            text += '    <td class="text-center">'+results[i].RNUM+'</td>'
-            text += '    <td>'+results[i].customer_code+'</td>'
-            text += '    <td>'+results[i].product_name+'</td>'
-            text += '    <td class="text-center">'+results[i].car_code+'</td>'
-            text += '    <td class="text-center">'+results[i].customer+'</td>'
-            text += '    <td class="text-center">'+results[i].supplier+'</td>'
-            text += '    <td align="right">'+comma(results[i].remain_qty)+'</td>'
-            text += '    <td class="text-center">'+results[i].name+'</td>'
-            text += '    <td>'
-            text += '       <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">'
-            text += '           <a href="../automotive_management/plating_stock_detail.html?id='+results[i].id+'">'
-            text += '               <button type="button" class="btn btn-warning">상세보기</button>'
-            text += '           </a>&nbsp;'
-            text += '           <a href="../automotive_management/plating_release_create.html?id='+results[i].id+'">'
-            text += '               <button type="button" class="btn btn-info">출고</button>'
-            text += '           </a>'
-            text += '       </div>'
-            text += '    </td>'
-            text += '</tr>'
+            text += '    <td class="text-center">'+results[i].RNUM+'</td>';
+            text += '    <td>'+results[i].customer_code+'</td>';
+            text += '    <td>'+results[i].product_name+'</td>';
+            text += '    <td class="text-center">'+results[i].brand_code+'</td>';
+            text += '    <td class="text-center">'+results[i].car_code+'</td>';
+            text += '    <td class="text-center">'+results[i].customer+'</td>';
+            text += '    <td class="text-center">'+results[i].supplier+'</td>';
+            text += '    <td align="right">'+comma(results[i].remain_qty)+'</td>';
+            text += '    <td class="text-center">'+results[i].name+'</td>';
+            text += '    <td>';
+            text += '       <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+            text += '           <a href="../automotive_management/plating_stock_detail.html?id='+results[i].id+'">';
+            text += '               <button type="button" class="btn btn-warning">상세보기</button>';
+            text += '           </a>&nbsp;';
+            text += '           <a href="../automotive_management/plating_release_create.html?id='+results[i].id+'">';
+            text += '               <button type="button" class="btn btn-info">출고</button>';
+            text += '           </a>';
+            text += '       </div>';
+            text += '    </td>';
+            text += '</tr>';
         }
 
         $("#stock_list").empty();
@@ -115,3 +120,6 @@ function paging(end, start, total){
     $("#pagination").empty();
     $("#pagination").append(text);
 }
+$("#search_btn").on("click", function(){
+  location.href="../automotive_management/plating_stock.html?search_text="+$("#search_text").val();
+});

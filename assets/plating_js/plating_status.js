@@ -98,6 +98,7 @@ function plating_status(page_no, per_page, sort, order){
         text +='  <td align="center">'+jsonResult[i].lot_no+'</td>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td align="center">'+jsonResult[i].brand_code+'</td>';
         text +='  <td align="center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].input)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].output)+'</td>';

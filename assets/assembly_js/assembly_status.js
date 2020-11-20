@@ -14,6 +14,13 @@ $(function(){
   assemble_status_cnt();
   painting_stock();
 });
+
+setInterval(function() {
+  painting_status(page_no, per_page, sort, order);
+  assemble_status_cnt();
+  painting_stock();
+}, reload_cycle_time);
+
 setDateBox();
 
 var page_no = getParam("page_no");

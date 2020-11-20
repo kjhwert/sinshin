@@ -9,6 +9,8 @@ $(function(){
     alert("페이지 접근 권한이 없습니다");
     history.back();
   }
+
+  material_list(page_no, per_page);
 });
 
 var page_no = "";
@@ -19,8 +21,11 @@ if(getParam("page_no") == ""){
 }else{
   page_no = getParam("page_no");
 }
+if(getParam("search_text") != ""){
+  $("#search_text").val(getParam("search_text"));
+}
 
-material_list(page_no, per_page);
+
 
 function material_list(page_no, per_page){
   $.ajax({
@@ -34,6 +39,7 @@ function material_list(page_no, per_page){
       data     : {
         page: page_no,
         perPage: per_page,
+        search: $("#search_text").val()
       }
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
@@ -46,6 +52,7 @@ function material_list(page_no, per_page){
         text +='  <th class="text-center">'+jsonResult[i].RNUM+'</th>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].brand_code+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].remain_qty)+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].customer+'</td>';
@@ -55,7 +62,11 @@ function material_list(page_no, per_page){
         text +='    <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='      <a href="../automotive_management/plating_material_detail.html?id='+jsonResult[i].id +'">';
         text +='        <button type="button" class="btn btn-warning">상세보기</button>';
-        text +='      </a>';
+        text +='      </a>&nbsp;';
+
+        //text +='      <a href="../automotive_management/plating_material_export.html?id='+jsonResult[i].id +'">';
+        //text +='        <button type="button" class="btn btn-success">반출</button>';
+        //text +='      </a>';
         text +='    </div>';
         text +='  </td>';
         text +='</tr>';
@@ -112,3 +123,7 @@ function paging(end, start, total){
   $("#pagination").empty();
   $("#pagination").append(text);
 }
+
+$("#search_btn").on("click", function(){
+  location.href="../automotive_management/plating_material.html?search_text="+$("#search_text").val();
+});

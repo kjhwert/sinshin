@@ -90,6 +90,7 @@ function warehousing(page_no, per_page, sort, order){
         text +='  <th class="text-center">'+jsonResult[i].RNUM+'</th>';
         text +='  <td>'+jsonResult[i].customer_code+'</td>';
         text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].brand_code+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].car_code+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].store_qty)+'</td>';
         text +='  <td align="right">'+comma(jsonResult[i].loss)+'</td>';

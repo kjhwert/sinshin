@@ -40,9 +40,9 @@ class AutoMStock extends Model
         $page = ((int)$params["page"] * (int)$perPage);
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* 
-                    from (select a.id, concat(b.brand_code,'/',b.car_code) as car_code, b.customer_code, b.supply_code, b.name as product_name,
+                    from (select a.id, b.brand_code,b.car_code, b.customer_code, b.supply_code, b.name as product_name,
                        a.store_qty, sum(a.bing_defect + a.visual_defect) as loss,
-                       b.customer, b.supplier, c.name as charger, a.created_at,
+                       b.customer, b.supplier, c.name as charger, a.created_at, b.id product_id,
                        (case
                             when a.type = 1 then '합격'
                             when a.type = 0 then '불합격'

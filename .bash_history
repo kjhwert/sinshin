@@ -183,3 +183,8 @@ ls -al
 touch .gitignore
 vi .gitignore
 exit
+git status
+git add .
+git commit -m '20201112'
+git push origin master
+exit

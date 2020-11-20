@@ -13,7 +13,6 @@ $(function(){
   painting_warehousing_detail();
 });
 
-
 function painting_warehousing_detail(){
   $.ajax({
       type    : "GET",

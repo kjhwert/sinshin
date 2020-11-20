@@ -48,7 +48,7 @@ function stock_list(page_no, per_page, search_text){
         type: "warehouse",
         page: page_no,
         perPage: per_page,
-        material_type: "IN",
+        material_type: "CO",
         search: search_text,
         start_date: start_date,
         end_date: end_date
@@ -63,7 +63,6 @@ function stock_list(page_no, per_page, search_text){
         text+='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
         text+='  <td class="text-center">'+jsonResult[i].code+'</td>';
         text+='  <td>'+jsonResult[i].name+'</td>';
-        text+='  <td class="text-right">'+comma(jsonResult[i].qty)+'</td>';
         text+='  <td class="text-right">'+comma(jsonResult[i].total)+'</td>';
         text+='  <td class="text-center">'+jsonResult[i].unit+'</td>';
         text+='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
@@ -92,7 +91,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./material_status.html?page_no='+pre_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./painting_material_status.html?page_no='+pre_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -101,16 +100,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./painting_material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./painting_material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./material_status.html?page_no='+next_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./painting_material_status.html?page_no='+next_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -122,7 +121,7 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/material_status.html?search_text="+$("#search_text").val()+"&start_date="+$("#start_date").val()+'&end_date='+$("#end_date").val();
+  location.href="../product_history/painting_material_status.html?search_text="+$("#search_text").val()+"&start_date="+$("#start_date").val()+'&end_date='+$("#end_date").val();
 });
 
 $("#search_text").keydown(function(key) {
@@ -132,7 +131,7 @@ $("#search_text").keydown(function(key) {
 });
 
 $("#material_type").on("change", function(){
-  if($(this).val() == "CO"){
-    location.href="./painting_material_status.html";
+  if($(this).val() == "IN"){
+    location.href="./material_status.html";
   }
 });

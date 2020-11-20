@@ -26,8 +26,8 @@ class ProcessOrder extends Model
                 inner join product_master pm
                 on po.product_code = pm.code
                 where po.order_id = {$params['order_id']}
-                and po.process_type in ({$this->getDeptProcessType()}) 
-                and po.code is not null
+                {$this->getDeptProcessType()} 
+                and po.code is not null and po.code != ''
                 ";
 
         return new Response(200, $this->fetch($sql, $this->db));
@@ -40,11 +40,11 @@ class ProcessOrder extends Model
 
         switch ($this->token['dept_id']) {
             case $injection:
-                return $this->injectionProcessCode;
+                return "and po.process_type in ({$this->injectionProcessCode})";
             case $painting:
-                return $this->paintingProcessCode;
+                return "and po.process_type in ({$this->paintingProcessCode})";
             case $assemble:
-                return $this->assembleProcessCode;
+                return "";
             default:
                 return new Response(403, [], '출력 권한이 없습니다.');
         }

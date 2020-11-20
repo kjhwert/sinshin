@@ -11,7 +11,8 @@ class MaterialMaster extends Model
             return new Response(403, [],'type이 존재하지 않습니다.');
         }
 
-        $sql = "select mm.id, mm.code, mm.name, mm.type, mm.qty, @rownum:= @rownum+1 AS RNUM 
+        $sql = "select mm.id, mm.code, mm.name, mm.type, mm.qty, mm.unit,
+                        @rownum:= @rownum+1 AS RNUM 
                     from {$this->table} mm,
                     (SELECT @rownum:= 0) AS R
                     where stts = 'ACT' and type = '{$params['type']}' 

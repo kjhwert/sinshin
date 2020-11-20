@@ -71,9 +71,10 @@ function defect_data(){
       painting_defect_data.push(jsonResult.painting);
       assemble_defect_data.push(jsonResult.assemble);
 
-      injection_defect_graph();
-      painting_defect_graph();
-      assemble_defect_graph();
+        injection_defect_graph();
+        painting_defect_graph();
+        injection_defect_graph();
+
       $("#injection_total_qty1").text(comma(Number(injection_defect_data[0][0].litres)+Number(injection_defect_data[0][1].litres)));
       $("#injection_total_qty2").text(comma(Number(injection_defect_data[0][0].litres)));
       $("#injection_total_qty3").text(comma(Number(injection_defect_data[0][1].litres)));
@@ -512,6 +513,16 @@ function chart_start(){
   series3.labels.template.fill = am4core.color("white");
 
   }); // end am4core.ready()
+
+  if(defect_data1[0].defect_name == "없음"){
+    $("#chartdiv1").css("height","100px");
+  }
+  if(defect_data2[0].defect_name == "없음"){
+    $("#chartdiv2").css("height","100px");
+  }
+  if(defect_data3[0].defect_name == "없음"){
+    $("#chartdiv3").css("height","100px");
+  }
 }
 
 

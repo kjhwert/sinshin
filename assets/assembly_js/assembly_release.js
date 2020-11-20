@@ -14,6 +14,10 @@ $(function(){
   painting_end(page_no, per_page, sort, order);
 });
 
+setInterval(function() {
+  painting_end(page_no, per_page, sort, order);
+}, reload_cycle_time);
+
 var page_no = getParam("page_no");
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));

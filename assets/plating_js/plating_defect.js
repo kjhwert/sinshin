@@ -65,6 +65,7 @@ function defect_list (page_no, per_page) {
             text += '    <th class="text-center">'+results[i].lot_no+'</th>';
             text += '    <td>'+results[i].customer_code+'</td>';
             text += '    <td>'+results[i].product_name+'</td>';
+            text += '    <td class="text-center">'+results[i].brand_code+'</td>';
             text += '    <td class="text-center">'+results[i].car_code+'</td>';
             text += '    <td class="text-center">'+results[i].customer+'</td>';
             text += '    <td class="text-center">'+results[i].supplier+'</td>';

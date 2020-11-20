@@ -22,8 +22,8 @@ switch ($method) {
         break;
 //    case 'POST' : $model->create($params);
 //        break;
-//    case 'PUT' : $model->update($id, $params);
-//        break;
+    case 'PUT' : $model->update($id, $params);
+        break;
 //    case 'DELETE' : $model->destroy($id);
 //        break;
 }

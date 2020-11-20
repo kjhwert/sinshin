@@ -7,6 +7,7 @@ class AutoMReleaseLog extends Model
         'release_qty' => 'integer',
         'product_id' => 'integer'
     ];
+    protected $searchableText = 'a.customer_code';
 
     public function index(array $params = [])
     {
@@ -18,7 +19,7 @@ class AutoMReleaseLog extends Model
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                 from (
                     select a.id, a.customer_code, a.supply_code, a.name as product_name,
-                           concat(a.brand_code,'/',a.car_code) as car_code,
+                           a.brand_code, a.car_code,
                            a.customer, a.supplier, b.remain_qty, c.name
                     from automobile_master a
                     inner join (
@@ -31,13 +32,30 @@ class AutoMReleaseLog extends Model
                     on a.id = b.product_id
                     inner join user c
                     on b.created_id = c.id 
-                    where a.stts = 'ACT' and c.stts = 'ACT'
+                    where a.stts = 'ACT' and c.stts = 'ACT' {$this->searchText($params['params'])}
                     order by b.created_at asc) tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}";
 
         return new Response(200, $this->fetch($sql), '', $params['paging']);
+    }
+
+    protected function paginationQuery (array $params = [])
+    {
+        return "select count(*) as cnt
+                    from automobile_master a
+                    inner join (
+                        select * from (
+                              select * from automobile_release_log
+                              where stts = 'ACT'
+                              order by created_at desc LIMIT 18446744073709551615) a
+                        group by a.product_id
+                    ) b
+                    on a.id = b.product_id
+                    inner join user c
+                    on b.created_id = c.id 
+                    where a.stts = 'ACT' and c.stts = 'ACT' {$this->searchText($params)}";
     }
 
     public function show($id = null, array $params = [])
@@ -96,7 +114,7 @@ class AutoMReleaseLog extends Model
                         when b.change_qty > 0 then '생산'
                         when b.change_qty < 0 then '출고'
                     end) as type,
-                    concat(a.brand_code,'/', a.car_code) as car_code,
+                    a.brand_code, a.car_code,
                    @rownum:= @rownum+1 AS RNUM
                 from automobile_master a
                 inner join automobile_release_log b
@@ -178,7 +196,7 @@ class AutoMReleaseLog extends Model
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM 
                     from (
-                        select concat(b.brand_code,'/', b.car_code) as car_code,
+                        select b.brand_code, b.car_code,
                            b.customer_code, b.supply_code, b.name as product_name,
                            b.customer, b.supplier, abs(a.change_qty) as release_qty, a.created_at, c.name
                         from automobile_release_log a

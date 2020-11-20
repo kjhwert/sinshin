@@ -107,7 +107,6 @@ function auto_search(search){
         var material_name = $(this).data("name");
         var material_id = $(this).data("material-id");
         var material_unit = $(this).data("material-unit");
-
         $("#material_code").val(material_code);
         $("#material_name").val(material_name);
         $("#material_id").val(material_id);
@@ -122,35 +121,11 @@ function auto_search(search){
   });
 }
 
-$("#material_qty").on("keyup", function(){
-  if($("#search_type").val() == null){
-    alert("분류를 먼저 선택해주세요");
-    $(this).val("");
-    return;
-  }else if($("#search_type").val() == "IN"){
-    $("#total_qty").val(comma(Number(uncomma($(this).val()) * 25)));
-  }
-  if($("#material_code").val() == null){
-    alert("자재코드를 먼저 선택해주세요");
-    $(this).val("");
-    return;
-  }
-  var keyup_comma = comma(uncomma($(this).val()));
-  $(this).val(keyup_comma);
-});
-
-$("#search_type").on("change", function(){
-  $("#material_code").val("");
-  $("#material_name").val("");
-  $("#total_qty").val("");
-});
 
 $("#stock_insert").on("click", function(){
-  if($("#search_type").val() == null){alert("분류를 선택해주세요");return;};
   if($("#material_code").val() == ""){alert("자재코드를 선택해주세요");return;};
-  if($("#material_qty").val() == ""){alert("수량을 선택해주세요");return;};
   if($("#stock_date").val() == ""){alert("날짜를 선택해주세요");return;};
-  if($("#lot_no").val() == ""){alert("LOT번호를 입력해주세요");return;};
+  if($("#total_qty").val() == ""){alert("총량을 선택해주세요");return;};
 
   $.ajax({
       type    : "POST",
@@ -162,15 +137,14 @@ $("#stock_insert").on("click", function(){
       dataType:"json",
       data     : JSON.stringify({
         material_id: $("#material_id").val(),
-        qty: uncomma($("#material_qty").val()),
         stock_date: $("#stock_date").val(),
-        lot_no: $("#lot_no").val(),
-        type: "IN"
+        qty: $("#total_qty").val(),
+        type: "CO"
       })
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
       alert("등록 되었습니다");
-      location.href="../product_history/material_status.html";
+      location.href="../product_history/painting_material_status.html";
     }else{
       alert(result.message);
     }

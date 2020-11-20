@@ -31,10 +31,11 @@ class MachineVisionPaintingCount extends Model
 
         $sql = "select tot.*, @rownum:= @rownum+1 AS RNUM
                     from (
-                        select i.input_date, i.input_qty, o.output_qty, o.output_date,
-                           (i.input_qty - o.output_qty) loss_qty, pm.name product_name
+                        select ifnull(i.input_date,'-') input_date, ifnull(i.input_qty,0) input_qty, 
+                                o.output_qty, o.output_date,
+                           (ifnull(i.input_qty,0) - o.output_qty) loss_qty, pm.name product_name
                         from product_master pm
-                        inner join (
+                        left join (
                             select MIN(i.created_at) input_date, sum(qty) input_qty, i.product_code
                             from machine_vision_painting_count_input i
                             where YEAR(i.created_at) = {$params['year']}

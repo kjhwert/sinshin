@@ -13,6 +13,19 @@ $(function(){
   painting_warehousing(page_no, per_page, sort, order);
 });
 
+
+
+var timer = setInterval(carousel, reload_cycle_time);
+function carousel(){
+  painting_warehousing(page_no, per_page, sort, order);
+}
+function stopit(){
+  clearInterval(timer);
+}
+function start(){
+  timer = setInterval(carousel, reload_cycle_time);
+}
+
 var page_no = getParam("page_no");
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
@@ -113,10 +126,10 @@ function painting_warehousing(page_no, per_page, sort, order){
       console.log(jsonResult);
 
       for(var i in jsonResult){
-        text +='<tr id="open_tr" class="open_tr">';
+        text +='<tr class="open_tr">';
         text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
-        text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td>'+jsonResult[i].product_name+'<span class="float-right" id="open_tr">▲</span></td>';
         text +='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
         text +='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
         text +='  <td class="text-center">';
@@ -128,7 +141,7 @@ function painting_warehousing(page_no, per_page, sort, order){
         text +='  </td>';
         text +='</tr>';
         text +='<tr class="sub_table" id="sub_tr">';
-        text +='  <td colspan="8">';
+        text +='  <td colspan="8" style="background-color:#eee;">';
         text +='    <table class="table table-striped table-bordered multi-ordering dataTable no-footer">';
         text +='      <tr>';
         text +='        <td class="text-center">#</td>';
@@ -162,14 +175,19 @@ function painting_warehousing(page_no, per_page, sort, order){
       $("#assembly_warehousing_list").append(text);
 
       $("#assembly_warehousing_list #open_tr").on("click", function(){
-        if($(this).next("tr#sub_tr").css("display") == "table-row"){
+        if($(this).parents("tr").next("tr#sub_tr").css("display") == "table-row"){
           $("#assembly_warehousing_list tr#sub_tr").fadeOut(0);
-          $("#assembly_warehousing_list #open_tr").css("background-color","#fff");
+          $(this).parents("tr").css("background-color","#fff");
+          $("#assembly_warehousing_list #open_tr").text("▲");
+          start();
         }else{
-          $("#assembly_warehousing_list #open_tr").css("background-color","#fff");
-          $(this).css("background-color","#eee");
+          $("#assembly_warehousing_list tr").css("background-color","#fff");
+          $(this).parents("tr").css("background-color","#eee");
           $("#assembly_warehousing_list tr#sub_tr").fadeOut(0);
-          $(this).next("#sub_tr").slideDown(300);
+          $(this).parents("tr").next("#sub_tr").slideDown(300);
+          $("#assembly_warehousing_list #open_tr").text("▲");
+          $(this).text("▼");
+          stopit();
         }
       });
       paging(result.paging.end_page, result.paging.start_page, result.paging.total_page);

@@ -24,6 +24,11 @@ class AutoMProcess extends Model
         'day_night' => 'string',
      ];
 
+    protected $defectUpdateRequired = [
+        'input' => 'integer',
+        'output' => 'integer',
+    ];
+
     protected $reversedSort = true;
     protected $sort = [
         'date' => 'a.created_at',
@@ -42,11 +47,12 @@ class AutoMProcess extends Model
         $page = ((int)$params["page"] * $perPage);
 
         $sql = "
-                select @rownum:= @rownum+1 AS RNUM, tot.* from (select a.id, a.lot_no, b.name as product_name, a.input, b.customer_code, b.supply_code,
+                select @rownum:= @rownum+1 AS RNUM, tot.* from (select a.id, a.lot_no, b.name as product_name, 
+                    a.input, b.customer_code, b.supply_code,
                    a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
                    ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
                    a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
-                   concat(b.brand_code,'/',b.car_code) as car_code, a.memo,
+                   b.brand_code, b.car_code, a.memo,
                    (case
                         when a.type = 1 then 'immutable'
                         when a.type = 0 then 'mutable'
@@ -57,13 +63,13 @@ class AutoMProcess extends Model
                    ifnull(truncate((c.defect/a.input)*100,1),0) as defect_percent
                 from automobile_process a
                      inner join automobile_master b
-                                on a.product_id = b.id
+                     on a.product_id = b.id
                      left join (
                 select sum(qty) as defect, process_id
                 from automobile_defect_log
                 where stts = 'ACT' group by process_id
                 ) c
-                               on a.id = c.process_id
+                on a.id = c.process_id
                 where a.stts = 'ACT' and b.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
                 group by a.id
@@ -86,7 +92,7 @@ class AutoMProcess extends Model
                        a.output, ifnull(c.defect, 0) as defect, ifnull(sum(a.size_loss + a.trust_loss),0) as loss,
                        a.charger, a.created_at, b.customer, b.supplier, a.mfr_date,
                        ifnull((a.input - sum(a.size_loss + a.trust_loss + c.defect + a.output)),0) as drop_qty,
-                       concat(b.brand_code,'/',b.car_code) as car_code,
+                       b.brand_code, b.car_code,
                        ifnull(truncate((a.output/a.input)*100,1),0) as output_percent,
                        ifnull(truncate((sum(a.size_loss + a.trust_loss)/a.input)*100,1),0) as loss_percent,
                        ifnull(truncate((c.defect/a.input)*100,1),0) as defect_percent,
@@ -196,7 +202,7 @@ class AutoMProcess extends Model
         $release_remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
         $output = $data['output'] + $release_remain_qty;
 
-        $querys = [
+        $queries = [
             "update automobile_process set
                 {$this->dataToString($data)},
                 type = 1,
@@ -237,10 +243,88 @@ class AutoMProcess extends Model
                         created_at = SYSDATE()
                     ";
 
-            array_push($querys, $sql);
+            array_push($queries, $sql);
         }
 
-        return $this->setTransaction($querys);
+        return $this->setTransaction($queries);
+    }
+
+    /**
+     * @param $id
+     * @param array $data
+     * @return Response
+     * 불량등록된 제품을 양품처리 해야하는 경우.
+     */
+    public function defectUpdate ($id, array $data = [])
+    {
+        $data = $this->validate($data, $this->defectUpdateRequired);
+        $this->isExceedInput($data);
+
+        $sql = "select product_id from automobile_process where id = {$id}";
+        $product_id = $this->fetch($sql)[0]['product_id'];
+
+        $sql = "select remain_qty from automobile_stock_log
+                where product_id = {$product_id}
+                order by created_at desc limit 1";
+        $remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
+
+        $input = -$data['input'];
+        $remain = $remain_qty + $input;
+
+        $sql = "select remain_qty from automobile_release_log
+                where product_id = {$product_id}
+                order by created_at desc limit 1";
+
+        /** 좀 더 디테일한 분석이 필요함니당. */
+
+        $release_remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
+        $output = $data['output'] + $release_remain_qty;
+
+        $queries = [
+            "update automobile_process set
+                {$this->dataToString($data)},
+                type = 1,
+                updated_id = {$this->token['id']},
+                updated_at = SYSDATE()
+            where id = {$id}",
+            "insert into automobile_stock_log set
+                product_id = {$product_id},
+                change_qty = {$input},
+                remain_qty = {$remain},
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()",
+            "insert into automobile_release_log set
+                product_id = {$product_id},
+                change_qty = {$data['output']},
+                remain_qty = {$output},
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()"
+        ];
+
+        $defects = json_decode($data['defect']);
+
+        foreach ($defects as $defect) {
+            $d = (array)$defect;
+
+            if (!$d['id'] || !$d['qty']) {
+                continue;
+            }
+
+            $defect_id = $d['id'];
+            $qty = $d['qty'];
+
+            $sql = "insert into automobile_defect_log set
+                        process_id = {$id},
+                        defect_id = {$defect_id},
+                        qty = {$qty},
+                        created_id = {$this->token['id']},
+                        created_at = SYSDATE()
+                    ";
+
+            array_push($queries, $sql);
+        }
+
+        return $this->setTransaction($queries);
     }
 
     public function updateMemo ($id, array $data = [])

@@ -217,11 +217,13 @@ class MachineVisionStatistics extends Model
     {
         $this->validate($params, $this->monthIndexRequired);
 
-        $sql = "select count(id) cnt 
-                    from time_dimension 
-                where year = {$params['year']} and month = {$params['month']}";
+        $sql = "select id from machine_vision_statistics
+                    where YEAR(created_at) = {$params['year']}
+                      and MONTH(created_at) = {$params['month']}
+                    group by DAY(created_at)
+                ";
 
-        $dayCount = $this->fetch($sql)[0]['cnt'];
+        $dayCount = count($this->fetch($sql));
 
         $sql = "select round(sum(input_qty)/{$dayCount},1) input_qty,
                        round(sum(production_qty)/{$dayCount},1) production_qty,

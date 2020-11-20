@@ -142,7 +142,6 @@ function customer_search(search){
       },
       dataType:"json",
       data:{
-        type : "I",
         search: search
       }
   }).done(function (result, textStatus, xhr) {

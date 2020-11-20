@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Update a feature in realtime</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+    // TO MAKE THE MAP APPEAR YOU MUST
+    // ADD YOUR ACCESS TOKEN FROM
+    // https://account.mapbox.com
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia2pod2VydCIsImEiOiJja2g0M2s5Mm8wYXU4MnNvYWh0Nzc1ZXhyIn0.plvnGOmcjL1bMP2P7vuSTg';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/satellite-v9',
+        zoom: 0
+    });
+
+    var abc = [[126.949941, 37.546474],
+        [126.987991, 37.551118],
+        [126.993789, 37.574447],
+        [127.069143, 37.54013],
+        [127.027477, 37.497379],
+        [126.952626, 37.480682]];
+
+    map.on('load', function () {
+// We use D3 to fetch the JSON here so that we can parse and use it separately
+// from GL JS's use in the added source. You can use any request method (library
+// or otherwise) that you want.
+        d3.json(
+            'https://docs.mapbox.com/mapbox-gl-js/assets/hike.geojson',
+            function (err, data) {
+                if (err) throw err;
+                data.features[0].geometry.coordinates = abc;
+
+// save full coordinate list for later
+                var coordinates = data.features[0].geometry.coordinates;
+// start by showing just the first coordinate
+                data.features[0].geometry.coordinates = [coordinates[0]];
+// add it to the map
+                map.addSource('trace', { type: 'geojson', data: data });
+                map.addLayer({
+                    'id': 'trace',
+                    'type': 'line',
+                    'source': 'trace',
+                    'paint': {
+                        'line-color': 'yellow',
+                        'line-opacity': 0.75,
+                        'line-width': 5
+                    }
+                });
+// setup the viewport
+                map.jumpTo({ 'center': coordinates[0], 'zoom': 14 });
+                map.setPitch(30);
+// on a regular basis, add more coordinates from the saved list and update the map
+                var i = 0;
+                var timer = window.setInterval(function () {
+                    if (i < coordinates.length) {
+                        data.features[0].geometry.coordinates.push(
+                            coordinates[i]
+                        );
+                        map.getSource('trace').setData(data);
+                        map.panTo(coordinates[i]);
+                        i++;
+                    } else {
+                        window.clearInterval(timer);
+                    }
+                }, 1000);
+            }
+        );
+    });
+    var audio = new Audio();
+    audio.src = "./music_sample.mp3";
+    audio.play();
+</script>
+</body>
+</html>

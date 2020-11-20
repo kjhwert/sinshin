@@ -14,6 +14,13 @@ $(function(){
   injection_status_cnt();
   injection_stock();
 });
+
+setInterval(function() {
+  injection_status(page_no, per_page, sort, order);
+  injection_status_cnt();
+  injection_stock();
+}, reload_cycle_time);
+
 setDateBox();
 
 var page_no = getParam("page_no");
@@ -67,6 +74,9 @@ function setDateBox(){
 $("#search_btn_cnt").on("click", function(){
   injection_status_cnt();
 });
+
+
+
 function injection_status_cnt(){
   var years_select = $("#years_select").val();
   var monthly_select = $("#monthly_select").val();

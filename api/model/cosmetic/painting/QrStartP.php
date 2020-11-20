@@ -182,7 +182,7 @@ class QrStartP extends QrStart
         /** @var  $sql
          *  선입선출을 체크한다.
          */
-        $sql = "select w.in_date
+        $sql = "select w.in_date, w.group_id
                     from qr_code qc
                     inner join warehouse w
                     on qc.id = w.qr_id 
@@ -205,6 +205,7 @@ class QrStartP extends QrStart
                 where qc.dept_id = {$dept_id}
                 and qc.process_stts = {$process_warehousing}
                 and w.in_date < '{$pre_item['in_date']}'
+                and w.group_id != '{$pre_item['group_id']}'
                 ";
 
         $count = $this->fetch($sql)[0]['cnt'];

@@ -10,14 +10,10 @@ $(document).ready(function(){
     history.back();
   }
 });
+
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
-var start_date = getParam("start_date");
-var end_date = getParam("end_date");
-let today = new Date();
-
-
 if(getParam("page_no") == ""){
   page_no = 1;
 }else{
@@ -25,12 +21,6 @@ if(getParam("page_no") == ""){
 }
 if(search_text != ""){
   $("#search_text").val(search_text);
-}
-if(start_date != ""){
-  $("#start_date").val(start_date);
-}
-if(end_date != ""){
-  $("#end_date").val(end_date);
 }
 
 stock_list(page_no, per_page, search_text);
@@ -45,13 +35,11 @@ function stock_list(page_no, per_page, search_text){
       },
       dataType:"json",
       data     : {
-        type: "warehouse",
+        type: "stock",
         page: page_no,
         perPage: per_page,
-        material_type: "IN",
-        search: search_text,
-        start_date: start_date,
-        end_date: end_date
+        material_type: "CO",
+        search: search_text
       }
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
@@ -59,16 +47,22 @@ function stock_list(page_no, per_page, search_text){
       var jsonResult = result.data;
       var text = '';
       for(var i in jsonResult){
-        text+='<tr>';
-        text+='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
-        text+='  <td class="text-center">'+jsonResult[i].code+'</td>';
-        text+='  <td>'+jsonResult[i].name+'</td>';
-        text+='  <td class="text-right">'+comma(jsonResult[i].qty)+'</td>';
-        text+='  <td class="text-right">'+comma(jsonResult[i].total)+'</td>';
-        text+='  <td class="text-center">'+jsonResult[i].unit+'</td>';
-        text+='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
-        text+='  <td class="text-center">'+jsonResult[i].manager+'</td>';
-        text+='</tr>';
+        text +='<tr>';
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].code+'</td>';
+        text +='  <td>'+jsonResult[i].name+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].total)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].unit.toLowerCase();+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
+        text +='   <td>';
+        //text +='      <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
+        //text +='        <a href="../product_history/injection_start_print.html?material_id='+jsonResult[i].id+'">';
+        //text +='         <button type="button" class="btn btn-bg-gradient-x-blue-cyan">출력</button>';
+        //text +='        </a>';
+        //text +='      </div>';
+        text +='   </td>';
+        text +='</tr>';
       }
       $("#search_list").empty();
       $("#search_list").append(text);
@@ -92,7 +86,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./material_status.html?page_no='+pre_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./painting_stock_status.html?page_no='+pre_no+'&search_text='+search_text+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -101,16 +95,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./painting_stock_status.html?page_no='+k+'&search_text='+search_text+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./material_status.html?page_no='+k+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./painting_stock_status.html?page_no='+k+'&search_text='+search_text+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./material_status.html?page_no='+next_no+'&start_date='+start_date+'&end_date='+end_date+'&search_text='+search_text+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./painting_stock_status.html?page_no='+next_no+'&search_text='+search_text+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -122,9 +116,8 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/material_status.html?search_text="+$("#search_text").val()+"&start_date="+$("#start_date").val()+'&end_date='+$("#end_date").val();
+  location.href="../product_history/painting_stock_status.html?search_text="+$("#search_text").val();
 });
-
 $("#search_text").keydown(function(key) {
   if (key.keyCode == 13) {
     $("#search_btn").click();
@@ -132,7 +125,7 @@ $("#search_text").keydown(function(key) {
 });
 
 $("#material_type").on("change", function(){
-  if($(this).val() == "CO"){
-    location.href="./painting_material_status.html";
+  if($(this).val() == "IN"){
+    location.href="./stock_status.html";
   }
 });

@@ -9,21 +9,21 @@
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map { position:absolute; top:0; bottom:0; width:100%;height:400px; }
     </style>
 </head>
 <body>
-
 <div id='map'></div>
 <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoia2pod2VydCIsImEiOiJja2g0M2s5Mm8wYXU4MnNvYWh0Nzc1ZXhyIn0.plvnGOmcjL1bMP2P7vuSTg';
     var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v8',
-        center: [127.069143, 37.54013],
-        zoom: 11
+        style: 'mapbox://styles/kjhwert/ckh44po6e0ex919qohozaqs33',
+        center: [127.009143, 37.51613],
+        pitch: 60, // pitch in degrees
+        bearing: -60, // bearing in degrees
+        zoom: 10.6
     });
-
     var iPath = turf.linestring([
         [126.949941, 37.546474],
         [126.987991, 37.551118],
@@ -32,7 +32,6 @@
         [127.027477, 37.497379],
         [126.952626, 37.480682]
     ]);
-
     var geojson = {
         'type': 'FeatureCollection',
         'features': [
@@ -45,22 +44,18 @@
             }
         ]
     };
-
     var iPathLength = turf.lineDistance(iPath, 'miles');
     var iPoint = turf.along(iPath, 0, 'miles');
-
     map.on('load', function () {
         map.addSource("path", {
             "type": "geojson",
             "data": iPath,
             "maxzoom": 20
         });
-
         map.addSource('line', {
             'type': 'geojson',
             'data': geojson
         });
-
         // add the line which will be modified in the animation
         map.addLayer({
             'id': 'line-animation',
@@ -71,33 +66,19 @@
                 'line-join': 'round'
             },
             'paint': {
-                'line-color': '#ed6498',
-                'line-width': 5,
+                'line-color': '#ED6498',
+                'line-width': 8,
                 'line-opacity': 0.8
             }
         });
-        // map.addLayer({
-        //     "id": "path",
-        //     "type": "line",
-        //     "source": "path",
-        //     "layout": {
-        //         "line-join": "round",
-        //         "line-cap": "round"
-        //     },
-        //     "paint": {
-        //         "line-color": "#888",
-        //         "line-width": 2
-        //     }
-        // });
 
         map.loadImage(
-            'http://sinshin.hlabpartner.com/bike.png',
+            'http://chamyunggoan.cafe24.com/thumb.png',
             function (error, image) {
                 if (error) throw error;
-                map.addImage('cat', image);
+                map.addImage('profile', image);
             }
         );
-
         map.addSource('point', {
             'type': 'geojson',
             'data': iPoint
@@ -107,27 +88,10 @@
             'type': 'symbol',
             'source': 'point',
             'layout': {
-                'icon-image': 'cat',
+                'icon-image': 'profile',
                 'icon-size': 0.75
             }
         });
-        // map.addSource('point', {
-        //     'type': 'geojson',
-        //     'data': iPoint
-        // });
-        //
-        // map.addLayer({
-        //     'id': 'point',
-        //     'source': 'point',
-        //     'type': 'symbol',
-        //     'layout': {
-        //         'icon-image': 'airport-15',
-        //         'icon-rotate': ['get', 'bearing'],
-        //         'icon-rotation-alignment': 'map',
-        //         'icon-allow-overlap': true,
-        //         'icon-ignore-placement': true
-        //     }
-        // });
 
         var step = 0;
         var numSteps = 500; //Change this to set animation resolution
@@ -135,7 +99,6 @@
         var pSource = map.getSource('point');
         var interval = setInterval(function() {
             step += 1;
-
             if (step > numSteps) {
                 clearInterval(interval);
             } else {
@@ -146,9 +109,7 @@
                 pSource.setData(iPoint);
             }
         }, timePerStep);
-
     });
 </script>
-
 </body>
 </html>

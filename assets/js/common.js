@@ -1,6 +1,6 @@
 var user_data = JSON.parse(getCookie("user_data"));
 var path = $(location).attr('href');
-
+var reload_cycle_time = 10000;
 // user_log();
 
 function getHeader(){

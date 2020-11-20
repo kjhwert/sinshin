@@ -14,7 +14,6 @@ $(document).ready(function(){
 var page_no = "";
 var per_page = 15;
 var search_text = decodeURIComponent(getParam("search_text"));
-var material_type = getParam("material_type");
 if(getParam("page_no") == ""){
   page_no = 1;
 }else{
@@ -22,21 +21,6 @@ if(getParam("page_no") == ""){
 }
 if(search_text != ""){
   $("#search_text").val(search_text);
-}
-if(JSON.parse(getCookie("user_data")).dept_id == 6){
-  //사출팀
-  $("#material_type").empty();
-  $("#material_type").append('<option value="IN">원자재</option>');
-}else if(JSON.parse(getCookie("user_data")).dept_id == 4){
-  //도장팀
-  $("#material_type").empty();
-  $("#material_type").append('<option value="CO">도료</option>');
-}else{
-  $("#material_type").empty();
-  $("#material_type").append('<option value="IN">원자재</option><option value="CO">도료</option>');
-}
-if(material_type != ""){
-  $("#material_type").val(getParam("material_type"));
 }
 
 stock_list(page_no, per_page, search_text);
@@ -54,7 +38,7 @@ function stock_list(page_no, per_page, search_text){
         type: "stock",
         page: page_no,
         perPage: per_page,
-        material_type: $("#material_type").val(),
+        material_type: "IN",
         search: search_text
       }
   }).done(function (result, textStatus, xhr) {
@@ -103,7 +87,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./stock_status.html?page_no='+pre_no+'&search_text='+search_text+'&material_type='+material_type+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./stock_status.html?page_no='+pre_no+'&search_text='+search_text+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -112,16 +96,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'&material_type='+material_type+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'&material_type='+material_type+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./stock_status.html?page_no='+k+'&search_text='+search_text+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./stock_status.html?page_no='+next_no+'&search_text='+search_text+'&material_type='+material_type+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./stock_status.html?page_no='+next_no+'&search_text='+search_text+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';
@@ -133,10 +117,16 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/stock_status.html?search_text="+$("#search_text").val()+"&material_type="+$("#material_type").val();
+  location.href="../product_history/stock_status.html?search_text="+$("#search_text").val();
 });
 $("#search_text").keydown(function(key) {
   if (key.keyCode == 13) {
     $("#search_btn").click();
+  }
+});
+
+$("#material_type").on("change", function(){
+  if($(this).val() == "CO"){
+    location.href="./painting_stock_status.html";
   }
 });

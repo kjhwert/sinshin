@@ -6,8 +6,11 @@ class MaterialStock extends Model
     protected $createRequired = [
         'material_id' => 'integer',
         'qty' => 'integer',
-        'lot_no' => 'string',
-        'stock_date' => 'string'
+        'stock_date' => 'string',
+        'type' => 'string'
+    ];
+    protected $updateRequired = [
+        'qty' => 'integer'
     ];
     protected $searchableText = 'a.code';
     protected $searchableDate = 'b.stock_date';
@@ -29,8 +32,10 @@ class MaterialStock extends Model
                     inner join user c
                     on b.created_id = c.id,
                     (SELECT @rownum:= 0) AS R
-                    where a.stts = 'ACT' and b.stts = 'ACT' {$this->getMaterialType($material_type)}
-                    {$this->searchName($params['params'])} {$this->searchDate($params['params'])}
+                    where a.stts = 'ACT' and b.stts = 'ACT' 
+                    {$this->getMaterialType($material_type)}
+                    {$this->searchName($params['params'])} 
+                    {$this->searchDate($params['params'])}
                 order by RNUM desc
                 limit {$page},{$perPage}
                 ";
@@ -63,8 +68,8 @@ class MaterialStock extends Model
         $material_type = $params['params']['material_type'];
 
         $sql = "select @rownum:= @rownum+1 AS RNUM, tot.* from (
-                       select a.id, a.code, a.name, a.type, a.model, round((c.remain_qty / a.qty),0) as remain_qty, a.unit,
-                              remain_qty as total, c.created_at,
+                       select a.id, a.code, a.name, a.type, a.model, round((c.remain_qty / a.qty),0) as remain_qty, 
+                                a.unit, c.remain_qty as total, c.created_at, a.qty,
                               b.stock_date, e.name as manager
                        from material_master a
                         inner join (select * from (
@@ -157,12 +162,61 @@ class MaterialStock extends Model
     {
         $data = $this->validate($data, $this->createRequired);
 
+        if($data['type'] === 'IN') { // 사출
+            return $this->materialStockCreate($data);
+        }
+
+        if ($data['type'] === 'CO') { // 도장
+            return $this->coatingStockCreate($data);
+        }
+    }
+
+    protected function materialStockCreate (array $data = []) {
+        if (!$data['lot_no']) {
+            (new ErrorHandler())->typeNull('LOT_NO');
+        }
+
         $sql = "select remain_qty from material_stock_log 
                 where material_id = {$data['material_id']}
                 order by created_at desc limit 1";
         $remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
 
         $qty = $data['qty'] * 25;
+        $remain = $qty + $remain_qty;
+
+        $sqls = [
+            "insert into {$this->table} set
+                material_id = {$data['material_id']},
+                stock_date = '{$data['stock_date']}',
+                qty = {$qty},
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
+            ",
+            "insert into material_stock_log set
+                material_id = {$data['material_id']},
+                change_qty = {$qty},
+                remain_qty = {$remain},
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
+            ",
+            "insert into material_lot set
+                material_id = {$data['material_id']},
+                lot_no = '{$data['lot_no']}',
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
+            "
+        ];
+
+        return $this->setTransaction($sqls);
+    }
+
+    protected function coatingStockCreate (array $data = []) {
+        $sql = "select remain_qty from material_stock_log 
+                where material_id = {$data['material_id']}
+                order by created_at desc limit 1";
+        $remain_qty = (int)$this->fetch($sql)[0]['remain_qty'];
+
+        $qty = $data['qty'];
         $remain = $qty + $remain_qty;
 
         $sqls = [
@@ -230,5 +284,45 @@ class MaterialStock extends Model
                 'end_page' => $endPage
             ]
         ];
+    }
+
+    /**
+     * @param null $id
+     * @param array $data
+     * @return Response
+     * 도료 사용 등록
+     */
+    public function update($id = null, array $data = [])
+    {
+        $sql = "select log.change_qty, log.remain_qty, mm.type
+                from material_master mm
+                inner join material_stock_log log
+                where mm.id = {$id} order by log.created_at desc limit 1
+                ";
+
+        $result = $this->fetch($sql)[0];
+
+        if ($result['type'] === 'IN') {
+            return (new ErrorHandler())->badRequest();
+        }
+
+        $remain_qty = (int)$result['remain_qty'];
+
+        $change_qty = -(int)$data['qty'];
+        $remain_qty = $remain_qty + $change_qty;
+
+        if ($remain_qty < 0) {
+            return new Response(403, [], '재고가 부족합니다.');
+        }
+
+        $sql = "insert into material_stock_log set 
+                change_qty = {$change_qty},
+                remain_qty = {$remain_qty},
+                material_id = {$id},
+                created_id = {$this->token['id']},
+                created_at = SYSDATE()
+            ";
+
+        return new Response(200, $this->fetch($sql), '등록 되었습니다.');
     }
 }
