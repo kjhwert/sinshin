@@ -188,3 +188,8 @@ git add .
 git commit -m '20201112'
 git push origin master
 exit
+git add .
+git status
+git commit -m "20201120"
+git push origin master
+exit

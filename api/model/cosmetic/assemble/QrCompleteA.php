@@ -77,7 +77,7 @@ class QrCompleteA extends QrCompleteP
                         where aa.stts = 'ACT'
                           and bb.stts = 'ACT'
                           and aa.order_id = {$value['id']}
-                        group by aa.process_order_id ) tot,
+                        group by aa.process_order_id order by bb.process_date asc ) tot,
                         (SELECT @rownum:= 0) AS R
                         order by RNUM desc";
 
@@ -149,10 +149,16 @@ class QrCompleteA extends QrCompleteP
 
         $sql = "select
                    cs.process_date, o.order_no, u.name as manager,
-                   pm.name as product_name, qc.qty, @rownum:= @rownum+1 AS RNUM
+                   pm.name as product_name, qc.qty, po.code as process_code, 
+                   ifnull(pc.name,'') type, 
+                   @rownum:= @rownum+1 AS RNUM
                     from qr_code qc
                     inner join `order` o 
                     on qc.order_id = o.id
+                    inner join process_order po
+                    on qc.process_order_id = po.id
+                    left join process_code pc   
+                    on po.process_type = pc.code
                     inner join (
                         select * 
                         from change_stts

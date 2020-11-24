@@ -128,7 +128,7 @@ function painting_end(page_no, per_page, sort, order){
         text +='<tr class="open_tr">';
         text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].order_no+'</td>';
-        text +='  <td>'+jsonResult[i].product_name+'<span class="float-right" id="open_tr">▲</span></td>';
+        text +='  <td>'+jsonResult[i].product_name+'<span class="float-right" id="open_tr">▼</span></td>';
         text +='  <td class="text-right">'+comma(jsonResult[i].box_qty)+'</td>';
         text +='  <td class="text-right">'+comma(jsonResult[i].product_qty)+'</td>';
         text +='  <td class="text-center">';
@@ -149,7 +149,7 @@ function painting_end(page_no, per_page, sort, order){
         text +='        <td class="text-center">제품명</td>';
         text +='        <td class="text-center">박스수량</td>';
         text +='        <td class="text-center">제품수량</td>';
-        text +='        <td class="text-center">입고일자</td>';
+        text +='        <td class="text-center">완료일자</td>';
         text +='        <td class="text-center">담당자</td>';
         text +='      </tr>';
         for(var j in jsonResult[i].process_order){
@@ -175,15 +175,15 @@ function painting_end(page_no, per_page, sort, order){
         if($(this).parents("tr").next("tr#sub_tr").css("display") == "table-row"){
           $("#painting_end_list tr#sub_tr").fadeOut(0);
           $(this).parents("tr").css("background-color","#fff");
-          $("#painting_end_list #open_tr").text("▲");
+          $("#painting_end_list #open_tr").text("▼");
           start();
         }else{
           $("#painting_end_list tr").css("background-color","#fff");
           $(this).parents("tr").css("background-color","#eee");
           $("#painting_end_list tr#sub_tr").fadeOut(0);
           $(this).parents("tr").next("#sub_tr").slideDown(300);
-          $("#painting_end_list #open_tr").text("▲");
-          $(this).text("▼");
+          $("#painting_end_list #open_tr").text("▼");
+          $(this).text("▲");
           stopit();
         }
       });
@@ -210,7 +210,7 @@ function paging(end, start, total){
   {
   }else{
     text +='<li class="page-item">';
-    text +='<a class="page-link" href="./assembly_end.html?page_no='+pre_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
+    text +='<a class="page-link" href="./assembly_end.html?page_no='+pre_no+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Previous">';
     text +=' <span aria-hidden="true">Prev</span>';
     text +=' <span class="sr-only">Previous</span>';
     text +='</a>';
@@ -219,16 +219,16 @@ function paging(end, start, total){
   for( var k = paging_init_num; k <= paging_end_num; k++){
     if (parseInt(page_no) == k)
     {
-      text +='<li class="page-item active"><a class="page-link" href="./assembly_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item active"><a class="page-link" href="./assembly_end.html?page_no='+k+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }else{
-      text +='<li class="page-item"><a class="page-link" href="./assembly_end.html?page_no='+k+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
+      text +='<li class="page-item"><a class="page-link" href="./assembly_end.html?page_no='+k+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'">'+k+'</a></li>';
     }
   }
   if (total_paging_cnt == 0 || total_paging_cnt == 1 || next_no > total_paging_cnt)
   {
   }else{
     text +='<li class="page-item">';
-    text +='  <a class="page-link" href="./assembly_end.html?page_no='+next_no+'&search_text+'+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
+    text +='  <a class="page-link" href="./assembly_end.html?page_no='+next_no+'&search_text='+search_text+'&start_date='+start_date+'&end_date='+end_date+'&asset_id='+asset_id+'&sort='+sort+'&order='+order+'&sort_select='+$("#basicSelect").val()+'" aria-label="Next">';
     text +='    <span aria-hidden="true">Next</span>';
     text +='    <span class="sr-only">Next</span>';
     text +='  </a>';

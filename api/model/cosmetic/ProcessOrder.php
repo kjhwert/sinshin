@@ -21,10 +21,13 @@ class ProcessOrder extends Model
             return new Response(403, [], '수주 정보가 없습니다.');
         }
 
-        $sql = "select po.id, po.code, pm.name as product_name, pm.id as product_id, pm.code as product_code
+        $sql = "select po.id, po.code, pm.name as product_name, pm.id as product_id, 
+                        pm.code as product_code, cm.id as customer_id, cm.name customer_name
                 from process_order po
                 inner join product_master pm
                 on po.product_code = pm.code
+                left join customer_master cm
+                on po.customer_id = cm.id
                 where po.order_id = {$params['order_id']}
                 {$this->getDeptProcessType()} 
                 and po.code is not null and po.code != ''
