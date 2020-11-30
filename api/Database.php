@@ -3,9 +3,9 @@
 
 class Database
 {
-    private $servername = "sinshin.hlabpartner.com";
-    private $username = "hlab";
-    private $password = "AjdAjd8689!@";
+    private $servername = "localhost";
+    private $username = "root";
+    private $password = "Ajdajd8689!@";
     private $database = "sinshin";
     private $db = null;
     private static $_instance; //The single instance
