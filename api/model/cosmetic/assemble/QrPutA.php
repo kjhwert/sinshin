@@ -81,7 +81,7 @@ class QrPutA extends QrPutP
                     where aa.stts = 'ACT'
                       and bb.stts = 'ACT'
                       and aa.order_id = {$value['id']}
-                    group by aa.process_order_id) tot,
+                    group by aa.process_order_id order by bb.process_date asc) tot,
                     (SELECT @rownum:= 0) AS R
                     order by RNUM desc
                     ";

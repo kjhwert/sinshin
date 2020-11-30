@@ -2,6 +2,15 @@ if(JSON.parse(getCookie("user_data")).dept_id != 5){
   alert("페이지 접근 권한이 없습니다");
   history.back();
 }
+
+let today = new Date();
+
+let year = today.getFullYear(); // 년도
+let month = today.getMonth() + 1;  // 월
+let date = today.getDate();  // 날짜
+
+$("#process_date").val(year + '-' + month + '-' + date); //오늘날짜적용
+
 $(function(){
   $("#product_history").addClass("open");
   $("#assembly").addClass("active");
@@ -200,7 +209,7 @@ function balju_select(order_no){
       var text = '';
       for(var i in jsonResult){
         text +='<option selected hidden disabled>발주번호를 선택하세요</option>';
-        text +='<option value='+jsonResult[i].id+' data-pakage='+jsonResult[i].product_code+'>'+jsonResult[i].code+'</option>'
+        text +='<option value='+jsonResult[i].id+' data-pakage='+jsonResult[i].product_code+' data-customer_name='+jsonResult[i].customer_name+' data-from_id='+jsonResult[i].customer_id+'>'+jsonResult[i].code+'</option>'
       }
       $("#barju_no").empty();
       $("#barju_no").append(text);
@@ -209,6 +218,8 @@ function balju_select(order_no){
         var barju_no = $(this).val();
         balju_data(barju_no);
         pakage_data($("#barju_no").find("option:selected").data("pakage"));
+        $("#from_id").val($("#barju_no").find("option:selected").data("customer_name"));
+        $("#from_id").data("from_id", $("#barju_no").find("option:selected").data("from_id"));
       });
     }else{
       alert(result.message);

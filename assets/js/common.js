@@ -146,7 +146,7 @@ function lot_print(){
 					innerHtml +='<div id="print_box">';
 					innerHtml +='  <div class="print_box">';
 					innerHtml +='    <div class="print_inner_line">';
-					innerHtml +='			 <p class="qr_no">No. '+lot_id+'</p>';
+					innerHtml +='			 <p class="qr_no">No. '+qr_no+'</p>';
 					innerHtml +='      <div id="qrcode" class="qrcode2"></div>';
 					innerHtml +='      <table cellpadding="0" cellspacing="0" class="print_table2" border="1">';
 					innerHtml +='        <tr>';

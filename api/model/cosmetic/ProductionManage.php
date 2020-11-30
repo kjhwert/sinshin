@@ -2,6 +2,8 @@
 
 class ProductionManage extends Model
 {
+    protected $searchableText = 'product.name';
+
     public function __construct()
     {
         $this->token = $this->tokenValidation();
@@ -34,7 +36,8 @@ class ProductionManage extends Model
                         inner join MES_Machine machine
                             on po.machineId = machine.id
                         where po.status in ('P', 'R') and po.companyId = {$injection}
-                        order by machine.machineNo desc, po.priority desc limit 10000 ) tot,
+                        {$this->searchText($params['params'])}
+                        order by machine.machineNo desc, po.priority desc ) tot,
                     (SELECT @rownum:= 0) AS R
                     order by RNUM desc
                     limit {$page}, {$perPage}
@@ -56,7 +59,8 @@ class ProductionManage extends Model
                         on process.moldId = mold.id
                     inner join MES_Machine machine
                         on po.machineId = machine.id
-                    where po.status in ('P', 'R') and po.companyId = {$injection}";
+                    where po.status in ('P', 'R') and po.companyId = {$injection}
+                    {$this->searchText($params)}";
     }
 
     public function paintingIndex(array $params = [])
@@ -83,7 +87,8 @@ class ProductionManage extends Model
                             on po.sujuNum = suju.sujuNum
                         where po.companyId = {$painting} 
                         and po.status in ('R', 'P')
-                        order by po.priority desc limit 10000 ) tot,
+                        {$this->searchText($params['params'])}
+                        order by po.priority desc ) tot,
                     (SELECT @rownum:= 0) AS R
                     order by RNUM desc
                     limit {$page}, {$perPage}";
@@ -100,7 +105,8 @@ class ProductionManage extends Model
                         on po.productCode = product.code
                     inner join MES_Process process
                         on po.productCode = process.productCode
-                    where po.companyId = {$painting} and po.status in ('R', 'P')";
+                    where po.companyId = {$painting} and po.status in ('R', 'P')
+                    {$this->searchText($params)}";
     }
 
     public function assembleIndex(array $params = [])
@@ -125,7 +131,8 @@ class ProductionManage extends Model
                         inner join MES_Suju suju
                             on po.sujuNum = suju.sujuNum
                         where po.companyId = {$assemble} and po.status in ('R', 'P')
-                        order by po.orderDate asc limit 10000 ) tot,
+                        {$this->searchText($params['params'])}
+                        order by po.orderDate asc ) tot,
                     (SELECT @rownum:= 0) AS R
                     order by RNUM desc
                     limit {$page}, {$perPage}";
@@ -142,7 +149,8 @@ class ProductionManage extends Model
                         on po.productCode = product.code
                     inner join MES_Process process
                         on po.productCode = process.productCode
-                    where po.companyId = {$assemble} and po.status in ('R', 'P')";
+                    where po.companyId = {$assemble} and po.status in ('R', 'P')
+                    {$this->searchText($params)}";
     }
 
     protected function pagination(array $params = [])

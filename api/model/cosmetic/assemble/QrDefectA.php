@@ -134,6 +134,7 @@ class QrDefectA extends QrDefectP
         }
 
         $process_start = Code::$PROCESS_START;
+        $assemble = CustomerMaster::$ASSEMBLE;
         $dept_id = $this->getDeptId();
 
         $sql = "select pm.name as product_name, o.order_no, po.id, po.code as process_code,
@@ -152,11 +153,14 @@ class QrDefectA extends QrDefectP
                         group by qc.order_id
                 ) aa
                 on o.id = aa.order_id
+                inner join customer_master cm
+                on po.customer_id = cm.id
                 left join process_code pc
                 on po.process_type = pc.code
                 where pm.name like '%{$params['product_name']}%'
                 and o.order_no like '%{$params['order_no']}%'
                 and po.process_type in ({$this->getDeptProcessType()})
+                and cm.id = {$assemble}
                 order by o.created_at desc
                 ";
 
