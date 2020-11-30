@@ -193,3 +193,10 @@ git status
 git commit -m "20201120"
 git push origin master
 exit
+git add .
+git status
+git commit -m '20201124'
+git push origin master
+exit
+crontab -e
+exit
