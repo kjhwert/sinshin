@@ -205,3 +205,11 @@ git status
 git commit -m '20201130'
 git push origin master
 exit
+ls
+git add .
+git status
+git commit -m '20201202'
+git push origin master
+git pull
+git push origin master
+exit
