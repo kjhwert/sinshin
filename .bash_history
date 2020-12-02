@@ -242,3 +242,8 @@ git commit -m 'order update refresh'
 git push origin master
 git pull origin master
 git push origin master
+git add .
+git status
+git commit -m 'customer refresh'
+git push origin master
+exit

@@ -178,6 +178,10 @@ class ProcessOrder extends Model
                 $sql .= ", updated_at = '{$result['updateDate']}'";
             }
 
+            if ($result['quantity']) {
+                $sql .= ", qty = '{$result['quantity']}'";
+            }
+
             if ($process['moldId']) {
                 $sql .= ", mold_id = {$process['moldId']}";
             }
