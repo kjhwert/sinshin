@@ -10,8 +10,14 @@ class ProductMaster extends Model
         'search' => 'string'
     ];
 
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getDatabase();
+    }
+
     public function index(array $params = [])
     {
+        $this->token = $this->tokenValidation();
         $params = $this->pagination($params);
 
         $perPage = $params["perPage"];
@@ -38,6 +44,7 @@ class ProductMaster extends Model
 
     public function searchIndex (array $params = [])
     {
+        $this->token = $this->tokenValidation();
         $this->validate($params, $this->searchIndexRequired);
 
         if (mb_strlen($params['search'], 'utf-8') <= 1) {
@@ -134,8 +141,8 @@ class ProductMaster extends Model
 
         $sql = "select * from MES_Product where id > {$id}";
         $erp_results = $this->fetch($sql, $erp);
-        $count = count($erp_results);
 
+        $createCount = 0;
         foreach ($erp_results as $result) {
 
             $sql = "select count(id) as cnt from product_master where id = {$result['id']}";
@@ -157,21 +164,17 @@ class ProductMaster extends Model
                         process_type = '{$result['processType']}',
                         type = '{$result['type']}',
                         data_sync = 'ERP',
-                        created_id = {$this->token['id']},
+                        created_id = 1,
                         created_at = SYSDATE()
                     ";
 
-            $material = "select resourceId from MES_Process where resourceId is not null and productCode = '{$result['code']}'";
-            $material_id = $this->fetch($material, $erp)[0]['resourceId'];
-
-            if ($material_id) {
-                $sql .= ", material_id = {$material_id}";
-            }
-
             $this->fetch($sql, $mes);
+            $createCount += 1;
         }
 
-        return new Response(200, [], "{$count} 개의 데이터가 갱신 되었습니다.");
+        $deleteCount = $this->destroy();
+
+        return new Response(200, [], "{$createCount} 개의 데이터가 갱신 되고 {$deleteCount} 개의 데이터가 삭제되었습니다.");
     }
 
     /**
@@ -191,12 +194,13 @@ class ProductMaster extends Model
                     where p.resourceId is not null and pro.deleted = 'N'";
         $erp_results = $this->fetch($sql, $erp);
 
+        $updateCount = 0;
         foreach ($erp_results as $result) {
 
             $sql = "select material_id from product_master where code = '{$result['code']}'";
             $material_id = $this->fetch($sql, $mes)[0]['material_id'];
 
-            if ($material_id) {
+            if (!$material_id) {
                 continue;
             }
 
@@ -205,10 +209,11 @@ class ProductMaster extends Model
                         where code = '{$result['code']}'
                     ";
 
+            $updateCount += 1;
             $this->fetch($sql, $mes);
         }
 
-        return new Response(200, [], '갱신되었습니다.');
+        return new Response(200, [], "{$updateCount} 개의 데이터가 갱신되었습니다.");
     }
 
     public function destroy($id = null)
@@ -219,6 +224,7 @@ class ProductMaster extends Model
         $sql = "select * from MES_Product where deleted = 'Y'";
         $erp_results = $this->fetch($sql, $erp);
 
+        $deleteCount = 0;
         foreach ($erp_results as $result) {
             $sql = "select stts from product_master where code = '{$result['code']}'";
             $stts = $this->fetch($sql, $mes)[0]['stts'];
@@ -233,9 +239,10 @@ class ProductMaster extends Model
                     ";
 
             $this->fetch($sql, $mes);
+            $deleteCount += 1;
         }
 
-        return new Response(200, [], '갱신되었습니다.');
+        return $deleteCount;
     }
 
     protected function fetch ($sql = null, $db = null)
