@@ -77,6 +77,73 @@ class Order extends Model
         }
     }
 
+    public function update($id = null, array $data = [])
+    {
+        $erp = ErpDatabase::getInstance()->getDatabase();
+        $mes = Database::getInstance()->getDatabase();
+
+        $sql = "select id from `order` order by id desc limit 1";
+        $mes_id = $this->fetch($sql, $mes)[0]['id'] - 10000;
+
+        $sql = "select * from MES_Suju where id > {$mes_id}";
+        $erp_results = $this->fetch($sql, $erp);
+
+        foreach ($erp_results as $result) {
+
+            $sql = "select updated_at from `order` where id = {$result['id']}";
+            $update_date = $this->fetch($sql, $mes)[0]['updated_at'];
+
+            if (!$result['updateDate'] || $update_date === $result['updateDate']) {
+                continue;
+            }
+
+            $sql = "update `order` set
+                        updated_id = 1,
+                        updated_at = '{$result['updateDate']}'
+                    ";
+
+            if ($result['sujuNum']) {
+                $sql .= ", order_no = '{$result['sujuNum']}'";
+            }
+
+            if ($result['deliveryCompanyId']) {
+                $sql .= ", customer_id = {$result['deliveryCompanyId']}";
+            }
+
+            if ($result['productCode']) {
+               $sql .= ", product_code = '{$result['productCode']}'";
+            }
+
+            if ($result['jajeCode']) {
+                $sql .= ", jaje_code = '{$result['jajeCode']}'";
+            }
+
+            if ($result['quantity']) {
+                $sql .= ", qty = {$result['quantity']}";
+            }
+
+            if ($result['sujuDate']) {
+                $sql .= ", order_date = '{$result['sujuDate']}'";
+            }
+
+            if ($result['requestDeliveryDate']) {
+                $sql .= ", request_date = '{$result['requestDeliveryDate']}'";
+            }
+
+            if ($result['sujuCompanyId']) {
+                $sql .= ", supply_id = {$result['sujuCompanyId']}";
+            }
+
+            if ($result['sujuType']) {
+                $sql .= ", order_type = '{$result['sujuType']}'";
+            }
+
+            $sql .= " where id = {$result['id']}";
+
+            $this->fetch($sql, $mes);
+        }
+    }
+
     protected function fetch ($sql = null, $db = null)
     {
         try {

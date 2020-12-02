@@ -220,3 +220,11 @@ git add .
 git status
 git commit -m 'fixed untracked files'
 exit
+git add .
+git status
+git commit 'modify database'
+git commit -m 'modify database'
+git push origin master
+git pull
+git push origin master
+exit

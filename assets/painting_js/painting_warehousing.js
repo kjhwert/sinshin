@@ -37,8 +37,8 @@ let y_month = today.getMonth();
 let date = today.getDate();  // 날짜
 let day = today.getDay();  // 요일
 
-var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + date); //한달전
-var range_date2 = (year + '-' + month + '-' + date); //오늘
+var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //한달전
+var range_date2 = (year + '-' + (("00"+month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //오늘
 if(asset_id != ""){
   $("#asset_id").val(asset_id);
 }

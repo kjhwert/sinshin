@@ -12,5 +12,6 @@ $query = $db->prepare($sql);
 $query->execute();
 
 (new Order())->create();
+(new Order())->update();
 (new ProcessOrder())->create();
 (new ProcessOrder())->update();
