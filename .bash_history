@@ -228,3 +228,17 @@ git push origin master
 git pull
 git push origin master
 exit
+git status
+git pull origin master
+git commit -m 'modify front-end'
+git push origin master
+git add .
+git commit -m 'modify front-end'
+git push origin master
+exit
+git status
+git add .
+git commit -m 'order update refresh'
+git push origin master
+git pull origin master
+git push origin master
