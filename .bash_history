@@ -213,3 +213,10 @@ git push origin master
 git pull
 git push origin master
 exit
+git status
+vi .gitignore
+git rm -r --cached .
+git add .
+git status
+git commit -m 'fixed untracked files'
+exit

@@ -350,7 +350,7 @@ class Model
         $created_dept_id = $this->fetch($sql)[0]['dept_id'];
 
         if ($created_dept_id !== $this->token['dept_id']) {
-            return new Response(403, [], '타 부서의 QR코드를 처리할 수 없습니다.');
+            return new Response(403, [], "타 부서의 QR코드를 처리할 수 없습니다.");
         }
     }
 

@@ -17,7 +17,7 @@ class QrDefect extends Model
 
     protected $searchableText = 'product_name';
     protected $searchableDate = 'a.created_at';
-    protected $searchableAsset = 'c.asset_id';
+    protected $searchableAsset = 'c.id';
     protected $reversedSort = true;
 
     protected $injectionProcessCode = "'M'";

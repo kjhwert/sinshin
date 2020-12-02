@@ -27,7 +27,7 @@ class MaterialMaster extends Model
         $search = $params['search'];
 
         if ($search) {
-            return "and (mm.name like '%{$search}%' or mm.code like '%{$search}%')";
+            return "and mm.code like '%{$search}%'";
         } else {
             return "";
         }
@@ -56,7 +56,7 @@ class MaterialMaster extends Model
 
     protected function pagingSearchText (array $params = []) {
         $search = $params['search'];
-        return "and (mm.code like '%{$search}%' or mm.name like '%{$search}%')";
+        return "and mm.code like '%{$search}%'";
     }
 
     protected function paginationQuery (array $params = [])
