@@ -5,8 +5,14 @@ class MaterialMaster extends Model
     protected $table = 'material_master';
     protected $searchableText = 'mm.code';
 
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getDatabase();
+    }
+
     public function index(array $params = [])
     {
+        $this->token = $this->tokenValidation();
         if (!$params['type']) {
             return new Response(403, [],'type이 존재하지 않습니다.');
         }
@@ -34,6 +40,7 @@ class MaterialMaster extends Model
     }
 
     public function pagingIndex (array $params = []) {
+        $this->token = $this->tokenValidation();
         $params = $this->pagination($params);
 
         $perPage = $params["perPage"];
@@ -107,6 +114,7 @@ class MaterialMaster extends Model
 
     public function show($id = null)
     {
+        $this->token = $this->tokenValidation();
         $sql = "select * from {$this->table} where stts = 'ACT' and id = {$id}";
         return new Response(200, $this->fetch($sql, $this->db), '');
     }
@@ -116,28 +124,37 @@ class MaterialMaster extends Model
         $erp = ErpDatabase::getInstance()->getDatabase();
         $mes = Database::getInstance()->getDatabase();
 
-        $sql = "select id from material_master order by id desc limit 1";
-        $mes_id = $this->fetch($sql, $mes)[0]['id'];
-
-        $sql = "select * from MES_Resource where id > {$mes_id}";
+        $sql = "select * from MES_Resource";
         $erp_results = $this->fetch($sql, $erp);
-        $count = count($erp_results);
 
+        $createCount = 0;
         foreach ($erp_results as $result) {
+
+            $sql = "select count(id) cnt from material_master where code = '{$result['code']}'";
+            $has = $this->fetch($sql, $mes)[0]['cnt'];
+
+            if ($has > 0) {
+                continue;
+            }
+
             $sql = "insert into material_master set
                         name = '{$result['name']}',
                         type = '{$result['categoryCode']}',
                         unit = '{$result['unit']}',
-                        supplier = {$result['purchaseCompanyId']},
                         code = '{$result['code']}',
-                        created_id = {$this->token['id']},
+                        created_id = 1,
                         created_at = SYSDATE()
                     ";
 
+            if ($result['purchaseCompanyId']) {
+                $sql .= ", supplier = {$result['purchaseCompanyId']}";
+            }
+
             $this->fetch($sql, $mes);
+            $createCount += 1;
         }
 
-        return new Response(200, [], "{$count}개의 데이터가 갱신 되었습니다.");
+        return new Response(200, [], "{$createCount} 개의 데이터가 갱신 되었습니다.");
     }
 
     protected function fetch ($sql = null, $db = null)
