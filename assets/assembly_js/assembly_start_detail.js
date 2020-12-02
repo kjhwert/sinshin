@@ -34,10 +34,12 @@ function painting_start_detail(){
       for(var i in jsonResult){
         total_qty = total_qty + Number(jsonResult[i].qty);
         text +='<tr>';
-        text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+comma(jsonResult[i].qty)+'</td>';
-        text +='  <td>'+jsonResult[i].process_date+'</td>';
-        text +='  <td>'+jsonResult[i].manager+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].type+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].qty)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].process_date+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
         text +='</tr>';
       }
       $("#painting_start_detail_list").empty();
