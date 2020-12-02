@@ -111,6 +111,7 @@ class AssetRepair extends Model
                 order by a.asset_no";
 
         $assetResults = $this->fetch($sql);
+
         $result = (new Woojin())->index();
 
         for($i = 0; $i < count($assetResults); $i++) {
