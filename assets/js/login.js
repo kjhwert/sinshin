@@ -23,7 +23,11 @@ function login(){
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
       setCookie("user_data",JSON.stringify(result.data), 1);
-      location.href="./main/main.html";
+      if(result.data.dept_id == 12){
+        location.href="./automotive_management/plating_status.html";
+      }else{
+        location.href="./main/main.html";
+      }
     }else{
       alert(result.message);
     }

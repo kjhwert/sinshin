@@ -24,18 +24,23 @@ class MaterialStock extends Model
 
         $material_type = $params['params']['material_type'];
 
-        $sql = "select a.code, a.name, round((b.qty / a.qty),0) as qty, b.qty as total, a.unit, b.stock_date,
-                       c.name as manager, @rownum:= @rownum+1 AS RNUM
-                    from material_master a
-                    inner join material_stock b
-                    on a.id = b.material_id
-                    inner join user c
-                    on b.created_id = c.id,
-                    (SELECT @rownum:= 0) AS R
+        $sql = "
+                select tot.*, @rownum:= @rownum+1 AS RNUM
+                    from (
+                        select a.code, a.name, round((b.qty / a.qty),0) as qty, 
+                            b.qty as total, a.unit, b.stock_date, c.name as manager
+                            from material_master a
+                            inner join material_stock b
+                            on a.id = b.material_id
+                            inner join user c
+                            on b.created_id = c.id
                     where a.stts = 'ACT' and b.stts = 'ACT' 
                     {$this->getMaterialType($material_type)}
                     {$this->searchName($params['params'])} 
                     {$this->searchDate($params['params'])}
+                    order by b.stock_date asc
+                    ) tot,
+                (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}
                 ";
@@ -90,7 +95,7 @@ class MaterialStock extends Model
                            on b.created_id = e.id 
                        where a.stts = 'ACT' and d.stts = 'ACT'
                        and e.stts = 'ACT' {$this->getMaterialType($material_type)} {$this->searchName($params['params'])}
-                       order by c.created_at asc
+                       order by b.stock_date asc
                     ) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc

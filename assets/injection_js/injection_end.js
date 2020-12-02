@@ -12,6 +12,7 @@ $(function(){
   }
 
   injection_start(page_no, per_page, sort, order);
+  asset_select();
 });
 
 setInterval(function() {
@@ -38,8 +39,8 @@ let y_month = today.getMonth();
 let date = today.getDate();  // 날짜
 let day = today.getDay();  // 요일
 
-var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + date); //한달전
-var range_date2 = (year + '-' + month + '-' + date); //오늘
+var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //한달전
+var range_date2 = (year + '-' + (("00"+month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //오늘
 
 if(asset_id != ""){
   $("#asset_id").val(asset_id);
@@ -197,7 +198,7 @@ function paging(end, start, total){
 }
 
 $("#search_btn").on("click", function(){
-  location.href="../product_history/injection_end.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val();
+  location.href="../product_history/injection_end.html?page_no="+page_no+"&start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val()+"&asset_id="+$("#asset_id").val()+"&sort="+sort+"&order="+order+"&sort_select="+$("#basicSelect").val();
 });
 
 $("#search_text").keydown(function(key) {
@@ -205,3 +206,36 @@ $("#search_text").keydown(function(key) {
     $("#search_btn").click();
   }
 });
+
+function asset_select(){
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/master/asset/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json"
+  }).done(function (result, textStatus, xhr) {
+    var text = '<option value="">전체</option>';
+    if(result.status == 200){
+      var jsonResult = result.data;
+      console.log(jsonResult);
+
+      for(var i in jsonResult){
+        text+='<option value="'+jsonResult[i].id+'">'+jsonResult[i].asset_no+'</option>';
+      }
+    }else{
+      alert(result.message);
+      return;
+    }
+    $("#asset_id").empty();
+    $("#asset_id").append(text);
+
+    if(getParam("asset_id") != ""){
+      $("#asset_id").val(getParam("asset_id"));
+    }
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+}

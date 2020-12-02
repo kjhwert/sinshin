@@ -55,7 +55,9 @@ function injection_end_detail(){
       $("#asset_name").val(jsonResult[0].asset_no);
       $("#asset_id").val(jsonResult[0].asset_id);
       $("#material_id").val(jsonResult[0].material_id);
-      product_balju(jsonResult[0].order_id);
+      $("#product_balju").val(jsonResult[0].product_name+"("+jsonResult[0].process_code+")");
+      $("#product_id").val(jsonResult[0].product_id);
+      product_cnt(jsonResult[0].product_code);
     }else{
       alert(result.message);
     }
@@ -64,37 +66,8 @@ function injection_end_detail(){
   });
 }
 
-function product_balju(order_id){
-  $.ajax({
-      type    : "GET",
-      url        : "../api/cosmetics/master/process-order/index.php",
-      headers : {
-        "content-type": "application/json",
-        Authorization : user_data.token,
-      },
-      dataType:"json",
-      data:{
-        order_id: order_id
-      }
-  }).done(function (result, textStatus, xhr) {
-    if(result.status == 200){
-      var jsonResult = result.data;
-      console.log(jsonResult);
-      var text = '<option disabled selected hidden>제품명(발주번호)를 선택하세요</option>';
-      for(var i in jsonResult){
-        text += '<option value="'+jsonResult[i].id+'" data-product_id="'+jsonResult[i].product_id+'"  data-product_code="'+jsonResult[i].product_code+'">'+jsonResult[i].product_name+' ('+jsonResult[i].code+')</option>';
-      }
-      $("#product_balju").empty();
-      $("#product_balju").append(text);
-    }else{
-      alert(result.message);
-    }
-  }).fail(function(data, textStatus, errorThrown){
-    console.log("전송 실패");
-  });
-}
 
-$("#product_balju").on("change", function(){
+function product_cnt(code){
   $.ajax({
       type    : "GET",
       url        : "../api/cosmetics/master/package/index.php",
@@ -104,7 +77,7 @@ $("#product_balju").on("change", function(){
       },
       dataType:"json",
       data:{
-        id: $(this).find("option:selected").data("product_code")
+        id: code
       }
   }).done(function (result, textStatus, xhr) {
     if(result.status == 200){
@@ -117,8 +90,8 @@ $("#product_balju").on("change", function(){
     }
   }).fail(function(data, textStatus, errorThrown){
     console.log("전송 실패");
-  });
-});
+  })
+};
 
 // var qrcode = new QRCode(document.getElementById("qrcode"+i), {
 //     text: "abc123"+i,
@@ -132,15 +105,10 @@ $("#product_balju").on("change", function(){
 function print(){
     var order_no = $("#order_no").val();
     var order_id = $("#order_id").val();
-    var barju_no = $("#product_balju").val();
     var print_cnt = $("#print_cnt").val();
     var product_cnt = $("#product_cnt").val();
     if(order_no == ""){
       alert("수주번호를 선택해주세요");
-      return;
-    }
-    if(barju_no == ""){
-      alert("발주번호를 선택해주세요");
       return;
     }
     if(print_cnt == ""){
@@ -169,9 +137,9 @@ function print(){
         dataType:"json",
         data:JSON.stringify({
           order_id : order_id,
-          process_order_id : barju_no,
+          process_order_id : getParam("id"),
           qty : product_cnt,
-          product_id: $("#product_balju").find("option:selected").data("product_id"),
+          product_id: $("#product_id").val(),
           print_qty : print_cnt,
           created_at : $("#create_at").val(),
           asset_id : $("#asset_id").val()

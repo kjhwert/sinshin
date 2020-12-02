@@ -56,7 +56,7 @@ function stock_list(page_no, per_page, search_text){
         text +='  <td class="text-center">'+jsonResult[i].unit.toLowerCase();+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].stock_date+'</td>';
         text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
-        text +='   <td>';
+        text +='   <td class="text-center">';
         text +='      <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">';
         text +='        <a href="../product_history/injection_start_print.html?material_id='+jsonResult[i].id+'">';
         text +='         <button type="button" class="btn btn-bg-gradient-x-blue-cyan">출력</button>';

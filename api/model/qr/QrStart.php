@@ -109,7 +109,7 @@ class QrStart extends Model
                     cs.process_date, a.name as asset_name, o.order_no, po.id, a.id as asset_id, o.id as order_id,
                        MIN(cs.process_date) as start_date, MAX(cs.process_date) as end_date, mm.id as material_master,
                     pm.name as product_name, pm.id as product_id, mm.name as material_name, o.jaje_code, sum(qc.qty) as qty,
-                    a.display_name, a.asset_no, po.code as process_code
+                    a.display_name, a.asset_no, po.code as process_code, pm.code product_code
                 from qr_code qc
                      inner join process_order po
                         on qc.process_order_id = po.id
@@ -189,12 +189,14 @@ class QrStart extends Model
             return new Response(403, [], '이미 처리되었습니다.');
         }
 
+        return new Response(403, [], "{$result['material_id']} {$id}");
         $material_id = $result['material_id'];
 
         $sql = "select log.change_qty, log.remain_qty, mm.qty
-                from material_master mm
-                inner join material_stock_log log
-                where mm.id = {$material_id} order by log.created_at desc limit 1
+                    from material_stock_log log
+                    inner join material_master mm
+                    on log.material_id = mm.id
+                where log.material_id = {$material_id} order by log.created_at desc limit 1
                 ";
 
         $result = $this->fetch($sql)[0];
