@@ -73,7 +73,7 @@ class QrPut extends Model
                 on a.process_type = e.code
                 where a.stts = 'ACT' and c.stts = 'ACT' and d.stts = 'ACT'
                 {$this->searchText($params['params'])} {$this->searchDate($params['params'])}
-                group by a.id order by {$this->sorting($params['params'])}) as tot,
+                group by a.id order by {$this->sorting($params['params'])}, a.id desc) as tot,
                (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}

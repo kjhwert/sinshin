@@ -28,7 +28,6 @@ var complete_qty3 = "";
 var defect_qty3 = "";
 var release_qty3 = "";
 
-
 function setDateBox(){
   var dt = new Date();
   var year = "";
@@ -230,9 +229,9 @@ am4core.ready(function() {
 
       var bullet = series.bullets.push(new am4charts.LabelBullet())
       bullet.interactionsEnabled = false
-      bullet.dy = 30;
+      bullet.dy = -8;
       bullet.label.text = '{valueY}'
-      bullet.label.fill = am4core.color('#ffffff')
+      bullet.label.fill = am4core.color('#000')
 
       return series;
   }

@@ -36,11 +36,14 @@ function painting_warehousing_detail(){
       for(var i in jsonResult){
         total_box = total_box + Number(jsonResult[i].qty);
         text +='<tr>';
-        text +='  <td>'+jsonResult[i].RNUM+'</td>';
-        text +='  <td>'+jsonResult[i].qty+'</td>';
-        text +='  <td>'+jsonResult[i].process_date+'</td>';
-        text +='  <td>'+jsonResult[i].put_date+'</td>';
-        text +='  <td>'+jsonResult[i].manager+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].RNUM+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].from_name+'</td>';
+        text +='  <td>'+jsonResult[i].product_name+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].type+'</td>';
+        text +='  <td class="text-right">'+comma(jsonResult[i].qty)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].process_date.substr(0,10)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].put_date.substr(0,10)+'</td>';
+        text +='  <td class="text-center">'+jsonResult[i].manager+'</td>';
         text +='</tr>';
       }
       $("#painting_detail_list").empty();
@@ -51,8 +54,8 @@ function painting_warehousing_detail(){
       $("#total_order_no").text(jsonResult[0].order_no);
       $("#process_code").text(jsonResult[0].process_code);
       $("#total_product_name").text(jsonResult[0].product_name);
-      $("#total_box").text(comma(jsonResult.length)+"box");
-      $("#total_qty").text(total_box+"ea");
+      $("#total_box").text(comma(jsonResult.length)+" box");
+      $("#total_qty").text(comma(total_box)+" ea");
       $("#total_from_name").text(jsonResult[0].from_name);
       $("total_type").text(jsonResult[0].type);
     }else{
