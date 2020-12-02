@@ -88,10 +88,10 @@ class ProcessOrder extends Model
         $mes = Database::getInstance()->getDatabase();
 
         $sql = "select id from process_order order by id desc limit 1";
-        $mes_id = $this->fetch($sql, $mes)[0]['id'] - 5000;
+        $mes_id = $this->fetch($sql, $mes)[0]['id'] - 10000;
 
-//        $sql = "select * from MES_ProcessOrder where id > {$mes_id}";
-        $sql = "select * from MES_ProcessOrder where id >= 210000";
+        $sql = "select * from MES_ProcessOrder where id > {$mes_id}";
+//        $sql = "select * from MES_ProcessOrder where id >= 210000";
         $erp_results = $this->fetch($sql, $erp);
 
         foreach ($erp_results as $result) {
