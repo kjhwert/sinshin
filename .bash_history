@@ -200,3 +200,8 @@ git push origin master
 exit
 crontab -e
 exit
+git add .
+git status
+git commit -m '20201130'
+git push origin master
+exit
