@@ -77,7 +77,7 @@ function defect_data(){
 
         injection_defect_graph();
         painting_defect_graph();
-        injection_defect_graph();
+        assemble_defect_graph();
 
       $("#injection_total_qty1").text(comma(Number(injection_defect_data[0][0].litres)+Number(injection_defect_data[0][1].litres)));
       $("#injection_total_qty2").text(comma(Number(injection_defect_data[0][0].litres)));
