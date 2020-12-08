@@ -43,6 +43,12 @@ if(getParam("order") == ""){
 }
 warehousing(page_no, per_page, sort, order);
 
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});
+
 $("#basicSelect").on("change", function(){
   if($(this).val() == "date1"){
     sort = "date";

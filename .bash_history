@@ -261,3 +261,9 @@ git status
 git commit -m 'dashboard'
 git push origin master
 exit
+ls
+git add .
+git status
+git commit -m '20201208 page reload ordering change issue'
+git push origin master
+exit

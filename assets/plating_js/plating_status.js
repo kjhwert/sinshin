@@ -11,6 +11,11 @@ $(function(){
     history.back();
   }
 });
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});
 
 
 var page_no = getParam("page_no");

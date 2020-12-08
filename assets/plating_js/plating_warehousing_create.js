@@ -18,6 +18,12 @@ $("#customer_code").on("click", function(){
     $(".search_result_box").css("display","none");
 });
 
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});
+
 $("#modal_back").on("click", function(){
   modal_off();
 });

@@ -31,7 +31,11 @@ if(getParam("page_no") == ""){
   page_no = 1;
 }
 
-
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});
 
 function defect_list (page_no, per_page) {
     $.ajax({

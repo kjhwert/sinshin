@@ -23,6 +23,11 @@ if(getParam("page_no") == ""){
 if(getParam("search_text") != ""){
   $("#search_text").val(getParam("search_text"));
 }
+$("#search_text").keydown(function(key) {
+  if (key.keyCode == 13) {
+    $("#search_btn").click();
+  }
+});
 
 function stock_list(page_no, per_page) {
     $.ajax({
