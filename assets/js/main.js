@@ -20,8 +20,15 @@ weekly_data(); //주간생산현황
 defect_data(); //공정별 불량률
 data1(); //유형별 불량률
 
-
-
+setInterval(function() {
+  injection_status();
+  painting_status();
+  assemble_status();
+  machine_data(); //사출기현황
+  weekly_data(); //주간생산현황
+  defect_data(); //공정별 불량률
+  data1(); //유형별 불량률
+}, 20000);
 
 
 function weekly_data(){

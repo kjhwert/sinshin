@@ -73,7 +73,7 @@ class QrDefect extends Model
                 on a.id = p.process_order_id
                 where a.stts = 'ACT' and o.stts = 'ACT'
                 {$this->searchText($params['params'])}
-                order by {$this->sorting($params['params'])}) as tot,
+                order by {$this->sorting($params['params'])}, o.order_no) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}

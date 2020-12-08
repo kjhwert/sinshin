@@ -63,20 +63,34 @@ function daily_total(){
     $("#assemble_qty").text(comma(jsonResult.assemble_qty));
     $("#assemble_defect_qty").text(comma(jsonResult.assemble_defect_qty));
 
-    $("#day_defect_percent").text(comma(jsonResult.day_defect_percent)+"%");
-    $("#day_production_percent").text(comma(jsonResult.day_production_percent)+"%");
-    $("#day_assemble_percent").text(comma(jsonResult.day_assemble_percent)+"%");
-    $("#day_assemble_defect_qty").text(comma(jsonResult.day_assemble_defect_percent)+"%");
+    $("#day_defect_percent").text(comma(jsonResult.day_defect_percent)+" %");
+    $("#day_production_percent").text(comma(jsonResult.day_production_percent)+" %");
+    $("#day_assemble_percent").text(comma(jsonResult.day_assemble_percent)+" %");
+    $("#day_assemble_defect_qty").text(comma(jsonResult.day_assemble_defect_percent)+" %");
 
-    $("#month_defect_percent").text(comma(jsonResult.month_defect_percent));
-    $("#month_production_percent").text(comma(jsonResult.month_production_percent));
-    $("#month_assemble_percent").text(comma(jsonResult.month_assemble_percent));
-    $("#month_assemble_defect_qty").text(comma(jsonResult.month_assemble_defect_percent));
+    $("#month_defect_percent").text(comma(jsonResult.month_defect_percent)+" %");
+    $("#month_production_percent").text(comma(jsonResult.month_production_percent)+" %");
+    $("#month_assemble_percent").text(comma(jsonResult.month_assemble_percent)+" %");
+    $("#month_assemble_defect_qty").text(comma(jsonResult.month_assemble_defect_percent)+" %");
 
-    $("#defect_percent_point").text(comma(jsonResult.defect_percent_point));
-    $("#production_percent_point").text(comma(jsonResult.production_percent_point));
-    $("#assemble_percent_point").text(comma(jsonResult.assemble_percent_point));
-    $("#assemble_defect_percent_point").text(comma(jsonResult.assemble_defect_percent_point));
+    $("#defect_percent_point").text(comma(jsonResult.defect_percent_point)+" %");
+    $("#production_percent_point").text(comma(jsonResult.production_percent_point)+" %");
+    $("#assemble_percent_point").text(comma(jsonResult.assemble_percent_point)+" %");
+    $("#assemble_defect_percent_point").text(comma(jsonResult.assemble_defect_percent_point)+" %");
+
+    if($("#defect_percent_point").text().substr(0,1) != "-"){
+      $("#defect_percent_point").css("color","#ff0000");
+    }
+    if($("#production_percent_point").text().substr(0,1) == "-"){
+      $("#production_percent_point").css("color","#ff0000");
+    }
+    if($("#assemble_percent_point").text().substr(0,1) != "-"){
+      $("#assemble_percent_point").css("color","#ff0000");
+    }
+    if($("#assemble_defect_percent_point").text().substr(0,1) != "-"){
+      $("#assemble_defect_percent_point").css("color","#ff0000");
+    }
+
     daily_statistics();
   }).fail(function(result, textStatus, errorThrown){
     console.log("전송 실패");

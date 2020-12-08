@@ -256,3 +256,8 @@ git add .
 git status
 git commit -m 'header column'
 git push origin master
+git add .
+git status
+git commit -m 'dashboard'
+git push origin master
+exit

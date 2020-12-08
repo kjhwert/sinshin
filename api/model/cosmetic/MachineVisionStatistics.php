@@ -67,10 +67,26 @@ class MachineVisionStatistics extends Model
                    ifnull(round((m.production_qty/m.input_qty)*100, 1),0) month_production_percent,
                    ifnull(round((m.assemble_qty/m.input_qty)*100, 1),0) month_assemble_percent,
                    ifnull(round((m.assemble_defect_qty/m.input_qty)*100, 1),0) month_assemble_defect_percent,
-                   ifnull(round((d.defect_qty/d.input_qty)*100, 1),0)-ifnull(round((m.defect_qty/m.input_qty)*100, 1),0) defect_percent_point,
-                   ifnull(round((d.production_qty/d.input_qty)*100, 1),0)-ifnull(round((m.production_qty/m.input_qty)*100, 1),0) production_percent_point,
-                   ifnull(round((d.assemble_qty/d.input_qty)*100, 1),0)-ifnull(round((m.assemble_qty/m.input_qty)*100, 1),0) assemble_percent_point,
-                   ifnull(round((d.assemble_defect_qty/d.input_qty)*100, 1),0)-ifnull(round((m.assemble_defect_qty/m.input_qty)*100, 1),0) assemble_defect_percent_point
+                   case
+                    when d.defect_qty > 0
+                        then ifnull(round((d.defect_qty/d.input_qty)*100, 1),0)-ifnull(round((m.defect_qty/m.input_qty)*100, 1),0)
+                    else 0
+                    end defect_percent_point,
+                   case 
+                    when d.production_qty > 0
+                        then ifnull(round((d.production_qty/d.input_qty)*100, 1),0)-ifnull(round((m.production_qty/m.input_qty)*100, 1),0)
+                    else 0
+                    end production_percent_point,
+                   case
+                    when d.assemble_qty > 0
+                        then ifnull(round((d.assemble_qty/d.input_qty)*100, 1),0)-ifnull(round((m.assemble_qty/m.input_qty)*100, 1),0)
+                    else 0
+                    end assemble_percent_point,
+                   case
+                    when d.assemble_defect_qty > 0
+                        then ifnull(round((d.assemble_defect_qty/d.input_qty)*100, 1),0)-ifnull(round((m.assemble_defect_qty/m.input_qty)*100, 1),0)
+                    else 0
+                    end assemble_defect_percent_point    
                 from
                     (
                     select

@@ -1,7 +1,7 @@
 var user_data = JSON.parse(getCookie("user_data"));
 var path = $(location).attr('href');
 var reload_cycle_time = 10000;
-// user_log();
+user_log();
 
 function getHeader(){
 	var url;
@@ -180,10 +180,9 @@ function lot_print(){
 				popupWindow.focus()
 
 				/** 1초 지연 */
-				setTimeout(() => {
-						popupWindow.print()         // 팝업의 프린트 도구 시작
-						// popupWindow.close()         // 프린트 도구 닫혔을 경우 팝업 닫기
-				}, 1000)
+				setTimeout(function() {
+				  popupWindow.print();
+				}, 1000);
 			}else if(result.status == 401){
 				alert(result.message);
 				location.href="/login.html";
