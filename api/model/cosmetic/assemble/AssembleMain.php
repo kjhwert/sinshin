@@ -40,7 +40,7 @@ class AssembleMain extends InjectionMain
                 inner join product_master d
                 on c.product_code = d.code
                 where c.stts = 'ACT'
-                group by c.id order by {$params['params']['sort']} {$params['params']['order']}, c.order_date) as tot,
+                group by c.id order by {$params['params']['sort']} {$params['params']['order']}, c.order_no, d.name) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}

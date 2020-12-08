@@ -267,3 +267,8 @@ git status
 git commit -m '20201208 page reload ordering change issue'
 git push origin master
 exit
+git add .
+git status
+git commit -m 'automobile search enter key modify & page reload ordering issue'
+git push origin master
+exit

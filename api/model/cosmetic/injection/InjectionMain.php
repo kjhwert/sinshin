@@ -49,7 +49,7 @@ class InjectionMain extends Model
                   left join asset f
                     on a.asset_id = f.id
                  where a.stts = 'ACT'
-                group by a.id order by {$this->sorting($params['params'])}, a.order_date) as tot,
+                group by a.id order by {$this->sorting($params['params'])}, c.order_no, d.name) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}

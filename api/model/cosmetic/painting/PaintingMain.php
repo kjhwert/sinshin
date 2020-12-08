@@ -49,7 +49,7 @@ class PaintingMain extends InjectionMain
                 left join painting_process_setting p
                 on a.id = p.process_order_id
                 where a.stts = 'ACT'
-                group by a.id order by {$params['params']['sort']} {$params['params']['order']}, a.order_date) as tot,
+                group by a.id order by {$params['params']['sort']} {$params['params']['order']}, c.order_no, d.name) as tot,
                 (SELECT @rownum:= 0) AS R
                 order by RNUM desc
                 limit {$page},{$perPage}
