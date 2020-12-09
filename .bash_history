@@ -272,3 +272,8 @@ git status
 git commit -m 'automobile search enter key modify & page reload ordering issue'
 git push origin master
 exit
+git add .
+git status
+git commit -m 'page reload issue'
+git push origin master
+exit
