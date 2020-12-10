@@ -18,34 +18,38 @@ $(document).ready(function(){
         var release_qty = parseInt($("#release_qty").val());
 
         if (release_qty > remain) {
-            alert('출하가능량을 넘을 수 없습니다.');
+            alert('출고가능량을 넘을 수 없습니다.');
             return;
         }
 
-        $.ajax({
-            type    : "POST",
-            url        : "../api/automobile/release/log/index.php",
-            headers : {
-                "content-type": "application/json",
-                Authorization : user_data.token,
-            },
-            dataType:"json",
-            data: JSON.stringify({
-                release_qty : release_qty,
-                product_id : parseInt(getParam("id"))
-            })
-        }).done(function (data, textStatus, xhr) {
-            if (data.status != 200) {
-                alert(data.message);
-                return;
-            }
+        var msg = confirm('출고 하시겠습니까?');
+        if(msg) { //yes location.replace('index.php'); } else { //no }
+          $.ajax({
+              type    : "POST",
+              url        : "../api/automobile/release/log/index.php",
+              headers : {
+                  "content-type": "application/json",
+                  Authorization : user_data.token,
+              },
+              dataType:"json",
+              data: JSON.stringify({
+                  release_qty : release_qty,
+                  product_id : parseInt(getParam("id"))
+              })
+          }).done(function (data, textStatus, xhr) {
+              if (data.status != 200) {
+                  alert(data.message);
+                  return;
+              }
 
-            alert(data.message);
-            location.href="plating_stock.html";
+              alert(data.message);
+              location.href="plating_stock.html";
 
-        }).fail(function(data, textStatus, errorThrown){
-            console.log("전송 실패");
-        });
+          }).fail(function(data, textStatus, errorThrown){
+              console.log("전송 실패");
+          });
+        }
+
 
     })
 });
