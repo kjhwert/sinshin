@@ -75,8 +75,6 @@ $("#search_btn_cnt").on("click", function(){
   injection_status_cnt();
 });
 
-
-
 function injection_status_cnt(){
   var years_select = $("#years_select").val();
   var monthly_select = $("#monthly_select").val();
@@ -272,4 +270,64 @@ function paging(end, start, total){
 
  $("#search_btn").on("click", function(){
    location.href="./injection_status.html?start_date="+$("#start_date").val()+"&end_date="+$("#end_date").val()+"&search_text="+$("#search_text").val();
+ });
+
+ $("#start_qty").on("click", function(){
+   var firstDay = new Date($("#years_select").val(), $("#monthly_select").val(), 1);
+   var lastDay = new Date($("#years_select").val(), $("#monthly_select").val(), 0);
+
+   var first_year = $("#years_select").val();
+   var first_month = ("0" + $("#monthly_select").val()).slice(-2);
+   var first_day = ("0" + firstDay.getDate()).slice(-2);
+   var last_day = ("0" + lastDay.getDate()).slice(-2);
+
+   var param_start_date = first_year + "-" + first_month + "-" + first_day;
+   var param_end_date = first_year + "-" + first_month + "-" + last_day;
+
+   location.href="../product_history/injection_start.html?start_date="+param_start_date+"&end_date="+param_end_date;
+ });
+
+ $("#complete_qty").on("click", function(){
+   var firstDay = new Date($("#years_select").val(), $("#monthly_select").val(), 1);
+   var lastDay = new Date($("#years_select").val(), $("#monthly_select").val(), 0);
+
+   var first_year = $("#years_select").val();
+   var first_month = ("0" + $("#monthly_select").val()).slice(-2);
+   var first_day = ("0" + firstDay.getDate()).slice(-2);
+   var last_day = ("0" + lastDay.getDate()).slice(-2);
+
+   var param_start_date = first_year + "-" + first_month + "-" + first_day;
+   var param_end_date = first_year + "-" + first_month + "-" + last_day;
+
+   location.href="../product_history/injection_end.html?start_date="+param_start_date+"&end_date="+param_end_date;
+ });
+
+ $("#defect_qty").on("click", function(){
+   var firstDay = new Date($("#years_select").val(), $("#monthly_select").val(), 1);
+   var lastDay = new Date($("#years_select").val(), $("#monthly_select").val(), 0);
+
+   var first_year = $("#years_select").val();
+   var first_month = ("0" + $("#monthly_select").val()).slice(-2);
+   var first_day = ("0" + firstDay.getDate()).slice(-2);
+   var last_day = ("0" + lastDay.getDate()).slice(-2);
+
+   var param_start_date = first_year + "-" + first_month + "-" + first_day;
+   var param_end_date = first_year + "-" + first_month + "-" + last_day;
+
+   location.href="../product_history/injection_defect.html?start_date="+param_start_date+"&end_date="+param_end_date;
+ });
+
+ $("#release_qty").on("click", function(){
+   var firstDay = new Date($("#years_select").val(), $("#monthly_select").val(), 1);
+   var lastDay = new Date($("#years_select").val(), $("#monthly_select").val(), 0);
+
+   var first_year = $("#years_select").val();
+   var first_month = ("0" + $("#monthly_select").val()).slice(-2);
+   var first_day = ("0" + firstDay.getDate()).slice(-2);
+   var last_day = ("0" + lastDay.getDate()).slice(-2);
+
+   var param_start_date = first_year + "-" + first_month + "-" + first_day;
+   var param_end_date = first_year + "-" + first_month + "-" + last_day;
+
+   location.href="../product_history/injection_release.html?start_date="+param_start_date+"&end_date="+param_end_date;
  });

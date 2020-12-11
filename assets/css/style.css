@@ -525,3 +525,7 @@ table{
 .color-blue{
   color:#0000ff;
 }
+.total_qty{
+  cursor:pointer;
+  color:#6967ce;
+}

@@ -170,11 +170,33 @@ class InjectionMain extends Model
                     and comp.dept_id = {$dept_id}
                     and comp.process_date >= '{$year}-{$month}-01'
                     and comp.process_date < '{$year}-{$month}-31 23:59:59') as stock,
-                (select ifnull(sum(d.qty),0) as qty
-                    from cosmetics_defect_log as d
-                    where d.dept_id = {$dept_id}
-                    and d.created_at >= '{$year}-{$month}-01'
-                    and d.created_at < '{$year}-{$month}-31 23:59:59') as defect,
+                (select ifnull(sum(d.defect_qty),0) qty
+                    from process_order po
+                     left join (
+                        select sum(a.qty) as defect_qty, a.process_order_id, a.created_at, c.name as user_name,
+                               min(a.created_at) as start_date, max(a.created_at) as end_date
+                        from cosmetics_defect_log a
+                        inner join defect b
+                            on a.defect_id = b.id
+                        inner join user c
+                            on a.created_id = c.id
+                        where a.stts = 'ACT' and b.stts = 'ACT' and c.stts = 'ACT' and a.dept_id = {$dept_id}
+                          and a.created_at >= '{$year}-{$month}-01' and a.created_at <= '{$year}-{$month}-31 23:59:59'
+                        group by a.process_order_id ) as d
+                     on po.id = d.process_order_id
+                     inner join (
+                        select sum(a.qty) as product_qty, a.process_order_id,
+                               d.name as product_name
+                        from qr_code a
+                        inner join change_stts b
+                            on a.id = b.qr_id
+                        inner join product_master d
+                            on a.product_id = d.id
+                        where b.process_status = 40
+                          and b.dept_id = {$dept_id}
+                          and a.stts = 'ACT' and b.stts = 'ACT' and d.stts = 'ACT'
+                        group by a.process_order_id) as p
+                     on po.id = p.process_order_id) as defect,
                 (select ifnull(sum(qc.qty),0) as qty
                     from qr_code as qc
                          left join change_stts as rel

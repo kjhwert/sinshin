@@ -285,3 +285,10 @@ exit
 git add .
 git status
 exit
+git add .
+git status
+ git add .
+git status
+git commit -m 'automobile confirm'
+git push origin master
+exit
