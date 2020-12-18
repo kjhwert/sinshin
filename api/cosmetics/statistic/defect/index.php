@@ -11,5 +11,8 @@ $id = $req->getParamsValue($model->primaryKey);
 
 switch ($method) {
     case 'GET' :
-       return $model->index($params);
+        if ($params['month']) {
+            return $model->monthlyIndex($params);
+        }
+        return $model->yearlyIndex($params);
 };

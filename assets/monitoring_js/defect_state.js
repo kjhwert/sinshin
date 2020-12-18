@@ -25,7 +25,7 @@ function setDateBox(){
   // 발행 뿌려주기
   $("#years_select").append("<option value=''>년도</option>");
   // 올해 기준으로 -1년부터 +5년을 보여준다.
-  for(var y = (com_year); y <= (com_year+15); y++){
+  for(var y = (com_year); y >= (com_year-15); y--){
       $("#years_select").append("<option value='"+ y +"'>"+ y + " 년" +"</option>");
   }
   // 월 뿌려주기(1월부터 12월)
@@ -54,6 +54,7 @@ function setDateBox(){
     $("#monthly_select").val(getParam("month"));
   }
   data1();
+  month_chart();
 }
 
 function data1(){
@@ -72,32 +73,53 @@ function data1(){
   }).done(function (result, textStatus, xhr) {
     var jsonResult = result.data;
     console.log(jsonResult);
-    var injection_data = "<tr><th class='color-red'>전체</th><td id='total_qty1' class='color-red'></td></tr>";
-    var painting_data =  "<tr><th class='color-red'>전체</th><td id='total_qty2' class='color-red'></td></tr>";
-    var assemble_data =  "<tr><th class='color-red'>전체</th><td id='total_qty3' class='color-red'></td></tr>";
+    var injection_data = "<tr><th>전체</th><td id='total_color1'><b><span id='total_qty1' class='fs-18'></span></b> &nbsp;<span></span><span id='pre_total_qty1'></span></td></tr>";
+    var painting_data =  "<tr><th>전체</th><td id='total_color2'><b><span id='total_qty2' class='fs-18'></span></b> &nbsp;<span id='pre_total_qty2'></span></td></tr>";
+    var assemble_data =  "<tr><th>전체</th><td id='total_color3'><b><span id='total_qty3' class='fs-18'></span></b> &nbsp;<span id='pre_total_qty3'></span></td></tr>";
     var total_qty1 = Number(0);
     var total_qty2 = Number(0);
     var total_qty3 = Number(0);
+    var pre_total_qty1 = Number(0);
+    var pre_total_qty2 = Number(0);
+    var pre_total_qty3 = Number(0);
 
     for(var i in jsonResult.injection){
-      total_qty1 = total_qty1 + Number(jsonResult.injection[i].qty);
+      var sum_qty1 = comma(Number(jsonResult.injection[i].this_month_qty) - Number(jsonResult.injection[i].pre_month_qty));
+      total_qty1 = total_qty1 + Number(jsonResult.injection[i].this_month_qty);
+      pre_total_qty1 = pre_total_qty1 + Number(jsonResult.injection[i].pre_month_qty);
       injection_data +='<tr>';
       injection_data +='  <th>'+jsonResult.injection[i].defect_name+'</th>';
-      injection_data +='  <td>'+comma(jsonResult.injection[i].qty)+'</td>';
+      if(sum_qty1.substr(0,1) == "-"){
+        injection_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty1+')</td>';
+      }else{
+        injection_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty1+')</td>';
+      }
       injection_data +='</tr>';
     }
     for(var i in jsonResult.painting){
-      total_qty2 = total_qty2 + Number(jsonResult.painting[i].qty);
+      var sum_qty2 = comma(Number(jsonResult.painting[i].this_month_qty) - Number(jsonResult.painting[i].pre_month_qty));
+      total_qty2 = total_qty2 + Number(jsonResult.painting[i].this_month_qty);
+      pre_total_qty2 = pre_total_qty2 + Number(jsonResult.painting[i].pre_month_qty);
       painting_data +='<tr>';
       painting_data +='  <th>'+jsonResult.painting[i].defect_name+'</th>';
-      painting_data +='  <td>'+comma(jsonResult.painting[i].qty)+'</td>';
+      if(sum_qty2.substr(0,1) == "-"){
+        painting_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty2+')</td>';
+      }else{
+        painting_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty2+')</td>';
+      }
       painting_data +='</tr>';
     }
     for(var i in jsonResult.assemble){
-      total_qty3 = total_qty3 + Number(jsonResult.assemble[i].qty);
+      var sum_qty3 = comma(Number(jsonResult.assemble[i].this_month_qty) - Number(jsonResult.assemble[i].pre_month_qty));
+      total_qty3 = total_qty3 + Number(jsonResult.assemble[i].this_month_qty);
+      pre_total_qty3 = pre_total_qty3 + Number(jsonResult.assemble[i].pre_month_qty);
       assemble_data +='<tr>';
       assemble_data +='  <th>'+jsonResult.assemble[i].defect_name+'</th>';
-      assemble_data +='  <td>'+comma(jsonResult.assemble[i].qty)+'</td>';
+      if(sum_qty3.substr(0,1) == "-"){
+        assemble_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty3+')</td>';
+      }else{
+        assemble_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty3+')</td>';
+      }
       assemble_data +='</tr>';
     }
     $("#defect_table1").empty();
@@ -110,6 +132,32 @@ function data1(){
     $("#total_qty2").text(comma(total_qty2));
     $("#total_qty3").text(comma(total_qty3));
 
+    var total_sum1 = comma(total_qty1 - pre_total_qty1);
+    var total_sum2 = comma(total_qty2 - pre_total_qty2);
+    var total_sum3 = comma(total_qty3 - pre_total_qty3);
+
+    if(total_sum1.substr(0,1) == "-"){
+      $("#pre_total_qty1").text("(▼ "+total_sum1+")");
+      $("#total_color1").addClass("color-blue");
+    }else{
+      $("#pre_total_qty1").text("(▲ "+total_sum1+")");
+      $("#total_color1").addClass("color-red");
+    }
+    if(total_sum2.substr(0,1) == "-"){
+      $("#pre_total_qty2").text("(▼ "+total_sum2+")");
+      $("#total_color2").addClass("color-blue");
+    }else{
+      $("#pre_total_qty2").text("(▲ "+total_sum2+")");
+      $("#total_color2").addClass("color-red");
+    }
+    if(total_sum2.substr(0,1) == "-"){
+      $("#pre_total_qty3").text("(▼ "+total_sum3+")");
+      $("#total_color3").addClass("color-blue");
+    }else{
+      $("#pre_total_qty3").text("(▲ "+total_sum3+")");
+      $("#total_color3").addClass("color-red");
+    }
+
     defect_data1 = result.data.injection;
     defect_data2 = result.data.painting;
     defect_data3 = result.data.assemble;
@@ -121,6 +169,7 @@ function data1(){
 }
 
 function chart_start(){
+
   am4core.ready(function() {
   // Themes begin
   am4core.useTheme(am4themes_animated);
@@ -148,8 +197,8 @@ function chart_start(){
   chart3.legend = new am4charts.Legend();
 
   var series1 = chart1.series.push(new am4charts.PieSeries3D());
-  series1.dataFields.value = "qty";
-  series1.dataFields.depthValue = "qty";
+  series1.dataFields.value = "this_month_qty";
+  series1.dataFields.depthValue = "this_month_qty";
   series1.dataFields.category = "defect_name";
   series1.slices.template.cornerRadius = 5;
   series1.colors.step = 3;
@@ -160,8 +209,8 @@ function chart_start(){
   series1.labels.template.fill = am4core.color("white");
 
   var series2 = chart2.series.push(new am4charts.PieSeries3D());
-  series2.dataFields.value = "qty";
-  series2.dataFields.depthValue = "qty";
+  series2.dataFields.value = "this_month_qty";
+  series2.dataFields.depthValue = "this_month_qty";
   series2.dataFields.category = "defect_name";
   series2.slices.template.cornerRadius = 5;
   series2.colors.step = 3;
@@ -172,8 +221,8 @@ function chart_start(){
   series2.labels.template.fill = am4core.color("white");
 
   var series3 = chart3.series.push(new am4charts.PieSeries3D());
-  series3.dataFields.value = "qty";
-  series3.dataFields.depthValue = "qty";
+  series3.dataFields.value = "this_month_qty";
+  series3.dataFields.depthValue = "this_month_qty";
   series3.dataFields.category = "defect_name";
   series3.slices.template.cornerRadius = 5;
   series3.colors.step = 3;
@@ -184,6 +233,113 @@ function chart_start(){
   series3.labels.template.fill = am4core.color("white");
 
   }); // end am4core.ready()
+}
+
+function month_chart(){
+
+  var month_data = [];
+  $.ajax({
+      type    : "GET",
+      url        : "../api/cosmetics/statistic/defect/index.php",
+      headers : {
+        "content-type": "application/json",
+        Authorization : user_data.token,
+      },
+      dataType:"json",
+      data:{
+        year: $("#years_select").val()
+      }
+  }).done(function (result, textStatus, xhr) {
+    month_data.push(result.data);
+    console.log(month_data);
+    am4core.ready(function() {
+
+      // Themes begin
+      am4core.useTheme(am4themes_animated);
+      // Themes end
+
+      // Create chart instance
+      var chart = am4core.create("month_chart", am4charts.XYChart);
+
+      // Add data
+      chart.data = month_data[0];
+
+      // Create category axis
+      var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+      categoryAxis.dataFields.category = "month";
+      categoryAxis.renderer.opposite = true;
+
+      // Create value axis
+      var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.renderer.inversed = false;
+      valueAxis.title.text = "불량수";
+      valueAxis.renderer.minLabelPosition = 0.01;
+
+      // Create series
+      var series1 = chart.series.push(new am4charts.LineSeries());
+      series1.dataFields.valueY = "injection_qty";
+      series1.dataFields.categoryX = "month";
+      series1.name = "사출";
+      series1.bullets.push(new am4charts.CircleBullet());
+      series1.tooltipText = "{categoryX} {name} 불량수 {valueY} 건";
+      series1.legendSettings.valueText = "{valueY}";
+      series1.visible  = false;
+
+      var series2 = chart.series.push(new am4charts.LineSeries());
+      series2.dataFields.valueY = "painting_qty";
+      series2.dataFields.categoryX = "month";
+      series2.name = '도장';
+      series2.bullets.push(new am4charts.CircleBullet());
+      series2.tooltipText = "{categoryX} {name} 불량수 {valueY} 건";
+      series2.legendSettings.valueText = "{valueY}";
+
+      var series3 = chart.series.push(new am4charts.LineSeries());
+      series3.dataFields.valueY = "assemble_qty";
+      series3.dataFields.categoryX = "month";
+      series3.name = '조립';
+      series3.bullets.push(new am4charts.CircleBullet());
+      series3.tooltipText = "{categoryX} {name} 불량수 {valueY} 건";
+      series3.legendSettings.valueText = "{valueY}";
+
+      // Add chart cursor
+      chart.cursor = new am4charts.XYCursor();
+      chart.cursor.behavior = "zoomY";
+
+
+      let hs1 = series1.segments.template.states.create("hover")
+      hs1.properties.strokeWidth = 5;
+      series1.segments.template.strokeWidth = 1;
+
+      let hs2 = series2.segments.template.states.create("hover")
+      hs2.properties.strokeWidth = 5;
+      series2.segments.template.strokeWidth = 1;
+
+      let hs3 = series3.segments.template.states.create("hover")
+      hs3.properties.strokeWidth = 5;
+      series3.segments.template.strokeWidth = 1;
+
+      // Add legend
+      chart.legend = new am4charts.Legend();
+      chart.legend.itemContainers.template.events.on("over", function(event){
+        var segments = event.target.dataItem.dataContext.segments;
+        segments.each(function(segment){
+          segment.isHover = true;
+        })
+      })
+
+      chart.legend.itemContainers.template.events.on("out", function(event){
+        var segments = event.target.dataItem.dataContext.segments;
+        segments.each(function(segment){
+          segment.isHover = false;
+        })
+      })
+
+      }); // end am4core.ready()
+  }).fail(function(data, textStatus, errorThrown){
+    console.log("전송 실패");
+  });
+
+
 }
 
 $("#search_btn").on("click", function(){

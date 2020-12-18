@@ -292,3 +292,8 @@ git status
 git commit -m 'automobile confirm'
 git push origin master
 exit
+git add .
+git status
+git commit -m 'production history'
+git push origin master
+exit
