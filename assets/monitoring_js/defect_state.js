@@ -76,12 +76,13 @@ function data1(){
     var injection_data = "<tr><th>전체</th><td id='total_color1'><b><span id='total_qty1' class='fs-18'></span></b> &nbsp;<span></span><span id='pre_total_qty1'></span></td></tr>";
     var painting_data =  "<tr><th>전체</th><td id='total_color2'><b><span id='total_qty2' class='fs-18'></span></b> &nbsp;<span id='pre_total_qty2'></span></td></tr>";
     var assemble_data =  "<tr><th>전체</th><td id='total_color3'><b><span id='total_qty3' class='fs-18'></span></b> &nbsp;<span id='pre_total_qty3'></span></td></tr>";
-    var total_qty1 = Number(0);
-    var total_qty2 = Number(0);
-    var total_qty3 = Number(0);
-    var pre_total_qty1 = Number(0);
-    var pre_total_qty2 = Number(0);
-    var pre_total_qty3 = Number(0);
+    var total_qty1 = Number(0);//사출
+    var total_qty2 = Number(0);//도장
+    var total_qty3 = Number(0);//조립
+
+    var pre_total_qty1 = Number(0);//사출
+    var pre_total_qty2 = Number(0);//도장
+    var pre_total_qty3 = Number(0);//조립
 
     for(var i in jsonResult.injection){
       var sum_qty1 = comma(Number(jsonResult.injection[i].this_month_qty) - Number(jsonResult.injection[i].pre_month_qty));
@@ -90,9 +91,9 @@ function data1(){
       injection_data +='<tr>';
       injection_data +='  <th>'+jsonResult.injection[i].defect_name+'</th>';
       if(sum_qty1.substr(0,1) == "-"){
-        injection_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty1+')</td>';
+        injection_data +='  <td><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span><span class="color-blue"> &nbsp;▼ '+sum_qty1+' ('+jsonResult.injection[i].percent+'%)</span></td>';
       }else{
-        injection_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty1+')</td>';
+        injection_data +='  <td><span class="fs-18">'+comma(jsonResult.injection[i].this_month_qty)+'</span><span class="color-red"> &nbsp;▲ '+sum_qty1+' ('+jsonResult.injection[i].percent+'%)</span></td>';
       }
       injection_data +='</tr>';
     }
@@ -103,9 +104,9 @@ function data1(){
       painting_data +='<tr>';
       painting_data +='  <th>'+jsonResult.painting[i].defect_name+'</th>';
       if(sum_qty2.substr(0,1) == "-"){
-        painting_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty2+')</td>';
+        painting_data +='  <td><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span><span class="color-blue"> &nbsp;▼ '+sum_qty2+' ('+jsonResult.painting[i].percent+'%)</span></td>';
       }else{
-        painting_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty2+')</td>';
+        painting_data +='  <td><span class="fs-18">'+comma(jsonResult.painting[i].this_month_qty)+'</span><span class="color-red"> &nbsp;▲ '+sum_qty2+' ('+jsonResult.painting[i].percent+'%)</span></td>';
       }
       painting_data +='</tr>';
     }
@@ -116,9 +117,9 @@ function data1(){
       assemble_data +='<tr>';
       assemble_data +='  <th>'+jsonResult.assemble[i].defect_name+'</th>';
       if(sum_qty3.substr(0,1) == "-"){
-        assemble_data +='  <td class="color-blue"><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span> &nbsp;(▼ '+sum_qty3+')</td>';
+        assemble_data +='  <td><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span><span class="color-blue"> &nbsp;▼ '+sum_qty3+' ('+jsonResult.painting[i].percent+'%)</span></span></td>';
       }else{
-        assemble_data +='  <td class="color-red"><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span> &nbsp;(▲ '+sum_qty3+')</td>';
+        assemble_data +='  <td><span class="fs-18">'+comma(jsonResult.assemble[i].this_month_qty)+'</span><span class="color-red"> &nbsp;▲ '+sum_qty3+' ('+jsonResult.painting[i].percent+'%)</span></span></td>';
       }
       assemble_data +='</tr>';
     }
@@ -135,26 +136,32 @@ function data1(){
     var total_sum1 = comma(total_qty1 - pre_total_qty1);
     var total_sum2 = comma(total_qty2 - pre_total_qty2);
     var total_sum3 = comma(total_qty3 - pre_total_qty3);
+    var total_percent1 = total_sum1 * 100 / total_qty1;
+    var total_percent2 = total_sum2 * 100 / total_qty2;
+    var total_percent3 = total_sum3 * 100 / total_qty3;
+    if(isNaN(total_percent1)) {total_percent1 = 0;}
+    if(isNaN(total_percent2)) {total_percent2 = 0;}
+    if(isNaN(total_percent3)) {total_percent3 = 0;}
 
     if(total_sum1.substr(0,1) == "-"){
-      $("#pre_total_qty1").text("(▼ "+total_sum1+")");
+      $("#pre_total_qty1").text("▼ "+total_sum1+" ("+total_percent1.toFixed(1)+"%)");
       $("#total_color1").addClass("color-blue");
     }else{
-      $("#pre_total_qty1").text("(▲ "+total_sum1+")");
+      $("#pre_total_qty1").text("▲ "+total_sum1+" ("+total_percent1.toFixed(1)+"%)");
       $("#total_color1").addClass("color-red");
     }
     if(total_sum2.substr(0,1) == "-"){
-      $("#pre_total_qty2").text("(▼ "+total_sum2+")");
+      $("#pre_total_qty2").text("▼ "+total_sum1+" ("+total_percent2.toFixed(1)+"%)");
       $("#total_color2").addClass("color-blue");
     }else{
-      $("#pre_total_qty2").text("(▲ "+total_sum2+")");
+      $("#pre_total_qty2").text("▲ "+total_sum1+" ("+total_percent2.toFixed(1)+"%)");
       $("#total_color2").addClass("color-red");
     }
     if(total_sum2.substr(0,1) == "-"){
-      $("#pre_total_qty3").text("(▼ "+total_sum3+")");
+      $("#pre_total_qty3").text("▼ "+total_sum3+" ("+total_percent3.toFixed(1)+"%)");
       $("#total_color3").addClass("color-blue");
     }else{
-      $("#pre_total_qty3").text("(▲ "+total_sum3+")");
+      $("#pre_total_qty3").text("▲ "+total_sum3+" ("+total_percent3.toFixed(1)+"%)");
       $("#total_color3").addClass("color-red");
     }
 

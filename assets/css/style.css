@@ -541,3 +541,6 @@ table{
 .height400{
   height:400px;
 }
+.table td.vertical-middle{
+  vertical-align:middle;
+}

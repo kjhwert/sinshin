@@ -297,3 +297,8 @@ git status
 git commit -m 'production history'
 git push origin master
 exit
+git add .
+git status
+git commit -m '20201218'
+git push origin master
+exit

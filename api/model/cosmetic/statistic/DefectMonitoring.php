@@ -72,7 +72,7 @@ class DefectMonitoring extends Model
             select d.id, d.name defect_name,
                     ifnull(pre_month.qty, 0) pre_month_qty,
                     ifnull(this_month.qty, 0) this_month_qty,
-                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1),0) percent
+                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1)-100,0) percent
                 from defect d
                 left join (
                     select sum(cd.qty) qty, cd.defect_id
@@ -96,7 +96,7 @@ class DefectMonitoring extends Model
             select d.id, d.name defect_name,
                     ifnull(pre_month.qty, 0) pre_month_qty,
                     ifnull(this_month.qty, 0) this_month_qty,
-                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1),0) percent
+                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1)-100,0) percent
                 from defect d
                 left join (
                     select sum(cd.qty) qty, cd.defect_id
@@ -120,7 +120,7 @@ class DefectMonitoring extends Model
             select d.id, d.name defect_name,
                     ifnull(pre_month.qty, 0) pre_month_qty,
                     ifnull(this_month.qty, 0) this_month_qty,
-                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1),0) percent
+                    ifnull(round((ifnull(this_month.qty, 0)/ifnull(pre_month.qty, 0))*100, 1)-100,0) percent
                 from defect d
                 left join (
                     select sum(cd.qty) qty, cd.defect_id
