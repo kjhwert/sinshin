@@ -20,7 +20,7 @@ switch ($method) {
             return $model->show($id);
         }
     case 'POST' :
-        $model->create($params);
+        $model->responseCreate($params);
         break;
     case 'PUT' : $model->dataSync();
         break;

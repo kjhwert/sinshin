@@ -9,6 +9,7 @@ $(document).ready(function(){
     alert("페이지 접근 권한이 없습니다");
     history.back();
   }
+  stock_list(page_no, per_page, search_text);
 });
 
 var page_no = "";
@@ -22,8 +23,15 @@ if(getParam("page_no") == ""){
 if(search_text != ""){
   $("#search_text").val(search_text);
 }
+if(JSON.parse(getCookie('user_data')).dept_name == "사출팀"){
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option>');
+}else{
+  $("#material_type").empty();
+  $("#material_type").append('<option value="CO">도료</option>');
+}
 
-stock_list(page_no, per_page, search_text);
+
 
 function stock_list(page_no, per_page, search_text){
   $.ajax({
@@ -38,7 +46,7 @@ function stock_list(page_no, per_page, search_text){
         type: "stock",
         page: page_no,
         perPage: per_page,
-        material_type: "IN",
+        material_type: $("#material_type").val(),
         search: search_text
       }
   }).done(function (result, textStatus, xhr) {

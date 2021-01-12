@@ -302,3 +302,8 @@ git status
 git commit -m '20201218'
 git push origin master
 exit
+git add .
+git status
+git commit -m '20201222'
+git push origin master
+exit

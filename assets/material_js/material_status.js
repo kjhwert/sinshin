@@ -16,7 +16,13 @@ var search_text = decodeURIComponent(getParam("search_text"));
 var start_date = getParam("start_date");
 var end_date = getParam("end_date");
 let today = new Date();
-
+if(JSON.parse(getCookie('user_data')).dept_name == "사출팀"){
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option>');
+}else{
+  $("#material_type").empty();
+  $("#material_type").append('<option value="CO">도료</option>');
+}
 
 if(getParam("page_no") == ""){
   page_no = 1;
@@ -48,7 +54,7 @@ function stock_list(page_no, per_page, search_text){
         type: "warehouse",
         page: page_no,
         perPage: per_page,
-        material_type: "IN",
+        material_type: $("#material_type").val(),
         search: search_text,
         start_date: start_date,
         end_date: end_date

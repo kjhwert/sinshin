@@ -119,7 +119,11 @@ class CustomerMaster extends Model
         }
 
         $this->update();
+        return $count;
+    }
 
+    public function responseCreate () {
+        $count = $this->create();
         return new Response(200, [], "{$count} 개의 데이터가 갱신 되었습니다.");
     }
 

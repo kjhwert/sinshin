@@ -31,14 +31,24 @@ let today = new Date();
 
 let year = today.getFullYear(); // 년도
 let month = today.getMonth() + 1;  // 월
-let y_month = today.getMonth();
 
 
 let date = today.getDate();  // 날짜
 let day = today.getDay();  // 요일
 
-var range_date1 = (year + '-' + (("00"+y_month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //한달전
 var range_date2 = (year + '-' + (("00"+month.toString()).slice(-2)) + '-' + ("00"+date.toString()).slice(-2)); //오늘
+function dateToYYYYMMDD(date)
+{
+    function pad(num) {
+        num = num + '';
+        return num.length < 2 ? '0' + num : num;
+    }
+    return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate());
+}
+
+var prevDate = new Date(new Date().setMonth(new Date().getMonth()-1)); // 한달전 날짜
+var range_date1 = dateToYYYYMMDD(prevDate); //한달전 날짜 포멧변환
+
 if(asset_id != ""){
   $("#asset_id").val(asset_id);
 }
