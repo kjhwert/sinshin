@@ -26,6 +26,7 @@ class Login
         }
 
         $sql = "select password('{$pw}') as pw";
+
         $pw = $this->fetch($sql)[0]['pw'];
 
         $sql = "select a.id, b.name as dept_name, user_id, a.name, tel, email, duty, a.dept_id, c.name as position 

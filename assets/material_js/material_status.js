@@ -19,10 +19,14 @@ let today = new Date();
 if(JSON.parse(getCookie('user_data')).dept_name == "사출팀"){
   $("#material_type").empty();
   $("#material_type").append('<option value="IN">원자재</option>');
-}else{
+}else if(JSON.parse(getCookie('user_data')).dept_name == "도장팀"){
   $("#material_type").empty();
   $("#material_type").append('<option value="CO">도료</option>');
+}else{
+  $("#material_type").empty();
+  $("#material_type").append('<option value="IN">원자재</option><option value="CO">도료</option>');
 }
+
 
 if(getParam("page_no") == ""){
   page_no = 1;
